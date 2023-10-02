@@ -1,39 +1,40 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 
 function SidebarList(){
     return(
         <>
-            <ul className="nav nav-pills flex-column mb-auto" style={{minHeight:'80vh'}}>
+            <ul className="nav nav-pills flex-column mb-auto" style={{minHeight:'76vh'}}>
                 <li className="nav-item">
-                    <a href="#" className="nav-link active" aria-current="page">
+                    <Link to="/" className='nav-link'>
                         <svg className="bi me-2" width="16" height="16"></svg>
                         Home
-                    </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light">
+                    <Link to="/" className="nav-link">
                         <svg className="bi me-2" width="16" height="16"></svg>
                         Dashboard
-                    </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light">
+                    <Link to="/" className="nav-link">
                         <svg className="bi me-2" width="16" height="16"></svg>
                         Orders
-                    </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light">
+                    <Link to="/" className="nav-link">
                         <svg className="bi me-2" width="16" height="16"></svg>
                         Products
-                    </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light">
+                    <Link to="/" className="nav-link">
                         <svg className="bi me-2" width="16" height="16"></svg>
                         Customers
-                    </a>
+                    </Link>
                 </li>
             </ul>
         </>
