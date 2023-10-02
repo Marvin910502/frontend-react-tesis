@@ -4,10 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from "react-router-dom";
-import {useState} from "react";
 import ThemeProvider from "./components/theme";
-
-const theme:string = 'dark'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
