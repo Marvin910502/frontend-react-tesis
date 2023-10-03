@@ -23,7 +23,7 @@ const Switch = () => {
                     onChange={checkHandle}
                     type="switch"
                     id="custom-switch"
-                    label="Tema"
+                    label={theme === 'dark' ? 'Modo Oscuro' : 'Modo Claro'}
                     defaultChecked={isChecked}
                 />
             </Form>

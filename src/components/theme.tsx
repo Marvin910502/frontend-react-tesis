@@ -9,6 +9,7 @@ const ThemeProvider = (props: any) => {
 
     if (theme === null){
         localStorage.setItem('themeMode', 'dark')
+        theme = 'dark'
     }
 
     return(
