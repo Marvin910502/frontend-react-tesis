@@ -21,7 +21,7 @@ function Sidebar(){
     return(
         <>
             <Row>
-            <Col lg={2} md={4} sm={4} className='sticky-top position-fixed' style={{height:'100vh'}} data-bs-theme='dark'>
+            <Col xl={2} lg={3} md={4} sm={4} xs={1} className='sticky-top position-fixed' style={{height:'100vh'}} data-bs-theme='dark'>
                 <div className="sticky-top shadow-lg" style={{minHeight:'100vh'}}>
                     <Link to="/" className={"text-center text-decoration-none " + link_color}>
                         <svg className="bi me-2" width="40" height="32"></svg>

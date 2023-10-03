@@ -11,11 +11,11 @@ function Router(){
     return(
         <>
             <Routes>
-                <Route path='/' element={<Dashboard/>} />
-                <Route path='/mapas-2d' element={<Maps2d/>} />
-                <Route path='/mapas-3d' element={<Maps3d/>} />
-                <Route path='/corte-vertical' element={<VerticalCut/>} />
-                <Route path='/corte-vertical-3d' element={<VerticalCut3d/>} />
+                <Route key={'1'} path='/' element={<Dashboard/>} />
+                <Route key={'2'} path='/mapas-2d' element={<Maps2d/>} />
+                <Route key={'3'} path='/mapas-3d' element={<Maps3d/>} />
+                <Route key={'4'} path='/corte-vertical' element={<VerticalCut/>} />
+                <Route key={'5'} path='/corte-vertical-3d' element={<VerticalCut3d/>} />
             </Routes>
         </>
     )

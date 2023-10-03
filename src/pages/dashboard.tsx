@@ -4,7 +4,7 @@ import DashboardCard from "../components/dashboard_card";
 
 function Dashboard(){
     return(
-        <>
+        <div className='mb-5'>
             <div className='row'>
                 <div className='col-lg-6 col-sm-12 col-md-6 ps-3 pe-3 mt-5'>
                     <DashboardCard
@@ -37,7 +37,7 @@ function Dashboard(){
                     />
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 
