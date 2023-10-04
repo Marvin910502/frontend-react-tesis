@@ -1,6 +1,8 @@
 import React from "react";
 import {Navbar, Container, Nav} from "react-bootstrap";
 import {Link, useLocation} from "react-router-dom";
+import Switch from "./switch";
+import SidebarDropdown from "./sidebar_dropdown";
 
 function NavbarMini(){
 
@@ -37,15 +39,17 @@ function NavbarMini(){
 
     return(
         <>
-            <Navbar expand="lg" className="bg-body-tertiary sticky-top">
+            <Navbar expand="lg" className="bg-body-tertiary sticky-top shadow-lg">
                 <Container fluid>
                     <Navbar.Brand>
                         <Link to={'/'} className={'text-decoration-none ' + link_color}>
                             CFA - WRFout
                         </Link>
                     </Navbar.Brand>
+                    <Switch/>
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse id="navbarScroll">
+                        <hr/>
                         <Nav
                             variant='pills'
                             activeKey={list_event}
@@ -79,6 +83,8 @@ function NavbarMini(){
                                 </Nav.Link>
                             </Link>
                         </Nav>
+                        <hr/>
+                        <SidebarDropdown/>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

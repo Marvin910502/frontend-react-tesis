@@ -3,7 +3,7 @@ import SidebarList from "./sidebar_list";
 import SidebarDropdown from "./sidebar_dropdown";
 import {Link} from "react-router-dom";
 import Switch from "./switch";
-import {Col, Row} from "react-bootstrap";
+import {Col, Navbar, NavbarBrand, Row} from "react-bootstrap";
 
 
 
@@ -20,23 +20,29 @@ function Sidebar(){
 
     return(
         <>
-            <Row>
-            <Col xl={2} lg={3} md={4} sm={4} xs={1} className='sticky-top position-fixed' style={{height:'100vh'}} data-bs-theme='dark'>
-                <div className="sticky-top shadow-lg" style={{minHeight:'100vh'}}>
+          <Navbar className='fixed-top'>
+            <div className='flex-column p-3 shadow-lg ms-2 ps-4 pe-4' style={{height:'100vh'}}>
+                <div>
                     <Link to="/" className={"text-center text-decoration-none " + link_color}>
-                        <svg className="bi me-2" width="40" height="32"></svg>
-                        <h2 className="fs-4">CFA - WFRout</h2>
+                        <NavbarBrand>
+                            <svg className="bi me-2" width="40" height="32"></svg>
+                            <h2 className="fs-4">CFA - WFRout</h2>
+                        </NavbarBrand>
                     </Link>
                     <hr/>
-                    <SidebarList/>
-                    <div className='d-flex justify-content-start ps-4'>
-                        <Switch/>
+                    <div className='p-1'>
+                        <SidebarList/>
                     </div>
-                    <hr/>
-                    <SidebarDropdown/>
+                    <div style={{position:"absolute", bottom:'5vh'}} className='pe-0'>
+                        <div className='d-flex justify-content-start ps-2'>
+                            <Switch/>
+                        </div>
+                        <hr/>
+                        <SidebarDropdown/>
+                    </div>
                 </div>
-            </Col>
-            </Row>
+            </div>
+          </Navbar>
         </>
     )
 }
