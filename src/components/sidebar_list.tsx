@@ -1,41 +1,72 @@
 import React from "react";
+import {Link, useLocation} from "react-router-dom";
+import {Nav, Navbar, Container} from "react-bootstrap";
 
 
 function SidebarList(){
+
+    let theme: string | null = localStorage.getItem('themeMode')
+
+    if (theme === null){
+        localStorage.setItem('themeMode', 'dark')
+        theme = 'dark'
+    }
+
+    const link_color = theme === 'dark' ? 'link-light' : 'link-dark'
+
+    let list_event: string = ''
+
+    const location = useLocation()
+
+    switch (location.pathname){
+        case '/':
+            list_event = '1'
+            break
+        case '/mapas-2d':
+            list_event = '2'
+            break
+        case '/mapas-3d':
+            list_event = '3'
+            break
+        case '/corte-vertical':
+            list_event = '4'
+            break
+        case '/corte-vertical-3d':
+            list_event = '5'
+            break
+    }
+
     return(
         <>
-            <ul className="nav nav-pills flex-column mb-auto">
-                <li className="nav-item">
-                    <a href="#" className="nav-link active" aria-current="page">
-                        <svg className="bi me-2" width="16" height="16"></svg>
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a href="#" className="nav-link link-light">
-                        <svg className="bi me-2" width="16" height="16"></svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#" className="nav-link link-light">
-                        <svg className="bi me-2" width="16" height="16"></svg>
-                        Orders
-                    </a>
-                </li>
-                <li>
-                    <a href="#" className="nav-link link-light">
-                        <svg className="bi me-2" width="16" height="16"></svg>
-                        Products
-                    </a>
-                </li>
-                <li>
-                    <a href="#" className="nav-link link-dark">
-                        <svg className="bi me-2" width="16" height="16"></svg>
-                        Customers
-                    </a>
-                </li>
-            </ul>
+            <Navbar>
+                <Nav variant='pills' activeKey={list_event} className="flex-column">
+                    <Link className='text-decoration-none' to='/'>
+                        <Nav.Link href='/' eventKey='1' className={link_color}>
+                                Inicio
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='mapas-2d'>
+                        <Nav.Link href='mapas-2d' eventKey='2' className={link_color}>
+                                Mapas 2d
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='mapas-3d'>
+                        <Nav.Link id={'element_3'} href='mapas-3d' eventKey='3' className={link_color}>
+                                Mapas 3d
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='corte-vertical'>
+                        <Nav.Link href='corte-vertical' eventKey='4' className={link_color}>
+                                Cortes Verticales
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='corte-vertical-3d'>
+                        <Nav.Link href='corte-vertical-3d' eventKey='5' className={link_color}>
+                                Cortes Veticales 3d
+                        </Nav.Link>
+                    </Link>
+                </Nav>
+            </Navbar>
         </>
     )
 }

@@ -1,17 +1,33 @@
 import React from "react";
+import {Link} from "react-router-dom";
+import {Card, Image} from "react-bootstrap";
+
+interface ChildProps {
+    title: string,
+    description: string,
+    url: string,
+    image_url: string
+}
 
 
-function DashboardCard() {
+const DashboardCard: React.FC<ChildProps> = ({title, description, url, image_url}) => {
     return(
         <>
-            <div className='card'>
-                <div className='card-header'>
-                    <h3>Mapa con datos en 2d</h3>
-                </div>
-                <div className='card-body'>
-                    <p>Esta es la parte en la que podemos graficar mapas a partir de los archivos wrfout </p>
-                </div>
-            </div>
+            <Link to={url} className='text-decoration-none'>
+                <Card className='shadow-sm'>
+                    <Card.Header>
+                        <h3>{title}</h3>
+                    </Card.Header>
+                    <Card.Body>
+                        <Image
+                            style={{maxWidth:'100%'}}
+                            rounded
+                            src={image_url}
+                        />
+                        <p>{description}</p>
+                    </Card.Body>
+                </Card>
+            </Link>
         </>
     )
 }
