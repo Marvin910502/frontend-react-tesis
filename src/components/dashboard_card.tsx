@@ -19,13 +19,11 @@ const DashboardCard: React.FC<ChildProps> = ({title, description, url, image_url
                         <h3>{title}</h3>
                     </Card.Header>
                     <Card.Body>
-                        <div className='align-items-center'>
-                            <Image
-                                style={{maxWidth:'100%'}}
-                                rounded
-                                src={image_url}
-                            />
-                        </div>
+                        <Image
+                            style={{maxWidth:'100%'}}
+                            rounded
+                            src={image_url}
+                        />
                         <p>{description}</p>
                     </Card.Body>
                 </Card>

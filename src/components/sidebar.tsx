@@ -20,7 +20,8 @@ function Sidebar(){
 
     return(
         <>
-          <Navbar className='fixed-top'>
+          <Col  xl={2} lg={3} md={4} sm={4} xs={1} className='fixed-top'>
+          <Navbar>
             <div className='flex-column p-3 shadow-lg ms-2 ps-4 pe-4' style={{height:'100vh'}}>
                 <div>
                     <Link to="/" className={"text-center text-decoration-none " + link_color}>
@@ -43,6 +44,7 @@ function Sidebar(){
                 </div>
             </div>
           </Navbar>
+          </Col>
         </>
     )
 }
