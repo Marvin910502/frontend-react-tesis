@@ -1,4 +1,4 @@
-import {Form, FormCheck} from "react-bootstrap";
+import {Form} from "react-bootstrap";
 import React, {useState} from "react";
 
 
@@ -19,7 +19,7 @@ const Switch = () => {
     return(
         <>
             <Form>
-                <FormCheck
+                <Form.Check
                     onChange={checkHandle}
                     type="switch"
                     id="custom-switch"

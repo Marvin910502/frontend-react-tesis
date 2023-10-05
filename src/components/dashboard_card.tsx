@@ -1,25 +1,32 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import {Card, Image} from "react-bootstrap";
 
 interface ChildProps {
     title: string,
     description: string,
-    url: string
+    url: string,
+    image_url: string
 }
 
 
-const DashboardCard: React.FC<ChildProps> = ({title, description, url}) => {
+const DashboardCard: React.FC<ChildProps> = ({title, description, url, image_url}) => {
     return(
         <>
             <Link to={url} className='text-decoration-none'>
-                <div className='card shadow-sm'>
-                    <div className='card-header'>
+                <Card className='shadow-sm'>
+                    <Card.Header>
                         <h3>{title}</h3>
-                    </div>
-                    <div className='card-body'>
+                    </Card.Header>
+                    <Card.Body>
+                        <Image
+                            style={{maxWidth:'100%'}}
+                            rounded
+                            src={image_url}
+                        />
                         <p>{description}</p>
-                    </div>
-                </div>
+                    </Card.Body>
+                </Card>
             </Link>
         </>
     )

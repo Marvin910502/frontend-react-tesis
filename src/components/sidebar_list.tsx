@@ -38,36 +38,34 @@ function SidebarList(){
 
     return(
         <>
-            <Navbar expand="lg">
-                <Container fluid>
-                    <Nav variant='pills' activeKey={list_event} className="flex-column mb-auto" style={{minHeight:'70vh'}}>
-                        <Link className='text-decoration-none' to='/'>
-                            <Nav.Link href='/' eventKey='1' className={link_color}>
-                                    Inicio
-                            </Nav.Link>
-                        </Link>
-                        <Link className='text-decoration-none' to='mapas-2d'>
-                            <Nav.Link href='mapas-2d' eventKey='2' className={link_color}>
-                                    Mapas 2d
-                            </Nav.Link>
-                        </Link>
-                        <Link className='text-decoration-none' to='mapas-3d'>
-                            <Nav.Link id={'element_3'} href='mapas-3d' eventKey='3' className={link_color}>
-                                    Mapas 3d
-                            </Nav.Link>
-                        </Link>
-                        <Link className='text-decoration-none' to='corte-vertical'>
-                            <Nav.Link href='corte-vertical' eventKey='4' className={link_color}>
-                                    Cortes Verticales
-                            </Nav.Link>
-                        </Link>
-                        <Link className='text-decoration-none' to='corte-vertical-3d'>
-                            <Nav.Link href='corte-vertical-3d' eventKey='5' className={link_color}>
-                                    Cortes Veticales 3d
-                            </Nav.Link>
-                        </Link>
-                    </Nav>
-                </Container>
+            <Navbar>
+                <Nav variant='pills' activeKey={list_event} className="flex-column">
+                    <Link className='text-decoration-none' to='/'>
+                        <Nav.Link href='/' eventKey='1' className={link_color}>
+                                Inicio
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='mapas-2d'>
+                        <Nav.Link href='mapas-2d' eventKey='2' className={link_color}>
+                                Mapas 2d
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='mapas-3d'>
+                        <Nav.Link id={'element_3'} href='mapas-3d' eventKey='3' className={link_color}>
+                                Mapas 3d
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='corte-vertical'>
+                        <Nav.Link href='corte-vertical' eventKey='4' className={link_color}>
+                                Cortes Verticales
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='corte-vertical-3d'>
+                        <Nav.Link href='corte-vertical-3d' eventKey='5' className={link_color}>
+                                Cortes Veticales 3d
+                        </Nav.Link>
+                    </Link>
+                </Nav>
             </Navbar>
         </>
     )
