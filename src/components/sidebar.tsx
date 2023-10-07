@@ -3,7 +3,7 @@ import SidebarList from "./sidebar_list";
 import SidebarDropdown from "./sidebar_dropdown";
 import {Link} from "react-router-dom";
 import Switch from "./switch";
-import {Col, Navbar, NavbarBrand, Row} from "react-bootstrap";
+import {Col, Navbar, NavbarBrand} from "react-bootstrap";
 
 
 
@@ -21,8 +21,8 @@ function Sidebar(){
     return(
         <>
           <Col  xl={2} lg={3} md={4} sm={4} xs={1} className='fixed-top'>
-          <Navbar>
-            <div className='flex-column p-3 shadow-lg ms-2 ps-4 pe-4' style={{height:'100vh'}}>
+          <Navbar className='shadow-lg'>
+            <div className='flex-lg-fill p-2 ms-2 w-100' style={{height:'100vh'}}>
                 <div>
                     <Link to="/" className={"text-center text-decoration-none " + link_color}>
                         <NavbarBrand>
