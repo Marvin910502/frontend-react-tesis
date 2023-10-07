@@ -5,6 +5,7 @@ import {Col, Row} from "react-bootstrap";
 import NavbarMini from "./components/navbarmini";
 
 
+
 function App() {
 
     const [isDesktop, setDesktop] = useState(window.innerWidth > 700);
@@ -39,7 +40,6 @@ function App() {
             </Row>
         )
         }
-
     </>
   );
 }
