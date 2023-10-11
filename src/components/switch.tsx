@@ -12,6 +12,8 @@ const Switch = () => {
         setIsChecked(!isChecked)
         theme = isChecked ? "light" : "dark"
         localStorage.setItem('themeMode', theme === "dark" ? "dark" : "light")
+        //@ts-ignore
+        document.querySelector('html').setAttribute('data-bs-theme', theme)
         window.location.reload()
     }
 
@@ -22,7 +24,7 @@ const Switch = () => {
                 <Form.Check
                     onChange={checkHandle}
                     type="switch"
-                    id="custom-switch"
+                    id="theme_selector"
                     label={theme === 'dark' ? 'Modo Oscuro' : 'Modo Claro'}
                     defaultChecked={isChecked}
                 />
