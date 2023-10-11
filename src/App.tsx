@@ -21,7 +21,7 @@ function App() {
 
 
   return (
-    <>
+    <div className='container-fluid'>
         { isDesktop ? (
             <Row style={{height:'100vh'}}>
                 <Col xl={2} lg={3} md={4} sm={4} xs={1} style={{height:'100vh'}}>
@@ -40,7 +40,7 @@ function App() {
             </Row>
         )
         }
-    </>
+    </div>
   );
 }
 
