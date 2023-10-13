@@ -1,32 +1,43 @@
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import {GeoJsonObject} from "geojson";
-// import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import React from "react";
+import Control from "react-leaflet-custom-control";
+import {Card} from "react-bootstrap";
+import LegendInstance from "./legend_instance";
 
 interface Map{
-    marker:boolean
-    geojson:GeoJsonObject | null | undefined,
+    geojson:GeoJsonObject[] | null | undefined,
     center: {
         lat:number,
         lon:number
     },
     zoom:number
+    lvl:number[] | undefined,
+    units:string
 }
 
-const Maps2dArea:React.FC<Map> = ({marker,
-                                  geojson,
+const Maps2dArea:React.FC<Map> = ({geojson,
                                   center,
-                                  zoom
+                                  zoom,
+                                  lvl,
+                                  units
                                   }) => {
 
-    console.log(geojson)
     let layetlist = []
+    let legendlist = []
+    let saveColors:string[] = []
     if (geojson){
-        //@ts-ignore
+        // for (let i= geojson.length-1; i >= 0; i--){
+        //     //@ts-ignore
+        //     saveColors.push(geojson[i].properties.fill)
+        // }
         for (let i= 0; i < geojson.length; i++){
+            //@ts-ignore
+            saveColors.push(geojson[i].properties.fill)
             layetlist.push(
                 <GeoJSON
+                    key={Math.random()}
                     //@ts-ignore
                     data={geojson[i]}
                     style={{
@@ -35,9 +46,17 @@ const Maps2dArea:React.FC<Map> = ({marker,
                     }}
                 />
             )
+            if (i !== geojson.length) {
+                //@ts-ignore
+                legendlist.push({from: lvl[i], to: lvl[i + 1]})
+            }
         }
     }
 
+    function getColor(i:number){
+        if (geojson)
+            return saveColors[i]
+    }
 
     return(
         <>
@@ -53,17 +72,28 @@ const Maps2dArea:React.FC<Map> = ({marker,
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {
-                  marker ?
-                    <Marker position={[25, -87]}>
-                        <Popup>
-                            A pretty CSS3 popup. <br /> Easily customizable.
-                        </Popup>
-                    </Marker>
-                      : ''
-                }
 
                 {layetlist}
+
+                <Control
+                // @ts-ignore
+                position='bottomleft'
+                >
+                    <Card className='p-2'>
+                        <strong>{units}</strong>
+                        <hr className='mt-1 mb-1'/>
+                        {legendlist.map((grade, index) => (
+                            <>
+                                <div style={{display:"flex"}}>
+                                    <div key={'grade-'+index} style={{backgroundColor:`${getColor(index)}`, opacity:'0.3', width:'15px', height:'15px', marginRight:'5px'}}></div>
+                                    <div style={{float:'right'}}>
+                                        <label htmlFor={'grade'+index}>{grade.from} - {grade.to}</label>
+                                    </div>
+                                </div>
+                            </>
+                        ))}
+                    </Card>
+                </Control>
 
             </MapContainer>
         </>

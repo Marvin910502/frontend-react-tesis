@@ -12,6 +12,9 @@ function App() {
 
     const updateMedia = () => {
         setDesktop(window.innerWidth > 700);
+        if (window.innerWidth < 700 && window.innerWidth > 550){
+            window.location.reload()
+        }
     };
 
     useEffect(() => {
@@ -20,10 +23,16 @@ function App() {
     });
 
 
+    const reload = () => {
+        window.location.reload()
+    }
+
+
   return (
     <div className='container-fluid'>
         { isDesktop ? (
             <Row style={{height:'100vh'}}>
+
                 <Col xl={2} lg={3} md={4} sm={4} xs={1} style={{height:'100vh'}}>
                     <Sidebar/>
                 </Col>
