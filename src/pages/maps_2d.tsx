@@ -10,13 +10,19 @@ const diagnostic_options = [
     {value: 'temperatura', label: 'Temperatura'},
     {value: 'altura_del_terreno', label: 'Altura del Terreno'},
     {value: 'temperatura_superior_nubes', label: 'Temperatura Superior de las Nubes'},
-    {value: 'maximo_reflectividad', label: 'Maximo de Reflectividad'},
     {value: 'helicidad_relativa_tormenta', label: 'Helicidad Realtiva de Tormenta'},
     {value: 'agua_precipitable', label: 'Agua Precipitable'},
     {value: 'humedad_relativa', label: 'Humedad Relativa'},
     {value: 'presion_nivel_del_mar', label: 'Presion a Nivel del Mar'},
     {value: 'helicidad_corriente_ascendente', label: 'Helicidad de Corriente Ascendente'}
 ]
+
+
+interface UNIT {
+    unit: string,
+    label: string
+}
+
 
 
 function Maps2d(){
@@ -27,7 +33,64 @@ function Maps2d(){
     let [zoom, setZoom] = useState(6)
     let [diagnostic, setDiagnostic] = useState( localStorage.getItem('diacnostic') || 'punto_de_condensacion')
     let [lvl, setLvL] = useState<number[] | undefined>()
-    let [units, setUnits] = useState('')
+    let [units, setUnits] = useState<string | null>('')
+    let [unit_label, setUnitLabel] = useState<string>()
+    let [list_units, setListUnits] = useState<UNIT[]>()
+
+    const handleUnits = (value:any, label:any) => {
+        setUnits(value)
+        setUnitLabel(label)
+    }
+    
+
+    const UnitsOptions = (diagnostic: string) => {
+        switch (diagnostic) {
+            case 'punto_de_condensacion':
+                setUnits('degC')
+                return [{unit: 'degC', label: 'grados C'}, {unit: 'K', label: 'K'}, {unit: 'degF', label: 'grados F'}]
+                break;
+            case 'temperatura':
+                setUnits('defaultK')
+                return [{unit: 'defaultK', label: 'K'}]
+                break;
+            case 'altura_del_terreno':
+                setUnits('m')
+                return [{unit: 'm', label: 'm'}, {unit: 'km', label: 'km'}, {unit: 'dm', label: 'dm'}, {unit: 'ft', label: 'pies'}, {unit: 'mi', label: 'millas'}]
+                break
+            case 'temperatura_superior_nubes':
+                setUnits('degC')
+                return [{unit: 'degC', label: 'grados C'}, {unit: 'K', label: 'K'}, {unit: 'degF', label: 'grados F'}]
+                break 
+            case 'helicidad_relativa_tormenta':
+                setUnits('defaultm2')
+                return [{unit: 'defaultm2', label: 'm2'}]
+                break 
+            case 'agua_precipitable':
+                setUnits('defaultkg')
+                return [{unit: 'defaultkg', label: 'kg'}]
+                break 
+            case 'humedad_relativa':
+                setUnits('default%')
+                return [{unit: 'default%', label: 'porciento'}]
+                break 
+            case 'presion_nivel_del_mar':
+                setUnits('hPa')
+                return [{unit: 'hPa', label: 'hPa'}, {unit: 'Pa', label: 'Pa'}, {unit: 'mb', label: 'mb'}, {unit: 'torr', label: 'torr'}, {unit: 'mmhg', label: 'mmhg'}, {unit: 'atm', label: 'atm'}]
+                break 
+            case 'helicidad_corriente_ascendente':
+                setUnits('defaultm2')
+                return [{unit: 'defaultm2', label: 'm2'}]
+                break                                                                                  
+        }
+            
+    
+    } 
+
+    console.log(units)
+
+    useEffect(()=>{
+        setListUnits(UnitsOptions(diagnostic)) 
+    }, [diagnostic])
 
 
     window.onload = function (){
@@ -39,7 +102,7 @@ function Maps2d(){
             setCenter({lat: 25, lon: -87})
             setZoom(6)
             setLvL(dataRefresh.lvl)
-            setUnits(dataRefresh.units)
+            setUnits(units)
         }
     }
 
@@ -57,7 +120,8 @@ function Maps2d(){
                 },
                 body: JSON.stringify({
                     'url': url,
-                    'diagnostic': diagnostic
+                    'diagnostic': diagnostic,
+                    'units': units
                 })
             }
         )
@@ -67,7 +131,7 @@ function Maps2d(){
         setCenter({lat: 25, lon: -87})
         setZoom(6)
         setLvL(data.lvl)
-        setUnits(data.units)
+        setUnits(units)
         localStorage.setItem('data', JSON.stringify(data))
         localStorage.setItem('diagnostic', diagnostic)
     }
@@ -79,7 +143,7 @@ function Maps2d(){
                 <script type="text/javascript" src='leaflet/dist/leaflet.js' />
                 <link rel="stylesheet" href="leaflet/dist/leaflet.css" />
                 <Card className='mt-3'>
-                    <h1 className='text-center'>Mapas con variables en 2D</h1>
+                    <h1 className='text-center'>Mapas con Variables en 2D</h1>
                 </Card>
                 <Row className='mt-3'>
                     <Col xl={9} lg={9} md={12} sm={12} className='mb-3'>
@@ -92,6 +156,7 @@ function Maps2d(){
                                 zoom={zoom}
                                 lvl={lvl}
                                 units={units}
+                                unit_label={unit_label ? unit_label : ''}
                                 />
                             </Card>
                         </Row>
@@ -105,7 +170,7 @@ function Maps2d(){
                         <Card className='p-2'>
                             <Form>
                                 <Form.Group>
-                                    <Form.Label>Direccion de archivo</Form.Label>
+                                    <Form.Label>Direccion de Archivo</Form.Label>
                                     <Form.Control type={'text'} name={'wrf_url'} onChange={e=>setUrl(e.target.value)}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
@@ -116,10 +181,14 @@ function Maps2d(){
                                         ))}
                                     </Form.Select>
                                 </Form.Group>
-                                <Form.Floating className='mt-3'>
-                                    <Form.Control type={'text'} name={'wrf_2'} value=''/>
-                                    <Form.Label>Tipo de datas</Form.Label>
-                                </Form.Floating>
+                                <Form.Group className='mt-3'>
+                                    <Form.Label>Unidad de Medición</Form.Label>
+                                    <Form.Select onChange={e=>handleUnits(e.target.value, e.target.innerText)}>
+                                        { list_units && list_units.map((unit)=>(
+                                            <option id={unit.label}  value={unit.unit}>{unit.label}</option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
                                 <Form.Floating className='mt-3'>
                                     <Form.Control type={'text'} name={'wrf_3'} value=''/>
                                     <Form.Label>Tipo de datas</Form.Label>

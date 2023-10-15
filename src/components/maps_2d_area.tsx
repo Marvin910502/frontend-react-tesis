@@ -4,7 +4,6 @@ import 'leaflet/dist/leaflet.css'
 import React from "react";
 import Control from "react-leaflet-custom-control";
 import {Card} from "react-bootstrap";
-import LegendInstance from "./legend_instance";
 
 interface Map{
     geojson:GeoJsonObject[] | null | undefined,
@@ -14,14 +13,37 @@ interface Map{
     },
     zoom:number
     lvl:number[] | undefined,
-    units:string
+    units:string | null
+    unit_label: string
+}
+
+const units_lables = {
+    'degC': 'grados C',
+    'degF': 'grados F',
+    'K': 'K',
+    'Pa': 'Pa',
+    'hPa': 'hPa',
+    'mb': 'mb',
+    'torr': 'torr',
+    'mmhg': 'mmhg',
+    'atm': 'atm',
+    'm': 'm',
+    'km': 'km',
+    'dm': 'dm',
+    'ft': 'pies',
+    'mi': 'millas',
+    'defaultK': 'K',
+    'defaultm2': 'm2',
+    'default%': 'porciento',
+    'defaultkg': 'kg'
 }
 
 const Maps2dArea:React.FC<Map> = ({geojson,
                                   center,
                                   zoom,
                                   lvl,
-                                  units
+                                  units,
+                                  unit_label
                                   }) => {
 
     let layetlist = []
@@ -43,6 +65,8 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                     style={{
                         //@ts-ignore
                         fillColor: geojson[i].properties.fill,
+                        weight: 0.5,
+                        fillOpacity: 0.3,
                     }}
                 />
             )
@@ -80,7 +104,10 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                 position='bottomleft'
                 >
                     <Card className='p-2'>
-                        <strong>{units}</strong>
+                        <strong>{
+                        //@ts-ignore 
+                        units_lables[units]
+                        }</strong>
                         <hr className='mt-1 mb-1'/>
                         {legendlist.map((grade, index) => (
                             <>

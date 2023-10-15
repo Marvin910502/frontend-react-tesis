@@ -3,7 +3,7 @@ import SidebarList from "./sidebar_list";
 import SidebarDropdown from "./sidebar_dropdown";
 import {Link} from "react-router-dom";
 import Switch from "./switch";
-import {Col, Navbar, NavbarBrand} from "react-bootstrap";
+import {Col, Navbar, NavbarBrand, Image} from "react-bootstrap";
 
 
 
@@ -26,11 +26,10 @@ function Sidebar(){
                 <div>
                     <Link to="/" className={"text-center text-decoration-none " + link_color}>
                         <NavbarBrand>
-                            <svg className="bi me-2" width="40" height="32"></svg>
-                            <h2 className="fs-4">CFA - WFRout</h2>
+                            <h2 className="fs-4 mt-3 mb-0"><Image src={process.env.PUBLIC_URL+"WRFout.svg"} className="me-2" style={{maxWidth:'15%'}}/>CFA - WFRout</h2>
                         </NavbarBrand>
                     </Link>
-                    <hr/>
+                    <hr className="mt-0"/>
                     <div className='p-1'>
                         <SidebarList/>
                     </div>

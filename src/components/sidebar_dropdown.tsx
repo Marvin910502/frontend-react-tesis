@@ -20,7 +20,7 @@ function SidebarDropdown(){
 
                     <Link className='text-decoration-none' to='/login'>
                         <NavDropdown.Item href='/login'>
-                            Login
+                            Autenticarse
                         </NavDropdown.Item>
                     </Link>
                     <Link className='text-decoration-none' to='/register'>
@@ -28,9 +28,6 @@ function SidebarDropdown(){
                             Registrarse
                         </NavDropdown.Item>
                     </Link>
-                    <NavDropdown.Item href="#action4">
-                        Autenticarse en Odoo
-                    </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <Link className='text-decoration-none' to={'/logout'}>
                         <NavDropdown.Item href="/logout">
