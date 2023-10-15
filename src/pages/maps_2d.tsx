@@ -32,15 +32,8 @@ function Maps2d(){
     let [center, setCenter] = useState({lat:25, lon:-87})
     let [zoom, setZoom] = useState(6)
     let [diagnostic, setDiagnostic] = useState( localStorage.getItem('diacnostic') || 'punto_de_condensacion')
-    let [lvl, setLvL] = useState<number[] | undefined>()
     let [units, setUnits] = useState<string | null>('')
-    let [unit_label, setUnitLabel] = useState<string>()
     let [list_units, setListUnits] = useState<UNIT[]>()
-
-    const handleUnits = (value:any, label:any) => {
-        setUnits(value)
-        setUnitLabel(label)
-    }
     
 
     const UnitsOptions = (diagnostic: string) => {
@@ -101,7 +94,6 @@ function Maps2d(){
             setGeoJson(JSON.parse(dataRefresh.geojson).features)
             setCenter({lat: 25, lon: -87})
             setZoom(6)
-            setLvL(dataRefresh.lvl)
             setUnits(units)
         }
     }
@@ -128,9 +120,9 @@ function Maps2d(){
         let data = await res.json()
         let geojson:typeof GeoJsonObject = JSON.parse(data.geojson).features
         setGeoJson(geojson)
+        console.log(geojson)
         setCenter({lat: 25, lon: -87})
         setZoom(6)
-        setLvL(data.lvl)
         setUnits(units)
         localStorage.setItem('data', JSON.stringify(data))
         localStorage.setItem('diagnostic', diagnostic)
@@ -154,9 +146,7 @@ function Maps2d(){
                                 geojson={geojson}
                                 center={center}
                                 zoom={zoom}
-                                lvl={lvl}
                                 units={units}
-                                unit_label={unit_label ? unit_label : ''}
                                 />
                             </Card>
                         </Row>
@@ -183,7 +173,7 @@ function Maps2d(){
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Form.Label>Unidad de Medición</Form.Label>
-                                    <Form.Select onChange={e=>handleUnits(e.target.value, e.target.innerText)}>
+                                    <Form.Select onChange={e=>setUnits(e.target.value)}>
                                         { list_units && list_units.map((unit)=>(
                                             <option id={unit.label}  value={unit.unit}>{unit.label}</option>
                                         ))}

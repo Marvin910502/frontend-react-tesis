@@ -12,9 +12,7 @@ interface Map{
         lon:number
     },
     zoom:number
-    lvl:number[] | undefined,
     units:string | null
-    unit_label: string
 }
 
 const units_lables = {
@@ -38,30 +36,29 @@ const units_lables = {
     'defaultkg': 'kg'
 }
 
+
+
+
+
 const Maps2dArea:React.FC<Map> = ({geojson,
                                   center,
                                   zoom,
-                                  lvl,
-                                  units,
-                                  unit_label
+                                  units
                                   }) => {
 
     let layetlist = []
-    let legendlist = []
-    let saveColors:string[] = []
+    let legend_list = []
     if (geojson){
-        // for (let i= geojson.length-1; i >= 0; i--){
-        //     //@ts-ignore
-        //     saveColors.push(geojson[i].properties.fill)
-        // }
         for (let i= 0; i < geojson.length; i++){
             //@ts-ignore
-            saveColors.push(geojson[i].properties.fill)
+            legend_list.push({color: geojson[i].properties.fill, label: geojson[i].properties.title})
             layetlist.push(
                 <GeoJSON
                     key={Math.random()}
                     //@ts-ignore
                     data={geojson[i]}
+                    //@ts-ignore
+                    //pane={geojson[i].properties.title}
                     style={{
                         //@ts-ignore
                         fillColor: geojson[i].properties.fill,
@@ -70,17 +67,9 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                     }}
                 />
             )
-            if (i !== geojson.length) {
-                //@ts-ignore
-                legendlist.push({from: lvl[i], to: lvl[i + 1]})
-            }
         }
     }
 
-    function getColor(i:number){
-        if (geojson)
-            return saveColors[i]
-    }
 
     return(
         <>
@@ -109,12 +98,12 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                         units_lables[units]
                         }</strong>
                         <hr className='mt-1 mb-1'/>
-                        {legendlist.map((grade, index) => (
+                        {legend_list.map((geoItem, index) => (
                             <>
                                 <div style={{display:"flex"}}>
-                                    <div key={'grade-'+index} style={{backgroundColor:`${getColor(index)}`, opacity:'0.3', width:'15px', height:'15px', marginRight:'5px'}}></div>
+                                    <div key={'grade-'+index} style={{backgroundColor:`${geoItem.color}`, opacity:'0.3', width:'15px', height:'15px', marginRight:'5px'}}></div>
                                     <div style={{float:'right'}}>
-                                        <label htmlFor={'grade'+index}>{grade.from} - {grade.to}</label>
+                                        <label htmlFor={'grade'+index}>{geoItem.label}</label>
                                     </div>
                                 </div>
                             </>
