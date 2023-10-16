@@ -347,16 +347,16 @@ function Maps2d(){
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Form.Label>Momento en el tiempo: {index + 1}</Form.Label>
-                                    {!load_path && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para usar este selector</small></div>}
-                                    <Form.Range max={max_index} min={0} defaultValue={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={!load_path && true}/>
+                                    {load_path.length === 0 && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para usar este selector</small></div>}
+                                    <Form.Range max={max_index} min={0} defaultValue={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={load_path.length === 0 && true}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Form.Label>Número de polígonos: {section_amount}</Form.Label>
                                     <Form.Range max={15} min={5} defaultValue={section_amount} onChange={e=>setSectionAmount(parseInt(e.target.value))}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                {!load_path && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>}
-                                    <Button type={'submit'} onClick={getMapData} disabled={!load_path && true}>Mapear</Button>
+                                {load_path.length === 0 && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>}
+                                    <Button type={'submit'} onClick={getMapData} disabled={load_path.length === 0 && true}>Mapear</Button>
                                     <Button className="ms-3" onClick={handleCleaning}>Limpiar Mapa</Button>
                                 </Form.Group>
                             </Form>
