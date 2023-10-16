@@ -39,17 +39,19 @@ function Maps2d(){
     let [diagnostic, setDiagnostic] = useState( localStorage.getItem('diagnostic') || 'punto_de_condensacion')
     let [units, setUnits] = useState<string>('degC')
     let [list_units, setListUnits] = useState<UNIT[]>()
+    let [max_index, setMaxIndex] = useState<number>(parseInt(localStorage.getItem('max_index') || '2'))
     let [index, setIndex] = useState(parseInt(localStorage.getItem('index') || '0'))
     let [section_amount, setSectionAmount] = useState(parseInt(localStorage.getItem('section_amount') || '10'))
     let [line_weight, setLineWeight] = useState(parseFloat(localStorage.getItem('line_weight') || '0.5'))
     let [fill_opacity, setFillOpacity] = useState(parseFloat(localStorage.getItem('fill_opacity') || '0.3'))
     let [list_file, setListFile] = useState<FILE[]>([])
     let [list_states, setListStates] = useState<boolean[]>()
-    let [load_path, setLoadPath] = useState<string[]>()
-    let [name_files_list, setNameFileList] = useState<string[]>()
+    let [load_path, setLoadPath] = useState<string[]>(JSON.parse(localStorage.getItem('load_path') || '[]'))
+    let [name_files_list, setNameFileList] = useState<string[]>(JSON.parse(localStorage.getItem('name_file_list') || '[]'))
 
     let initial_list_states:boolean[]
 
+    console.log(load_path)
 
     const handleCleaning = () => {
         setGeoJson(null)
@@ -68,6 +70,9 @@ function Maps2d(){
         localStorage.removeItem('line_weight')
         localStorage.removeItem('section_amount')
         localStorage.removeItem('units')
+        localStorage.removeItem('load_path')
+        localStorage.removeItem('name_file_list')
+        localStorage.removeItem('max_index')
         window.location.reload()
     }
 
@@ -78,6 +83,15 @@ function Maps2d(){
     useEffect(()=>{
         localStorage.setItem('fill_opacity', JSON.stringify(fill_opacity))
     },[fill_opacity])
+    useEffect(()=>{
+        localStorage.setItem('load_path', JSON.stringify(load_path))
+    },[load_path])
+    useEffect(()=>{
+        localStorage.setItem('name_file_list', JSON.stringify(name_files_list))
+    },[name_files_list])
+    useEffect(()=>{
+        localStorage.setItem('max_index', JSON.stringify(max_index))
+    },[max_index])
 
 
     const UnitsOptions = (diagnostic: string) => {
@@ -218,7 +232,9 @@ function Maps2d(){
         }
 
         setLoadPath(path_list)
-        setNameFileList(name_file_list)    
+        setNameFileList(name_file_list)
+        console.log(name_file_list.length)
+        setMaxIndex(name_file_list.length * 3 - 1)    
         setShow(false)
     }
 
@@ -250,13 +266,13 @@ function Maps2d(){
     return(
         <>
             <div className='ps-2 pe-2'>
-                <Card className='mt-3'>
+                <Card className='mt-3 shadow'>
                     <h1 className='text-center'>Mapas con Variables en 2D</h1>
                 </Card>
                 <Row className='mt-3'>
                     <Col xl={9} lg={9} md={12} sm={12} className='mb-3'>
                         <Row className='ps-3 pe-3'>
-                            <Card className='pt-3 pb-3'>
+                            <Card className='pt-3 pb-3 shadow'>
                                 <Maps2dArea
                                 //@ts-ignore
                                 geojson={geojson}
@@ -299,7 +315,7 @@ function Maps2d(){
                                         <Form.Label>Archivo(s):</Form.Label>
                                     </Row>
                                     <Row>
-                                        <Card className="ms-3 pt-2 pb-2 pt-3 shadow" style={{maxWidth:'90%', maxHeight:'200px'}}>
+                                        <Card className="ms-3 pt-2 pb-2 pt-3" style={{maxWidth:'90%', maxHeight:'200px'}}>
                                             <div style={{maxHeight:'200px', overflowY:'auto'}}>
                                             {name_files_list && name_files_list?.map((name)=>(
                                                 <>
@@ -331,14 +347,16 @@ function Maps2d(){
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Form.Label>Momento en el tiempo: {index + 1}</Form.Label>
-                                    <Form.Range max={2} min={0} defaultValue={index} onChange={e=>setIndex(parseInt(e.target.value))}/>
+                                    {!load_path && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para usar este selector</small></div>}
+                                    <Form.Range max={max_index} min={0} defaultValue={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={!load_path && true}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                    <Form.Label>Cantidad de secciones: {section_amount}</Form.Label>
+                                    <Form.Label>Número de polígonos: {section_amount}</Form.Label>
                                     <Form.Range max={15} min={5} defaultValue={section_amount} onChange={e=>setSectionAmount(parseInt(e.target.value))}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                    <Button type={'submit'} onClick={getMapData}>Mapear</Button>
+                                {!load_path && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>}
+                                    <Button type={'submit'} onClick={getMapData} disabled={!load_path && true}>Mapear</Button>
                                     <Button className="ms-3" onClick={handleCleaning}>Limpiar Mapa</Button>
                                 </Form.Group>
                             </Form>
