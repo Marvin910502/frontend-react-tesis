@@ -13,6 +13,8 @@ interface Map{
     },
     zoom:number
     units:string | null
+    line_weight:number,
+    fill_opacity:number,
 }
 
 const units_lables = {
@@ -43,7 +45,9 @@ const units_lables = {
 const Maps2dArea:React.FC<Map> = ({geojson,
                                   center,
                                   zoom,
-                                  units
+                                  units,
+                                  line_weight,
+                                  fill_opacity
                                   }) => {
 
     let layetlist = []
@@ -62,8 +66,8 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                     style={{
                         //@ts-ignore
                         fillColor: geojson[i].properties.fill,
-                        weight: 0.5,
-                        fillOpacity: 0.3,
+                        weight: line_weight,
+                        fillOpacity: fill_opacity,
                     }}
                 />
             )
