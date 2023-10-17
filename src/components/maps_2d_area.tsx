@@ -50,8 +50,8 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                                   fill_opacity
                                   }) => {
 
-    let layetlist = []
-    let legend_list = []
+    const layetlist = []
+    const legend_list = []
     if (geojson){
         for (let i= 0; i < geojson.length; i++){
             //@ts-ignore

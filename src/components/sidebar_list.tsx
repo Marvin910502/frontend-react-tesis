@@ -14,7 +14,7 @@ function SidebarList(){
 
     const link_color = theme === 'dark' ? 'link-light' : 'link-dark'
 
-    let list_event: string = ''
+    let list_event = ''
 
     const location = useLocation()
 

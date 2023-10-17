@@ -17,7 +17,7 @@ function NavbarMini(){
 
     const location = useLocation()
 
-    let list_event: string = ''
+    let list_event = ''
 
     switch (location.pathname){
         case '/':

@@ -139,19 +139,6 @@ function Maps2d(){
     useEffect(()=>{setUnits(localStorage.getItem('units') || 'degC')}, [local_unit])
 
 
-    window.onload = function (){
-        let verifyData = localStorage.getItem('data')
-        let dataRefresh
-        if (verifyData){
-            dataRefresh = JSON.parse(verifyData)
-            setGeoJson(JSON.parse(dataRefresh.geojson).features)
-            setCenter({lat: 25, lon: -87})
-            setZoom(6)
-            setUnits(units)
-        }
-    }
-
-
     useEffect(()=>{
         const getMapData = async () => {
             const res = await fetch(
@@ -241,7 +228,8 @@ function Maps2d(){
         setLoadPath(path_list)
         setNameFileList(name_file_list)
         console.log(name_file_list.length)
-        setMaxIndex(name_file_list.length * 3 - 1)    
+        setMaxIndex(name_file_list.length * 3 - 1)  
+        setIndex(0)  
         setShow(false)
     }
 
@@ -267,15 +255,6 @@ function Maps2d(){
         getListFiles()
         setShow(true)
     }
-
-
-/*     function Animate(){
-        while(index<=max_index){
-            setTimeout(()=>{
-                setIndex(index++)
-            },2000)
-        }
-    } */
 
 
     return(
@@ -393,7 +372,7 @@ function Maps2d(){
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modal heading</Modal.Title>
+                    <Modal.Title>Archivos Subidos</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Card>
@@ -411,7 +390,7 @@ function Maps2d(){
                                         <tr>
                                             <td className='text-center'><Form.Check id={JSON.stringify(index)} value={file.path} name='file' onChange={e=>handleRowSelection(e.target.id)}/></td>
                                             <td className='text-center'>{file.name}</td>
-                                            <td className='text-center'>{file.size}</td>
+                                            <td className='text-center'>{file.size} mb</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -421,10 +400,10 @@ function Maps2d(){
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
-                        Close
+                        Cerrar
                     </Button>
                     <Button variant="primary" type="submit" form="load_file" onClick={handleLoadFiles}>
-                        Save Changes
+                        Cargar Archivos
                     </Button>
                 </Modal.Footer>
             </Modal>

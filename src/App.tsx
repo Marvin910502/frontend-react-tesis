@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Router from "./routes/router";
 import Sidebar from "./components/sidebar";
 import {Col, Row} from "react-bootstrap";
 import NavbarMini from "./components/navbarmini";
+import { UserContext } from './context/context_provider';
 
 
 
@@ -12,9 +13,6 @@ function App() {
 
     const updateMedia = () => {
         setDesktop(window.innerWidth > 700);
-        if (window.innerWidth < 700 && window.innerWidth > 550){
-            window.location.reload()
-        }
     };
 
     useEffect(() => {
@@ -22,11 +20,7 @@ function App() {
         return () => window.removeEventListener("resize", updateMedia);
     });
 
-
-    const reload = () => {
-        window.location.reload()
-    }
-
+    const user = useContext(UserContext)
 
   return (
     <div className='container-fluid'>

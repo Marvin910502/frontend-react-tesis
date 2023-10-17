@@ -1,20 +1,22 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Image, NavDropdown} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import { UserContext } from "../context/context_provider";
 
 
 function SidebarDropdown(){
 
-    let theme: string | null = localStorage.getItem('themeMode')
+    const theme: string | null = localStorage.getItem('themeMode')
+
+    const user = useContext(UserContext)
 
     return(
         <>
             <div className='d-flex justify-content-start ps-2'>
                 <Image src={process.env.PUBLIC_URL + 'Marvin.webp'}  roundedCircle style={{maxHeight:'40px'}} />
                 <NavDropdown drop={'up'}
-                             title='Perfil'
+                             title={user?.username}
                              id="userDropdown"
-                             data-bs-theme={theme}
                              className='ms-3 mt-2'
                 >
 

@@ -31,7 +31,7 @@ function Sidebar(){
                     </Link>
                     <hr className="mt-0"/>
                     <div className='p-1'>
-                        <SidebarList/>
+                        { localStorage.getItem('isAuthenticated') && <SidebarList/>}
                     </div>
                     <div style={{position:"absolute", bottom:'5vh'}} className='pe-0'>
                         <div className='d-flex justify-content-start ps-2'>
