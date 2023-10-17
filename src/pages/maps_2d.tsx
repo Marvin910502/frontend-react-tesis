@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react";
-import Cookies from "js-cookie";
-import {Button, Card, Col, Form, Row, Modal, Table} from "react-bootstrap";
+import React, {useEffect, useState} from "react"
+import Cookies from "js-cookie"
+import {Button, Card, Col, Form, Row, Modal, Table} from "react-bootstrap"
 import 'leaflet/dist/leaflet.css'
-import Maps2dArea from "../components/maps_2d_area";
+import Maps2dArea from "../components/maps_2d_area"
 import GeoJsonObject from 'geojson'
 
 const diagnostic_options = [
@@ -37,7 +37,7 @@ function Maps2d(){
     let [center, setCenter] = useState({lat:25, lon:-87})
     let [zoom, setZoom] = useState(6)
     let [diagnostic, setDiagnostic] = useState( localStorage.getItem('diagnostic') || 'punto_de_condensacion')
-    let [units, setUnits] = useState<string>('degC')
+    let [units, setUnits] = useState<string>(localStorage.getItem('units') || 'degC')
     let [list_units, setListUnits] = useState<UNIT[]>()
     let [max_index, setMaxIndex] = useState<number>(parseInt(localStorage.getItem('max_index') || '2'))
     let [index, setIndex] = useState(parseInt(localStorage.getItem('index') || '0'))
@@ -48,6 +48,8 @@ function Maps2d(){
     let [list_states, setListStates] = useState<boolean[]>()
     let [load_path, setLoadPath] = useState<string[]>(JSON.parse(localStorage.getItem('load_path') || '[]'))
     let [name_files_list, setNameFileList] = useState<string[]>(JSON.parse(localStorage.getItem('name_file_list') || '[]'))
+
+    console.log(units)
 
     let initial_list_states:boolean[]
 
@@ -150,39 +152,44 @@ function Maps2d(){
     }
 
 
-    const getMapData = async (e:any) => {
-        e.preventDefault()
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/2d-variables-maps/`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${Cookies.get('access-token')}`
-                },
-                body: JSON.stringify({
-                    'url': load_path,
-                    'diagnostic': diagnostic,
-                    'units': units,
-                    'index': index,
-                    'section_amount': section_amount
-                })
-            }
-        )
-        let data = await res.json()
-        let geojson:typeof GeoJsonObject = JSON.parse(data.geojson).features
-        setGeoJson(geojson)
-        console.log(geojson)
-        setCenter({lat: 25, lon: -87})
-        setZoom(6)
-        setUnits(units)
-        localStorage.setItem('data', JSON.stringify(data))
-        localStorage.setItem('diagnostic', diagnostic)
-        localStorage.setItem('units', units)
-        localStorage.setItem('section_amount', JSON.stringify(section_amount))
-        localStorage.setItem('index', JSON.stringify(index))
-    }
+    useEffect(()=>{
+        const getMapData = async () => {
+            const res = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/2d-variables-maps/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${Cookies.get('access-token')}`
+                    },
+                    body: JSON.stringify({
+                        'url': load_path,
+                        'diagnostic': diagnostic,
+                        'units': units,
+                        'index': index,
+                        'section_amount': section_amount
+                    })
+                }
+            )
+            let data = await res.json()
+            let geojson:typeof GeoJsonObject = JSON.parse(data.geojson).features
+            setGeoJson(geojson)
+            console.log(geojson)
+            setCenter({lat: 25, lon: -87})
+            setZoom(6)
+            setUnits(units)
+            localStorage.setItem('data', JSON.stringify(data))
+            localStorage.setItem('diagnostic', diagnostic)
+            localStorage.setItem('units', units)
+            localStorage.setItem('section_amount', JSON.stringify(section_amount))
+            localStorage.setItem('index', JSON.stringify(index))
+        }
+        if (load_path.length !== 0){
+            getMapData()
+        }
+     
+    },[index, load_path, units, section_amount])
 
     const getListFiles = async () => {
         const res = await fetch(
@@ -262,13 +269,18 @@ function Maps2d(){
     }
 
 
+/*     function Animate(){
+        while(index<=max_index){
+            setTimeout(()=>{
+                setIndex(index++)
+            },2000)
+        }
+    } */
+
 
     return(
         <>
             <div className='ps-2 pe-2'>
-                <Card className='mt-3 shadow'>
-                    <h1 className='text-center'>Mapas con Variables en 2D</h1>
-                </Card>
                 <Row className='mt-3'>
                     <Col xl={9} lg={9} md={12} sm={12} className='mb-3'>
                         <Row className='ps-3 pe-3'>
@@ -282,6 +294,21 @@ function Maps2d(){
                                 line_weight={line_weight}
                                 fill_opacity={fill_opacity}
                                 />
+                            </Card>
+                        </Row>
+                        <Row className='ps-3 pe-3 mt-3'>
+                            <Card className='pt-1 pb-1 shadow'>
+                                <Row className="ps-2 pe-2">
+                                    <Col xl={2} lg={12} md={12} sm={12} xs={12}>
+                                    <h4 className="mt-1">Tiempo</h4>
+                                    </Col>    
+                                    <Col xl={9} lg={10} md={10} sm={10} xs={10}>
+                                        <Form.Range className="mt-2" max={max_index} min={0} value={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={load_path.length === 0 && true}/>
+                                    </Col>
+                                    <Col xl={1} lg={2} md={2} sm={2} xs={2} className="pt-2">
+                                        <span className="border rounded p-2">{index + 1}</span>
+                                    </Col>
+                                </Row>
                             </Card>
                         </Row>
                         <Row className='ps-3 pe-3 mt-3'>
@@ -306,6 +333,9 @@ function Maps2d(){
                         </Row>
                     </Col>
                     <Col xl={3} lg={3} md={12} sm={12} className='mt-xl-0 mt-lg-0'>
+                        <Card className='shadow mb-3'>
+                            <h3 className='text-center'>Mapas con Variables en 2D</h3>
+                        </Card>
                         <Card className='p-2 shadow'>
                             <h4 className="mt-2">Opciones</h4>
                             <hr className="mt-0"/>
@@ -315,8 +345,8 @@ function Maps2d(){
                                         <Form.Label>Archivo(s):</Form.Label>
                                     </Row>
                                     <Row>
-                                        <Card className="ms-3 pt-2 pb-2 pt-3" style={{maxWidth:'90%', maxHeight:'200px'}}>
-                                            <div style={{maxHeight:'200px', overflowY:'auto'}}>
+                                        <Card className="ms-3 pt-2 pb-2 pt-3" style={{maxWidth:'90%', maxHeight:'120px'}}>
+                                            <div style={{maxHeight:'120px', overflowY:'auto'}}>
                                             {name_files_list && name_files_list?.map((name)=>(
                                                 <>
                                                     <small>{name}</small>
@@ -326,6 +356,7 @@ function Maps2d(){
                                             </div>
                                         </Card> 
                                     </Row>
+                                    {load_path.length === 0 && <div className="mt-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>}
                                     <Form.Control type={'hidden'} name={'wrf_url'} value={load_path} required/>
                                     <Button className="mt-2" variant="primary" onClick={handleShow}>Selecionar Archivo(s)</Button>
                                 </Form.Group>
@@ -346,18 +377,13 @@ function Maps2d(){
                                     </Form.Select>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                    <Form.Label>Momento en el tiempo: {index + 1}</Form.Label>
-                                    {load_path.length === 0 && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para usar este selector</small></div>}
-                                    <Form.Range max={max_index} min={0} defaultValue={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={load_path.length === 0 && true}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Form.Label>Número de polígonos: {section_amount}</Form.Label>
                                     <Form.Range max={15} min={5} defaultValue={section_amount} onChange={e=>setSectionAmount(parseInt(e.target.value))}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                {load_path.length === 0 && <div className="mb-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>}
-                                    <Button type={'submit'} onClick={getMapData} disabled={load_path.length === 0 && true}>Mapear</Button>
-                                    <Button className="ms-3" onClick={handleCleaning}>Limpiar Mapa</Button>
+                                    <Button onClick={handleCleaning}>Limpiar Mapa</Button>
                                 </Form.Group>
                             </Form>
                         </Card>
