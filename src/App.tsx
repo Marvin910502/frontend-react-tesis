@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Router from "./routes/router";
 import Sidebar from "./components/sidebar";
 import {Col, Row} from "react-bootstrap";
 import NavbarMini from "./components/navbarmini";
+import { UserContext } from './context/context_provider';
 
 
 
@@ -19,11 +20,13 @@ function App() {
         return () => window.removeEventListener("resize", updateMedia);
     });
 
+    const user = useContext(UserContext)
 
   return (
     <div className='container-fluid'>
         { isDesktop ? (
             <Row style={{height:'100vh'}}>
+
                 <Col xl={2} lg={3} md={4} sm={4} xs={1} style={{height:'100vh'}}>
                     <Sidebar/>
                 </Col>

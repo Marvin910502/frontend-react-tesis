@@ -1,5 +1,5 @@
 import React from "react";
-import {Navbar, Container, Nav} from "react-bootstrap";
+import {Navbar, Container, Nav, Image} from "react-bootstrap";
 import {Link, useLocation} from "react-router-dom";
 import Switch from "./switch";
 import SidebarDropdown from "./sidebar_dropdown";
@@ -17,7 +17,7 @@ function NavbarMini(){
 
     const location = useLocation()
 
-    let list_event: string = ''
+    let list_event = ''
 
     switch (location.pathname){
         case '/':
@@ -59,26 +59,31 @@ function NavbarMini(){
                         >
                             <Link className='text-decoration-none' to='/'>
                                 <Nav.Link href='/' eventKey='1' className={link_color}>
+                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/home.svg"} className="me-2" style={{maxWidth:'7%'}}/>
                                     Inicio
                                 </Nav.Link>
                             </Link>
                             <Link className='text-decoration-none' to='mapas-2d'>
                                 <Nav.Link href='mapas-2d' eventKey='2' className={link_color}>
+                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/2d_maps.svg"} className="me-2" style={{maxWidth:'7%'}}/>
                                     Mapas 2d
                                 </Nav.Link>
                             </Link>
                             <Link className='text-decoration-none' to='mapas-3d'>
                                 <Nav.Link id={'element_3'} href='mapas-3d' eventKey='3' className={link_color}>
+                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/3d_maps.svg"} className="me-2" style={{maxWidth:'7%'}}/>
                                     Mapas 3d
                                 </Nav.Link>
                             </Link>
                             <Link className='text-decoration-none' to='corte-vertical'>
                                 <Nav.Link href='corte-vertical' eventKey='4' className={link_color}>
+                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/vertical_cut.svg"} className="me-2" style={{maxWidth:'7%'}}/>
                                     Cortes Verticales
                                 </Nav.Link>
                             </Link>
                             <Link className='text-decoration-none' to='corte-vertical-3d'>
                                 <Nav.Link href='corte-vertical-3d' eventKey='5' className={link_color}>
+                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/vertical_cut_3d.svg"} className="me-2" style={{maxWidth:'7%'}}/>
                                     Cortes Veticales 3d
                                 </Nav.Link>
                             </Link>
