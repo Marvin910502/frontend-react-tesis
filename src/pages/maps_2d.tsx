@@ -285,7 +285,7 @@ function Maps2d(){
                                         <Form.Range className="mt-2" max={max_index} min={0} value={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={load_path.length === 0 && true}/>
                                     </Col>
                                     <Col xl={1} lg={2} md={2} sm={2} xs={2} className="pt-2">
-                                        <span className="border rounded p-2">{index + 1}</span>
+                                        <span className="border rounded p-2">{index + 1} / {max_index+1}</span>
                                     </Col>
                                 </Row>
                             </Card>

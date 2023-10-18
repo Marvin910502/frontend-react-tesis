@@ -1,18 +1,49 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {Button, Card, Form, Row, Col} from "react-bootstrap";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Cookies from 'js-cookie'
+import { UserContext } from "../context/context_provider";
+import jwt from 'jwt-decode';
+import { userInteface } from "../context/context_provider";
 
-interface authState{
-    updateAuthentication:Function,
-}
+interface JWT {token_type: string, exp: number, iat: number, jti: string, email: string}
 
-const Login:React.FC<authState> = ({updateAuthentication}) => {
+const Login = () => {
 
+    const user = useContext(UserContext)
 
     let [email, setEmail] = useState('')
     let [password, setPassword] = useState('')
     let navigate = useNavigate()
+
+    let getUserInfo = async(username:string) => {
+        const res = await fetch(`${process.env["REACT_APP_API_URL"]}/api/get-user/`,
+        {
+            method:'POST',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Cookies.get('access-token')}`
+            },
+            body:JSON.stringify({'username':username})
+        }
+        )
+        const response = await res.json()
+        console.log(response)
+        const dataUser:userInteface = {
+            username: username,
+            isAuthenticated: true,
+            name: response.name,
+            last_names: response.last_names,
+            department: response.department,
+            isAdmin: response.isAdmin,
+            isGuess: response.isGuess,
+            isManager: response.isManager
+        }
+        localStorage.setItem('userData', JSON.stringify(dataUser))
+        user.setUser(dataUser)
+        return navigate('/')
+    }
 
 
     let loginUser = async(e:any)=> {
@@ -37,9 +68,8 @@ const Login:React.FC<authState> = ({updateAuthentication}) => {
         if (res.status === 200)
            Cookies.set('access-token', response.access)
            Cookies.set('refresh-token', response.refresh)
-           localStorage.setItem('isAuthenticated', 'true')
-           updateAuthentication(true)
-           return navigate('/')
+           const current_user:JWT = jwt(response.access)
+           getUserInfo(current_user.email)
     }
 
 
@@ -68,6 +98,11 @@ const Login:React.FC<authState> = ({updateAuthentication}) => {
                             </Form.Group>
                         </Form>
                     </Card.Body>
+                    <Card.Footer>
+                        <Link className="p-4" to={'/register'}>
+                            Registrarse
+                        </Link>
+                    </Card.Footer>
                  </Card>
                 </Col>
                 <Col xl={3} lg={2} md={1} sm={1} xs={1}></Col>
