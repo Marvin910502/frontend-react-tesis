@@ -1,20 +1,46 @@
-import React, {createContext, PropsWithChildren, useContext, useState} from "react"
+import {createContext, PropsWithChildren, useState} from "react"
 
-interface contextInteface {
+export interface userInteface {
     username:string,
-    isAuthenticated:boolean
+    isAuthenticated:boolean,
+    department:string,
+    name:string,
+    last_names:string,
+    isAdmin:boolean,
+    isGuess:boolean,
+    isManager:boolean
 }
 
-export const UserContext = createContext<contextInteface|null>(null)
+interface contextInterface {
+    user: userInteface,
+    setUser:Function
+}
 
+const v:userInteface = {username:'Anónimo', isAuthenticated:false, department:'', name:'', last_names:'', isAdmin:false, isGuess:false, isManager:false}
+const f:Function = ()=>{}
+
+export const UserContext = createContext<contextInterface>({user:v,setUser:f})
+
+const userData:userInteface = JSON.parse(localStorage.getItem('userData') || '{}')
 
 export default function ContextProvider(props:PropsWithChildren<{}>){
 
-    const [current_user, setCurrentUser] = useState<contextInteface>({username:'Anónimo', isAuthenticated:false})
+    const [current_user, setCurrentUser] = useState<userInteface>({
+                                                                   username:userData.username || 'Anónimo', 
+                                                                   isAuthenticated:userData.isAuthenticated || false,
+                                                                   department:userData.department || '',
+                                                                   name:userData.name || '',
+                                                                   last_names:userData.last_names || '',
+                                                                   isAdmin:userData.isAdmin || false,
+                                                                   isGuess:userData.isGuess || false,
+                                                                   isManager:userData.isManager || false,
+                                                                })
+
+    const user = {user:current_user, setUser:setCurrentUser}
 
     return(
 
-            <UserContext.Provider value={current_user}>
+            <UserContext.Provider value={user}>
                 {props.children}
             </UserContext.Provider>
 

@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import SidebarList from "./sidebar_list";
 import SidebarDropdown from "./sidebar_dropdown";
 import {Link} from "react-router-dom";
 import Switch from "./switch";
 import {Col, Navbar, NavbarBrand, Image} from "react-bootstrap";
+import { UserContext } from "../context/context_provider";
 
 
 
 function Sidebar(){
+
+    const user = useContext(UserContext)
 
     let theme: string | null = localStorage.getItem('themeMode')
 
@@ -31,7 +34,7 @@ function Sidebar(){
                     </Link>
                     <hr className="mt-0"/>
                     <div className='p-1'>
-                        { localStorage.getItem('isAuthenticated') && <SidebarList/>}
+                        { user?.user.isAuthenticated && <SidebarList/>}
                     </div>
                     <div style={{position:"absolute", bottom:'5vh'}} className='pe-0'>
                         <div className='d-flex justify-content-start ps-2'>
