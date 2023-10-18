@@ -1,9 +1,8 @@
-import React, {useState, useEffect, useContext} from 'react';
+import {useState, useEffect} from 'react';
 import Router from "./routes/router";
 import Sidebar from "./components/sidebar";
 import {Col, Row} from "react-bootstrap";
 import NavbarMini from "./components/navbarmini";
-import { UserContext } from './context/context_provider';
 
 
 
@@ -19,8 +18,6 @@ function App() {
         window.addEventListener("resize", updateMedia);
         return () => window.removeEventListener("resize", updateMedia);
     });
-
-    const user = useContext(UserContext)
 
   return (
     <div className='container-fluid'>

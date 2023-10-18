@@ -6,7 +6,6 @@ import { UserContext } from "../context/context_provider";
 
 function SidebarDropdown(){
 
-    const theme: string | null = localStorage.getItem('themeMode')
 
     const user = useContext(UserContext)
 
