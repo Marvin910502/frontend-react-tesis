@@ -41,7 +41,7 @@ function Maps2d(){
     let [list_units, setListUnits] = useState<UNIT[]>()
     let [max_index, setMaxIndex] = useState<number>(parseInt(localStorage.getItem('max_index') || '2'))
     let [index, setIndex] = useState(parseInt(localStorage.getItem('index') || '0'))
-    let [section_amount, setSectionAmount] = useState(parseInt(localStorage.getItem('section_amount') || '10'))
+    let [polygons, setPolygons] = useState(parseInt(localStorage.getItem('polygons') || '10'))
     let [line_weight, setLineWeight] = useState(parseFloat(localStorage.getItem('line_weight') || '0.5'))
     let [fill_opacity, setFillOpacity] = useState(parseFloat(localStorage.getItem('fill_opacity') || '0.3'))
     let [list_file, setListFile] = useState<FILE[]>([])
@@ -62,7 +62,7 @@ function Maps2d(){
         setDiagnostic('punto_de_condensacion')
         setUnits('degC')
         setIndex(0)
-        setSectionAmount(10)
+        setPolygons(10)
         setLineWeight(0.5)
         setFillOpacity(0.3)
         localStorage.removeItem('data')
@@ -70,7 +70,7 @@ function Maps2d(){
         localStorage.removeItem('diagnostic')
         localStorage.removeItem('fill_opacity')
         localStorage.removeItem('line_weight')
-        localStorage.removeItem('section_amount')
+        localStorage.removeItem('polygons')
         localStorage.removeItem('units')
         localStorage.removeItem('load_path')
         localStorage.removeItem('name_file_list')
@@ -155,7 +155,7 @@ function Maps2d(){
                         'diagnostic': diagnostic,
                         'units': units,
                         'index': index,
-                        'section_amount': section_amount
+                        'polygons': polygons
                     })
                 }
             )
@@ -169,14 +169,14 @@ function Maps2d(){
             localStorage.setItem('data', JSON.stringify(data))
             localStorage.setItem('diagnostic', diagnostic)
             localStorage.setItem('units', units)
-            localStorage.setItem('section_amount', JSON.stringify(section_amount))
+            localStorage.setItem('polygons', JSON.stringify(polygons))
             localStorage.setItem('index', JSON.stringify(index))
         }
         if (load_path.length !== 0){
             getMapData()
         }
      
-    },[index, load_path, units, section_amount])
+    },[index, load_path, units, polygons])
 
     const getListFiles = async () => {
         const res = await fetch(
@@ -358,8 +358,8 @@ function Maps2d(){
                                 <Form.Group className='mt-3'>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                    <Form.Label>Número de polígonos: {section_amount}</Form.Label>
-                                    <Form.Range max={15} min={5} defaultValue={section_amount} onChange={e=>setSectionAmount(parseInt(e.target.value))}/>
+                                    <Form.Label>Número de polígonos: {polygons}</Form.Label>
+                                    <Form.Range max={15} min={5} defaultValue={polygons} onChange={e=>setPolygons(parseInt(e.target.value))}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Button onClick={handleCleaning}>Limpiar Mapa</Button>
