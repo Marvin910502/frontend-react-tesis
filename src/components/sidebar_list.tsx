@@ -33,6 +33,12 @@ function SidebarList(){
         case '/corte-vertical-3d':
             list_event = '5'
             break
+        case '/mis-mapas':
+            list_event = '6'
+            break
+        case '/mis-graficas':
+            list_event = '7'
+            break    
     }
 
     return(
@@ -67,6 +73,19 @@ function SidebarList(){
                         <Nav.Link href='corte-vertical-3d' eventKey='5' className={link_color}>
                         <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/vertical_cut_3d.svg"} className="me-2" style={{maxWidth:'15%'}}/>
                                 Cortes Veticales 3D
+                        </Nav.Link>
+                    </Link>
+                    <hr/>
+                    <Link className='text-decoration-none' to='mis-mapas'>
+                        <Nav.Link href='mis-mapas' eventKey='6' className={link_color}>
+                        <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/2d_maps.svg"} className="me-2" style={{maxWidth:'15%'}}/>
+                                Mis Mapas
+                        </Nav.Link>
+                    </Link>
+                    <Link className='text-decoration-none' to='mis-graficas'>
+                        <Nav.Link href='mis-graficas' eventKey='7' className={link_color}>
+                        <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/vertical_cut.svg"} className="me-2" style={{maxWidth:'15%'}}/>
+                                Mis Gráficas
                         </Nav.Link>
                     </Link>
                 </Nav>
