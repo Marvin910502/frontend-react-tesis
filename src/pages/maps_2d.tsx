@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import Cookies from "js-cookie"
 import {Button, Card, Col, Form, Row, Modal, Table} from "react-bootstrap"
 import 'leaflet/dist/leaflet.css'
 import Maps2dArea from "../components/maps_2d_area"
 import GeoJsonObject from 'geojson'
+
 
 const diagnostic_options = [
     {value: 'punto_de_condensacion', label: 'Punto de Condensación'},
@@ -30,72 +31,77 @@ interface FILE {
 }
 
 
+interface mapData {
+    geojson: typeof GeoJsonObject,
+    diagnostic: string,
+    units: string,
+    polygons: number,
+    index: number,
+    max_index:number,
+    fill_opacity:number,
+    line_weight:number,
+    load_path:string[],
+    name_files_list:string[]
+}
+
+
+const defaultMapData:mapData = {
+    geojson: {},
+    diagnostic: 'punto_de_condensacion',
+    units: 'degC',
+    polygons: 10,
+    index: 0,
+    max_index: 2,
+    fill_opacity: 0.3,
+    line_weight: 0.5,
+    load_path: [],
+    name_files_list: [] 
+}
+
 
 function Maps2d(){
 
-    let [geojson, setGeoJson] = useState<typeof GeoJsonObject | null>()
+    let [mapInicialData, setMapInicialData] = useState<mapData>(JSON.parse(localStorage.getItem('mapData') || 'null') || defaultMapData)
+
+    let [geojson, setGeoJson] = useState<typeof GeoJsonObject | null>({})
     let [center, setCenter] = useState({lat:25, lon:-87})
     let [zoom, setZoom] = useState(6)
-    let [diagnostic, setDiagnostic] = useState( localStorage.getItem('diagnostic') || 'punto_de_condensacion')
-    let [units, setUnits] = useState<string>(localStorage.getItem('units') || 'degC')
+    let [units, setUnits] = useState<string>( mapInicialData.units )
+    let [diagnostic, setDiagnostic] = useState<string>( mapInicialData.diagnostic )
     let [list_units, setListUnits] = useState<UNIT[]>()
-    let [max_index, setMaxIndex] = useState<number>(parseInt(localStorage.getItem('max_index') || '2'))
-    let [index, setIndex] = useState(parseInt(localStorage.getItem('index') || '0'))
-    let [section_amount, setSectionAmount] = useState(parseInt(localStorage.getItem('section_amount') || '10'))
-    let [line_weight, setLineWeight] = useState(parseFloat(localStorage.getItem('line_weight') || '0.5'))
-    let [fill_opacity, setFillOpacity] = useState(parseFloat(localStorage.getItem('fill_opacity') || '0.3'))
+    let [max_index, setMaxIndex] = useState<number>( mapInicialData.max_index )
+    let [index, setIndex] = useState<number>( mapInicialData.index )
+    let [polygons, setPolygons] = useState( mapInicialData.polygons )
+    let [line_weight, setLineWeight] = useState( mapInicialData.line_weight )
+    let [fill_opacity, setFillOpacity] = useState( mapInicialData.fill_opacity )
     let [list_file, setListFile] = useState<FILE[]>([])
     let [list_states, setListStates] = useState<boolean[]>()
-    let [load_path, setLoadPath] = useState<string[]>(JSON.parse(localStorage.getItem('load_path') || '[]'))
-    let [name_files_list, setNameFileList] = useState<string[]>(JSON.parse(localStorage.getItem('name_file_list') || '[]'))
-
-    console.log(units)
+    let [load_path, setLoadPath] = useState<string[]>( mapInicialData.load_path )
+    let [name_files_list, setNameFileList] = useState<string[]>( mapInicialData.name_files_list )
 
     let initial_list_states:boolean[]
 
-    console.log(load_path)
-
     const handleCleaning = () => {
-        setGeoJson(null)
-        setCenter({lat:25, lon:-87})
-        setZoom(6)
-        setDiagnostic('punto_de_condensacion')
-        setUnits('degC')
-        setIndex(0)
-        setSectionAmount(10)
-        setLineWeight(0.5)
-        setFillOpacity(0.3)
-        localStorage.removeItem('data')
-        localStorage.removeItem('index')
-        localStorage.removeItem('diagnostic')
-        localStorage.removeItem('fill_opacity')
-        localStorage.removeItem('line_weight')
-        localStorage.removeItem('section_amount')
-        localStorage.removeItem('units')
-        localStorage.removeItem('load_path')
-        localStorage.removeItem('name_file_list')
-        localStorage.removeItem('max_index')
+        localStorage.removeItem('mapData')
         window.location.reload()
     }
 
 
     useEffect(()=>{
-        localStorage.setItem('line_weight', JSON.stringify(line_weight))
-    },[line_weight])
-    useEffect(()=>{
-        localStorage.setItem('fill_opacity', JSON.stringify(fill_opacity))
-    },[fill_opacity])
-    useEffect(()=>{
-        localStorage.setItem('load_path', JSON.stringify(load_path))
-    },[load_path])
-    useEffect(()=>{
-        localStorage.setItem('name_file_list', JSON.stringify(name_files_list))
-    },[name_files_list])
-    useEffect(()=>{
-        localStorage.setItem('max_index', JSON.stringify(max_index))
-    },[max_index])
+        mapInicialData.fill_opacity = fill_opacity
+        mapInicialData.line_weight = line_weight
+        mapInicialData.load_path = load_path
+        mapInicialData.name_files_list = name_files_list
+        mapInicialData.max_index = max_index
+        localStorage.setItem('mapData', JSON.stringify(mapInicialData))
+    }, [fill_opacity, line_weight, load_path, name_files_list, max_index])
 
 
+    /* useEffect(()=>{
+        mapInicialData.units = units
+        localStorage.setItem('mapData', JSON.stringify(mapInicialData))
+    },[units]) */
+        
     const UnitsOptions = (diagnostic: string) => {
         switch (diagnostic) {
             case 'punto_de_condensacion':
@@ -135,8 +141,6 @@ function Maps2d(){
         setListUnits(UnitsOptions(diagnostic))
     }, [diagnostic])
 
-    let local_unit = localStorage.getItem('units')
-    useEffect(()=>{setUnits(localStorage.getItem('units') || 'degC')}, [local_unit])
 
 
     useEffect(()=>{
@@ -155,28 +159,36 @@ function Maps2d(){
                         'diagnostic': diagnostic,
                         'units': units,
                         'index': index,
-                        'section_amount': section_amount
+                        'polygons': polygons
                     })
                 }
             )
             let data = await res.json()
             let geojson:typeof GeoJsonObject = JSON.parse(data.geojson).features
             setGeoJson(geojson)
-            console.log(geojson)
             setCenter({lat: 25, lon: -87})
             setZoom(6)
             setUnits(units)
-            localStorage.setItem('data', JSON.stringify(data))
-            localStorage.setItem('diagnostic', diagnostic)
-            localStorage.setItem('units', units)
-            localStorage.setItem('section_amount', JSON.stringify(section_amount))
-            localStorage.setItem('index', JSON.stringify(index))
+            const mapCurrentData:mapData = {
+                geojson:geojson,
+                diagnostic:diagnostic,
+                units:units,
+                polygons:polygons,
+                index:index,
+                max_index:max_index,
+                fill_opacity:fill_opacity,
+                line_weight:line_weight,
+                load_path:load_path,
+                name_files_list:name_files_list
+            }
+            setMapInicialData(mapCurrentData)
+            localStorage.setItem('mapData', JSON.stringify(mapCurrentData))
         }
         if (load_path.length !== 0){
             getMapData()
         }
      
-    },[index, load_path, units, section_amount])
+    },[index, load_path, units, polygons])
 
     const getListFiles = async () => {
         const res = await fetch(
@@ -197,20 +209,15 @@ function Maps2d(){
     useEffect(()=>{
         initial_list_states = []
         let count = list_file.length
-        console.log(count)
         for (let i=0; i<count; i++){
-            console.log(false)
             initial_list_states.push(false)
         }
-        //console.log(initial_list_states)
         setListStates(initial_list_states)
     }, [list_file])
 
     const [show, setShow] = useState(false)
 
     const handleClose = () => setShow(false)
-
-    let load_path_array = []
 
     const handleLoadFiles = (e:any) => {
         e.preventDefault()
@@ -227,14 +234,12 @@ function Maps2d(){
 
         setLoadPath(path_list)
         setNameFileList(name_file_list)
-        console.log(name_file_list.length)
         setMaxIndex(name_file_list.length * 3 - 1)  
         setIndex(0)  
         setShow(false)
     }
 
     const handleRowSelection = (index: string) => {
-        console.log(index)
         let new_list_states:boolean[] = []
         if (list_states){
             let count = list_states.length
@@ -248,7 +253,6 @@ function Maps2d(){
             }
         }
         setListStates(new_list_states)
-        console.log(new_list_states)
     }
 
     const handleShow = () => {
@@ -358,8 +362,8 @@ function Maps2d(){
                                 <Form.Group className='mt-3'>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                    <Form.Label>Número de polígonos: {section_amount}</Form.Label>
-                                    <Form.Range max={15} min={5} defaultValue={section_amount} onChange={e=>setSectionAmount(parseInt(e.target.value))}/>
+                                    <Form.Label>Número de polígonos: {polygons}</Form.Label>
+                                    <Form.Range max={15} min={5} defaultValue={polygons} onChange={e=>setPolygons(parseInt(e.target.value))}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Button onClick={handleCleaning}>Limpiar Mapa</Button>
