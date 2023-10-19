@@ -1,9 +1,11 @@
-import {useEffect, useState} from "react"
+import {useEffect, useState, useContext} from "react"
 import Cookies from "js-cookie"
 import {Button, Card, Col, Form, Row, Modal, Table} from "react-bootstrap"
 import 'leaflet/dist/leaflet.css'
 import Maps2dArea from "../components/maps_2d_area"
 import GeoJsonObject from 'geojson'
+import { UserContext } from "../context/context_provider"
+import MyToast from "../components/my_toast"
 
 
 const diagnostic_options = [
@@ -61,6 +63,8 @@ const defaultMapData:mapData = {
 
 function Maps2d(){
 
+    let user = useContext(UserContext)
+
     let [mapInicialData, setMapInicialData] = useState<mapData>(JSON.parse(localStorage.getItem('mapData') || 'null') || defaultMapData)
 
     let [geojson, setGeoJson] = useState<typeof GeoJsonObject | null>({})
@@ -78,15 +82,20 @@ function Maps2d(){
     let [list_states, setListStates] = useState<boolean[]>()
     let [load_path, setLoadPath] = useState<string[]>( mapInicialData.load_path )
     let [name_files_list, setNameFileList] = useState<string[]>( mapInicialData.name_files_list )
+    let [showNot, setShowNot] = useState(false)
+    let [toast_message, setToastMessage] = useState<string>('')
+    let [toast_bg_color, setToastBgColor] = useState<string>('')
+    let [toast_text_color, setToastTextColor] = useState('')
 
     let initial_list_states:boolean[]
 
+    //for cleaning the localStorage map data
     const handleCleaning = () => {
         localStorage.removeItem('mapData')
         window.location.reload()
     }
 
-
+    //for update localStorage with the current data after every change in this values
     useEffect(()=>{
         mapInicialData.fill_opacity = fill_opacity
         mapInicialData.line_weight = line_weight
@@ -96,12 +105,8 @@ function Maps2d(){
         localStorage.setItem('mapData', JSON.stringify(mapInicialData))
     }, [fill_opacity, line_weight, load_path, name_files_list, max_index])
 
-
-    /* useEffect(()=>{
-        mapInicialData.units = units
-        localStorage.setItem('mapData', JSON.stringify(mapInicialData))
-    },[units]) */
-        
+     
+    //units selector for the diagnostic
     const UnitsOptions = (diagnostic: string) => {
         switch (diagnostic) {
             case 'punto_de_condensacion':
@@ -136,13 +141,17 @@ function Maps2d(){
     
     } 
 
-
+    //get the list of units for the current diagnostic
     useEffect(()=>{
         setListUnits(UnitsOptions(diagnostic))
     }, [diagnostic])
 
 
+    //for units not change in an infinite loop
+    useEffect(()=>{setUnits(mapInicialData.units || 'degC')}, [mapInicialData])
 
+
+    //hook for make a request every time than a value of the forms changes
     useEffect(()=>{
         const getMapData = async () => {
             const res = await fetch(
@@ -169,6 +178,7 @@ function Maps2d(){
             setCenter({lat: 25, lon: -87})
             setZoom(6)
             setUnits(units)
+            //saving on the localStorage
             const mapCurrentData:mapData = {
                 geojson:geojson,
                 diagnostic:diagnostic,
@@ -183,6 +193,7 @@ function Maps2d(){
             }
             setMapInicialData(mapCurrentData)
             localStorage.setItem('mapData', JSON.stringify(mapCurrentData))
+            localStorage.setItem('units', units)
         }
         if (load_path.length !== 0){
             getMapData()
@@ -190,6 +201,7 @@ function Maps2d(){
      
     },[index, load_path, units, polygons])
 
+    // request for get the list of wrfout files in the default folder
     const getListFiles = async () => {
         const res = await fetch(
             `${process.env["REACT_APP_API_URL"]}/api/get-wrfout-list/`,
@@ -205,6 +217,59 @@ function Maps2d(){
         const data = await res.json()
         setListFile(data)
     }
+
+    //for get the name of the file using the index
+    const getFileName = () => {
+        
+    }
+
+    //for save the map data in the database
+    const saveMapData = async () => {
+        if (load_path.length !== 0){
+            let file_name:string = ''
+            let count = 0
+            for (let i = 2; index>i; i+=3) {
+                console.log(i, index)
+                count++
+                console.log(count)
+            }
+            let time_index = index - ((count)*3) 
+            file_name = name_files_list[count] + `-index(${time_index})-${diagnostic}`
+            const res = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/save-map-data/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${Cookies.get('access-token')}`
+                    },
+                    body: JSON.stringify({
+                        'user': user.user.username,
+                        'geojson': geojson,
+                        'diagnostic': diagnostic,
+                        'units': mapInicialData.units,
+                        'polygons': polygons,
+                        'file_name': file_name 
+                    })
+                }
+            )
+            const data = await res.json()
+            if(res.status === 201){
+                setShowNot(true)
+                setToastBgColor('success')
+                setToastTextColor('text-white')
+                setToastMessage('Los datos de este mapa fueron guardados!')
+            }
+        }
+        else{
+            setShowNot(true)
+            setToastBgColor('warning')
+            setToastTextColor('text-black')
+            setToastMessage('No hay datos para salvar')
+        }
+    }
+
 
     useEffect(()=>{
         initial_list_states = []
@@ -237,6 +302,10 @@ function Maps2d(){
         setMaxIndex(name_file_list.length * 3 - 1)  
         setIndex(0)  
         setShow(false)
+        setShowNot(true)
+        setToastBgColor('success')
+        setToastTextColor('text-white')
+        setToastMessage('Los archivos fueron cargados con éxito!')
     }
 
     const handleRowSelection = (index: string) => {
@@ -366,7 +435,8 @@ function Maps2d(){
                                     <Form.Range max={15} min={5} defaultValue={polygons} onChange={e=>setPolygons(parseInt(e.target.value))}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
-                                    <Button onClick={handleCleaning}>Limpiar Mapa</Button>
+                                    <Button className="me-3 mb-3 btn-danger" onClick={handleCleaning}>Limpiar Mapa</Button>
+                                    <Button onClick={saveMapData} className="mb-3 btn-success">Salvar Datos</Button>
                                 </Form.Group>
                             </Form>
                         </Card>
@@ -411,6 +481,8 @@ function Maps2d(){
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <MyToast position={'bottom-end'} bg_color={toast_bg_color} text_color={toast_text_color} show={showNot} close={setShowNot} body_text={toast_message}/>
         </>
     )
 }
