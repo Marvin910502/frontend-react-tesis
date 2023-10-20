@@ -173,8 +173,10 @@ function Maps2d(){
                 }
             )
             let data = await res.json()
-            let geojson:typeof GeoJsonObject = JSON.parse(data.geojson).features
-            setGeoJson(geojson)
+            let geojson:typeof GeoJsonObject = JSON.parse(data.geojson)
+            console.log()
+            //@ts-ignore
+            setGeoJson(geojson.features)
             setCenter({lat: 25, lon: -87})
             setZoom(6)
             setUnits(units)
@@ -234,7 +236,7 @@ function Maps2d(){
                 console.log(count)
             }
             let time_index = index - ((count)*3) 
-            file_name = name_files_list[count] + `-index(${time_index})-${diagnostic}`
+            file_name = name_files_list[count] + `-index(${time_index})-${diagnostic}-${mapInicialData.units}`
             const res = await fetch(
                 `${process.env["REACT_APP_API_URL"]}/api/save-map-data/`,
                 {
@@ -246,7 +248,7 @@ function Maps2d(){
                     },
                     body: JSON.stringify({
                         'user': user.user.username,
-                        'geojson': geojson,
+                        'geojson': JSON.stringify(mapInicialData.geojson),
                         'diagnostic': diagnostic,
                         'units': mapInicialData.units,
                         'polygons': polygons,
@@ -260,6 +262,12 @@ function Maps2d(){
                 setToastBgColor('success')
                 setToastTextColor('text-white')
                 setToastMessage('Los datos de este mapa fueron guardados!')
+            }
+            if(res.status === 208){
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('Ya guardo este mapa anteriormente!')
             }
         }
         else{
