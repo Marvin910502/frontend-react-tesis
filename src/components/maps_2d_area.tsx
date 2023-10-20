@@ -1,9 +1,36 @@
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet'
 import {GeoJsonObject} from "geojson";
 import 'leaflet/dist/leaflet.css'
-import React from "react";
+import React, { useState } from "react";
 import Control from "react-leaflet-custom-control";
+import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
+import {ControlPosition} from 'leaflet'
 import {Card} from "react-bootstrap";
+import { canvas } from 'leaflet';
+
+interface PluginOptions extends Object {
+    cropImageByInnerWH?: boolean, // crop blank opacity from image borders
+    hidden?: boolean, // hide screen icon
+    preventDownload?: boolean, // prevent download on button click
+    domtoimageOptions?: any, // see options for dom-to-image
+    position?: ControlPosition, // position of take screen icon
+    screenName?: string | (() => string), // string or function
+    iconUrl?: string, // screen btn icon base64 or url
+    hideElementsWithSelectors?: Array<string>,// by default hide map controls All els must be child of _map._container
+    mimeType?: string, // used if format == image,
+    caption?: string | (() => string | null) | null, // streeng or function, added caption to bottom of screen
+    captionFontSize?: number,
+    captionFont?: string,
+    captionColor?: string,
+    captionBgColor?: string,
+    captionOffset?: number,
+  }
+
+
+  const pluginCreeen:PluginOptions = {
+    hideElementsWithSelectors:[]
+  }
+
 
 interface Map{
     geojson:GeoJsonObject[] | null | undefined,
@@ -38,7 +65,21 @@ const units_lables = {
     'defaultkg': 'kg'
 }
 
+let screen_shot = false
 
+const screen = new SimpleMapScreenshoter(pluginCreeen)
+
+window.onload = ()=>{screen_shot=true}
+
+const ScreenShot = () => {
+    const map = useMap()
+    screen.addTo(map)
+    
+
+    return(
+        <></>
+    )
+}
 
 
 
@@ -49,6 +90,7 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                                   line_weight,
                                   fill_opacity
                                   }) => {
+
 
     const layetlist = []
     const legend_list = []
@@ -92,6 +134,7 @@ const Maps2dArea:React.FC<Map> = ({geojson,
 
                 {layetlist}
 
+
                 <Control
                 // @ts-ignore
                 position='bottomleft'
@@ -114,6 +157,8 @@ const Maps2dArea:React.FC<Map> = ({geojson,
                         ))}
                     </Card>
                 </Control>
+
+                <ScreenShot/>
 
             </MapContainer>
         </>
