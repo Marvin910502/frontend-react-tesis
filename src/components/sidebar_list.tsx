@@ -38,7 +38,10 @@ function SidebarList(){
             break
         case '/mis-graficas':
             list_event = '7'
-            break    
+            break 
+        case '/subir-wrfout':
+            list_event = '8'
+            break        
     }
 
     return(
@@ -78,14 +81,21 @@ function SidebarList(){
                     <hr/>
                     <Link className='text-decoration-none' to='mis-mapas'>
                         <Nav.Link href='mis-mapas' eventKey='6' className={link_color}>
-                        <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/2d_maps.svg"} className="me-2" style={{maxWidth:'15%'}}/>
+                        <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/my_maps.svg"} className="me-2" style={{maxWidth:'15%'}}/>
                                 Mis Mapas
                         </Nav.Link>
                     </Link>
                     <Link className='text-decoration-none' to='mis-graficas'>
                         <Nav.Link href='mis-graficas' eventKey='7' className={link_color}>
-                        <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/vertical_cut.svg"} className="me-2" style={{maxWidth:'15%'}}/>
+                        <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/my_graphics.svg"} className="me-2" style={{maxWidth:'15%'}}/>
                                 Mis Gráficas
+                        </Nav.Link>
+                    </Link>
+                    <hr/>
+                    <Link className='text-decoration-none' to='subir-wrfout'>
+                        <Nav.Link href='subir-wrfout' eventKey='8' className={link_color}>
+                        <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/files_upload.svg"} className="me-2" style={{maxWidth:'15%'}}/>
+                                Subir WRFout 
                         </Nav.Link>
                     </Link>
                 </Nav>

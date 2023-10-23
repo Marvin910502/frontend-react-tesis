@@ -28,8 +28,8 @@ function MyMaps(){
     const [showDelete, setShowDelete] = useState(false)
     const [map, setMap] = useState<mapDataElement>()
     const [geojsonObj, setGeoJsonObj] = useState<typeof GeoJsonObject | null>(null)
-    let [line_weight, setLineWeight] = useState( 0.5 )
-    let [fill_opacity, setFillOpacity] = useState( 0.3 )
+    const [line_weight, setLineWeight] = useState( 0.5 )
+    const [fill_opacity, setFillOpacity] = useState( 0.3 )
     const [element_delete, setElementDelete] = useState<string>('')
     const [filter, setFilter] = useState('')
     const [full_list_save, setFullListSave] = useState<mapDataElement[]>()
@@ -154,7 +154,7 @@ function MyMaps(){
                     <Table striped bordered hover>
                         <thead style={{position:'sticky', top: '0', zIndex:'1'}} className="shadow">
                             <tr>
-                                <th className="bg-primary text-white pb-3" style={{width:'50px'}}>
+                                <th className="bg-primary text-white text-center pb-3" style={{width:'50px'}}>
                                     #
                                 </th>
                                 <th className="bg-primary text-white" style={{width:'600px'}}>
@@ -177,7 +177,7 @@ function MyMaps(){
                         <tbody>
                             {list_maps && list_maps.map((map_element, index)=>(
                                 <tr>
-                                    <td>{index+1}</td>
+                                    <td className="text-center">{index+1}</td>
                                     <td>{map_element.diagnostic_label}</td>
                                     <td>{map_element.units_label}</td>
                                     <td><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={map_element.file_name}>{map_element.file_name}</div></td>

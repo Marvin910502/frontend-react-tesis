@@ -26,7 +26,7 @@ interface UNIT {
     label: string
 }
 
-interface FILE {
+export interface FILE {
     name: string,
     path: string,
     size: string
@@ -86,6 +86,8 @@ function Maps2d(){
     let [toast_message, setToastMessage] = useState<string>('')
     let [toast_bg_color, setToastBgColor] = useState<string>('')
     let [toast_text_color, setToastTextColor] = useState('')
+
+    console.log(load_path)
 
     let initial_list_states:boolean[]
 
@@ -208,12 +210,15 @@ function Maps2d(){
         const res = await fetch(
             `${process.env["REACT_APP_API_URL"]}/api/get-wrfout-list/`,
             {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${Cookies.get('access-token')}`
                 },
+                body:JSON.stringify({
+                    'order': 'name'
+                })
             }
         )
         const data = await res.json()

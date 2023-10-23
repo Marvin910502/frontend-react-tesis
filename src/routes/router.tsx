@@ -11,6 +11,7 @@ import Logout from "../pages/logout";
 import { UserContext } from "../context/context_provider";
 import MyMaps from "../pages/my_maps";
 import MyGraphics from "../pages/my_graphics";
+import UploadWrfout from "../pages/upload_wrfout";
 
 
 const Router = () => {
@@ -32,6 +33,7 @@ const Router = () => {
                 <Route path='/corte-vertical-3d' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <VerticalCut3d/>} />
                 <Route path='/mis-mapas' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <MyMaps/> }/>
                 <Route path='/mis-graficas' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <MyGraphics/> }/>
+                <Route path='/subir-wrfout' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <UploadWrfout/> }/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/logout' element={<Logout/>}/>
                 <Route path='/register' element={<Register/>}/>
