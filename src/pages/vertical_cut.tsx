@@ -1,9 +1,8 @@
 //@ts-nocheck
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Plot from 'react-plotly.js';
 import Cookies from "js-cookie";
-import GeoJsonObject from "geojson";
 import { Button } from "react-bootstrap";
 
 
@@ -29,9 +28,6 @@ function VerticalCut(){
         setData(JSON.parse(response.data))
         setX(JSON.parse(response.longitudes))
         setY(JSON.parse(response.latitudes))
-        console.log(data)
-        console.log(x)
-        console.log(y)
     }
 
     useEffect(()=>{
