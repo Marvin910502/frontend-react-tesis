@@ -23,6 +23,42 @@ const diagnostic_options = [
 ]
 
 
+const diagnostic_labels = {
+    'punto_de_condensacion': 'Punto de Condensación',
+    'temperatura': 'Temperatura',
+    'altura_del_terreno': 'Altura del Terreno',
+    'temperatura_superior_nubes': 'Temperatura Superior de las Nubes',
+    'helicidad_relativa_tormenta': 'Helicidad Realtiva de Tormenta',
+    'agua_precipitable': 'Agua Precipitable',
+    'humedad_relativa': 'Humedad Relativa',
+    'presion_nivel_del_mar': 'Presion a Nivel del Mar',
+    'helicidad_corriente_ascendente': 'Helicidad de Corriente Ascendente'
+}
+
+
+const units_lables = {
+    'degC': 'grados C',
+    'degCT': 'gradosC',
+    'degF': 'grados F',
+    'K': 'K',
+    'Pa': 'Pa',
+    'hPa': 'hPa',
+    'mb': 'mb',
+    'torr': 'torr',
+    'mmhg': 'mmhg',
+    'atm': 'atm',
+    'm': 'm',
+    'km': 'km',
+    'dm': 'dm',
+    'ft': 'pies',
+    'mi': 'millas',
+    'defaultK': 'K',
+    'defaultm2': 'm2',
+    'default%': 'porciento',
+    'defaultkg': 'kg'
+}
+
+
 interface UNIT {
     unit: string,
     label: string
@@ -63,7 +99,7 @@ const defaultMapData:mapData = {
 }
 
 
-function Maps2d(){
+function Diagnostics(){
 
     let user = useContext(UserContext)
 
@@ -72,7 +108,7 @@ function Maps2d(){
     let [geojson, setGeoJson] = useState<typeof GeoJsonObject | null>({})
     let [center, setCenter] = useState({lat:25, lon:-87})
     let [zoom, setZoom] = useState(6)
-    let [units, setUnits] = useState<string>( mapInicialData.units )
+    let [units, setUnits] = useState<string>( localStorage.getItem('units') || 'degC' )
     let [diagnostic, setDiagnostic] = useState<string>( mapInicialData.diagnostic )
     let [list_units, setListUnits] = useState<UNIT[]>()
     let [max_index, setMaxIndex] = useState<number>( mapInicialData.max_index )
@@ -91,6 +127,7 @@ function Maps2d(){
     let [data, setData] = useState()
     let [x, setX] = useState()
     let [y, setY] = useState()
+    const [showModal, setShowModal] = useState(false)
 
     console.log(load_path)
 
@@ -100,6 +137,27 @@ function Maps2d(){
     const handleCleaning = () => {
         localStorage.removeItem('mapData')
         window.location.reload()
+    }
+
+    const handleCloseModal = () => {
+        setShowModal(false)
+    }
+
+    const getDiagnosticLabel = () => {
+        for (let i=0; i<diagnostic_options.length; i++){
+            if (diagnostic_options[i].value === diagnostic)
+                return diagnostic_options[i].label
+        }
+    }
+
+    const getUnistLabel = () => {
+        //@ts-ignore
+        for (let i=0; i<UnitsOptions(diagnostic)?.length; i++){
+            //@ts-ignore
+            if (UnitsOptions(diagnostic)[i].unit === units)
+                //@ts-ignore
+                return UnitsOptions(diagnostic)[i].label
+        }
     }
 
     //for update localStorage with the current data after every change in this values
@@ -126,8 +184,8 @@ function Maps2d(){
                 setUnits('m')
                 return [{unit: 'm', label: 'm'}, {unit: 'km', label: 'km'}, {unit: 'dm', label: 'dm'}, {unit: 'ft', label: 'pies'}, {unit: 'mi', label: 'millas'}]
             case 'temperatura_superior_nubes':
-                setUnits('degC')
-                return [{unit: 'degC', label: 'grados C'}, {unit: 'K', label: 'K'}, {unit: 'degF', label: 'grados F'}]
+                setUnits('degCT')
+                return [{unit: 'degCT', label: 'grados C'}, {unit: 'K', label: 'K'}, {unit: 'degF', label: 'grados F'}]
             case 'helicidad_relativa_tormenta':
                 setUnits('defaultm2')
                 return [{unit: 'defaultm2', label: 'm2'}]
@@ -141,8 +199,8 @@ function Maps2d(){
                 setUnits('hPa')
                 return [{unit: 'hPa', label: 'hPa'}, {unit: 'Pa', label: 'Pa'}, {unit: 'mb', label: 'mb'}, {unit: 'torr', label: 'torr'}, {unit: 'mmhg', label: 'mmhg'}, {unit: 'atm', label: 'atm'}]
             case 'helicidad_corriente_ascendente':
-                setUnits('defaultm2')
-                return [{unit: 'defaultm2', label: 'm2'}]                                                                                
+                setUnits('defaultm2a')
+                return [{unit: 'defaultm2a', label: 'm2'}]                                                                                
         }
             
     
@@ -169,7 +227,10 @@ function Maps2d(){
                     'Authorization': `Bearer ${Cookies.get('access-token')}`
                 },
                 body:JSON.stringify({
+                    'url': load_path,
                     'diagnostic': diagnostic,
+                    'units': units,
+                    'index': index,
                 })
             }
         )
@@ -178,10 +239,6 @@ function Maps2d(){
         setX(JSON.parse(response.longitudes))
         setY(JSON.parse(response.latitudes))
     }
-
-    useEffect(()=>{
-        getCrossSectionData()
-    },[diagnostic])
 
 
     //hook for make a request every time than a value of the forms changes
@@ -233,6 +290,7 @@ function Maps2d(){
         if (load_path.length !== 0){
             getMapData()
         }
+        getCrossSectionData()
      
     },[index, load_path, units, polygons])
 
@@ -393,7 +451,7 @@ function Maps2d(){
                     </Col>
                     <Col xl={6}>
                         <Row>
-                            <Card className='p-3 shadow' style={{minHeight:'55vh'}}>
+                            <Card className='p-3 shadow' style={{minHeight:'60vh', maxHeight:'60vh'}}>
                                 <VerticalCut3dGraph
                                     //@ts-ignore
                                     z={data}
@@ -401,16 +459,20 @@ function Maps2d(){
                                     x={x}
                                     //@ts-ignore
                                     y={y}
+                                    //@ts-ignore
+                                    labelTitle={diagnostic_labels[diagnostic]}
+                                    //@ts-ignore
+                                    labelUnit={units_lables[units]}
                                 />
                             </Card>
                         </Row>
                         <Row className="mt-3">
-                            <Card>  
+                            <Card className='p-3 shadow'>  
                                 <h5 className="mt-1 mb-0">Pantalla Completa</h5>
                                 <hr className="mt-0, mb-0"/>
                                 <Row className="p-2">
                                 <Col xl={6} className="text-center">
-                                    <Button className="w-100"><OpenWith className="me-2"/>Mapa</Button>
+                                    <Button className="w-100" onClick={e=>setShowModal(true)}><OpenWith className="me-2"/>Mapa</Button>
                                 </Col>
                                 <Col xl={6} className="text-center">
                                     <Button className="w-100"><OpenWith className="me-2"/>Gráfica</Button>
@@ -558,9 +620,53 @@ function Maps2d(){
                 </Modal.Footer>
             </Modal>
 
+            <Modal show={showModal} onHide={handleCloseModal} className="modal-xl">
+                <Modal.Header closeButton>
+                    <Modal.Title className="fs-5">{
+                        //@ts-ignore
+                        diagnostic_labels[diagnostic]
+                    }</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Card>
+                        <Maps2dArea 
+                            //@ts-ignore
+                            geojson={geojson} 
+                            center={{lat:25, lon:-89}}
+                            zoom={6} 
+                            fill_opacity={fill_opacity} 
+                            line_weight={line_weight}
+                            units={units} 
+                        />
+                    </Card>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Row className='ps-3 pe-3 w-100'>
+                        <Card className="shadow">
+                            <h4 className="mt-2 fs-6">Estilos</h4>
+                            <hr className="mt-0 mb-1"/>
+                            <Row>
+                                <Col xl={6} lg={6} md={6} sm={12} >
+                                    <Form.Group className='mt-3'>
+                                        <Form.Label>Grueso de lineas: {line_weight}px</Form.Label>
+                                        <Form.Range max={2} min={0} step={0.1} defaultValue={line_weight} onChange={e=>setLineWeight(parseFloat(e.target.value))}/>
+                                    </Form.Group>
+                                </Col>
+                                <Col xl={6} lg={6} md={6} sm={12} >
+                                    <Form.Group className='mt-3'>
+                                        <Form.Label>Opacidad de poligonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
+                                        <Form.Range max={1} min={0} step={0.05} defaultValue={fill_opacity} onChange={e=>setFillOpacity(parseFloat(e.target.value))}/>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Row>
+                </Modal.Footer>
+            </Modal>
+
             <MyToast position={'bottom-end'} bg_color={toast_bg_color} text_color={toast_text_color} show={showNot} close={setShowNot} body_text={toast_message}/>
         </>
     )
 }
 
-export default Maps2d
+export default Diagnostics

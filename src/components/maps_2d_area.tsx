@@ -46,6 +46,7 @@ interface Map{
 
 const units_lables = {
     'degC': 'grados C',
+    'degCT': 'grados C',
     'degF': 'grados F',
     'K': 'K',
     'Pa': 'Pa',
