@@ -36,10 +36,8 @@ function Sidebar(){
                     <div className='p-1'>
                         { user?.user.isAuthenticated && <SidebarList/>}
                     </div>
-                    <div style={{position:"absolute", bottom:'5vh'}} className='pe-0'>
-                        <div className='d-flex justify-content-start ps-2'>
-                            <Switch/>
-                        </div>
+                    <div style={{position:"absolute", bottom:'5vh'}} className='pe-4 w-100'>
+                        <Switch/>
                         <hr/>
                         <SidebarDropdown/>
                     </div>

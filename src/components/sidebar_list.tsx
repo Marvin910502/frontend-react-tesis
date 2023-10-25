@@ -45,13 +45,13 @@ function SidebarList(){
                     <Link className='text-decoration-none' to='mapas-2d'>
                         <Nav.Link href='mapas-2d' eventKey='2' className={link_color}>
                         <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/2d_maps.svg"} className="me-2" style={{maxWidth:'15%'}}/>
-                                Mapas 2D
+                                Diágnosticos
                         </Nav.Link>
                     </Link>
                     <Link className='text-decoration-none' to='mis-mapas'>
                         <Nav.Link href='mis-mapas' eventKey='3' className={link_color}>
                         <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/my_maps.svg"} className="me-2" style={{maxWidth:'15%'}}/>
-                                Mis Mapas
+                                Mis Diagnósticos
                         </Nav.Link>
                     </Link>
                     <Link className='text-decoration-none' to='subir-wrfout'>
