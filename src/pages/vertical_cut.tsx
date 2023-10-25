@@ -1,5 +1,6 @@
+//@ts-nocheck
+
 import React, { useEffect, useState } from "react";
-//@ts-ignore
 import Plot from 'react-plotly.js';
 import Cookies from "js-cookie";
 import GeoJsonObject from "geojson";
@@ -26,15 +27,12 @@ function VerticalCut(){
         )
         const response = await res.json()
         setData(JSON.parse(response.data))
-        setX(response.coords)
-        setY(response.vertical)
+        setX(JSON.parse(response.longitudes))
+        setY(JSON.parse(response.latitudes))
         console.log(data)
         console.log(x)
         console.log(y)
     }
-
-    //@ts-ignore
-   //console.log(geojson[0].geometry.coordinates[0])
 
     useEffect(()=>{
         getCrossSectionData()
@@ -46,12 +44,37 @@ function VerticalCut(){
     const layout = {
         width: 1000, 
         height: 800, 
-        title: 'A Fancy Plot',
+        title: 'Presion Sobre el Nivel del Mar',
+        paper_bgcolor:'#212529',
+        font: {
+            color:'white',
+        },
         scene:{
+            aspectmode: 'manual',
+            aspectratio: {x: 2, y: 2, z: 0.8},
             zaxis:{
-                hoverformat:'.20f'
-            }    
-        }
+                title:'PSM(z)',
+                hoverformat:'.20f',
+                nticks:10,
+            },
+            xaxis:{
+                title:'Longitud(x)',
+                nticks:10,
+                range:[-85,-100]               
+            },
+            yaxis:{
+                title:'Latitud(y)',
+                nticks:10,
+            },
+        },
+        margin: {
+            autoexpand:false,
+            l: 50,
+            r: 50,
+            b: 25,
+            t: 25,
+            pad: 0,
+        } 
     }
 
     return(
@@ -59,15 +82,22 @@ function VerticalCut(){
             <Plot
                 data={[{
                         z: data,
+                        x: x,
+                        y: y,
                         type: 'surface',
                         contours: {
-                            //@ts-ignore
                             z: {
                               show:true,
                               usecolormap: true,
                               highlightcolor:"#42f462",
                               project:{z: true}
-                            }
+                            },
+                            x: {
+                                show:true,
+                                usecolormap: true,
+                                highlightcolor:"#42f462",
+                                project:{x: false}
+                              }
                       },
                 }]}
                 layout={layout}

@@ -6,6 +6,8 @@ import Maps2dArea from "../components/maps_2d_area"
 import GeoJsonObject from 'geojson'
 import { UserContext } from "../context/context_provider"
 import MyToast from "../components/my_toast"
+import VerticalCut3dGraph from "../components/vertical_cut_3d_graph"
+import { OpenWith } from "@mui/icons-material"
 
 
 const diagnostic_options = [
@@ -86,6 +88,9 @@ function Maps2d(){
     let [toast_message, setToastMessage] = useState<string>('')
     let [toast_bg_color, setToastBgColor] = useState<string>('')
     let [toast_text_color, setToastTextColor] = useState('')
+    let [data, setData] = useState()
+    let [x, setX] = useState()
+    let [y, setY] = useState()
 
     console.log(load_path)
 
@@ -151,6 +156,32 @@ function Maps2d(){
 
     //for units not change in an infinite loop
     useEffect(()=>{setUnits(mapInicialData.units || 'degC')}, [mapInicialData])
+
+
+    const getCrossSectionData = async () => {
+        const res = await fetch(
+            `${process.env["REACT_APP_API_URL"]}/api/cross-sections/`,
+            {
+                method:'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${Cookies.get('access-token')}`
+                },
+                body:JSON.stringify({
+                    'diagnostic': diagnostic,
+                })
+            }
+        )
+        const response = await res.json()
+        setData(JSON.parse(response.data))
+        setX(JSON.parse(response.longitudes))
+        setY(JSON.parse(response.latitudes))
+    }
+
+    useEffect(()=>{
+        getCrossSectionData()
+    },[diagnostic])
 
 
     //hook for make a request every time than a value of the forms changes
@@ -345,73 +376,99 @@ function Maps2d(){
 
     return(
         <>
-            <div className='ps-2 pe-2'>
+            <div className='ps-2 pe-2 mb-3'>
                 <Row className='mt-3'>
-                    <Col xl={9} lg={9} md={12} sm={12} className='mb-3'>
-                        <Row className='ps-3 pe-3'>
-                            <Card className='pt-3 pb-3 shadow'>
-                                <Maps2dArea
-                                //@ts-ignore
-                                geojson={geojson}
-                                center={center}
-                                zoom={zoom}
-                                units={units}
-                                line_weight={line_weight}
-                                fill_opacity={fill_opacity}
+                    <Col xl={6}>
+                        <Card className='p-3 shadow' style={{minHeight:'70vh'}}>
+                            <Maps2dArea
+                            //@ts-ignore
+                            geojson={geojson}
+                            center={center}
+                            zoom={zoom}
+                            units={units}
+                            line_weight={line_weight}
+                            fill_opacity={fill_opacity}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xl={6}>
+                        <Row>
+                            <Card className='p-3 shadow' style={{minHeight:'55vh'}}>
+                                <VerticalCut3dGraph
+                                    //@ts-ignore
+                                    z={data}
+                                    //@ts-ignore
+                                    x={x}
+                                    //@ts-ignore
+                                    y={y}
                                 />
                             </Card>
                         </Row>
-                        <Row className='ps-3 pe-3 mt-3'>
-                            <Card className='pt-1 pb-1 shadow'>
-                                <Row className="ps-2 pe-2">
-                                    <Col xl={2} lg={12} md={12} sm={12} xs={12}>
-                                    <h4 className="mt-1">Tiempo</h4>
-                                    </Col>    
-                                    <Col xl={9} lg={10} md={10} sm={10} xs={10}>
-                                        <Form.Range className="mt-2" max={max_index} min={0} value={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={load_path.length === 0 && true}/>
-                                    </Col>
-                                    <Col xl={1} lg={2} md={2} sm={2} xs={2} className="pt-2">
-                                        <span className="border rounded p-2">{index + 1} / {max_index+1}</span>
-                                    </Col>
-                                </Row>
-                            </Card>
-                        </Row>
-                        <Row className='ps-3 pe-3 mt-3'>
-                            <Card className="shadow">
-                                <h4 className="mt-2">Estilos</h4>
-                                <hr className="mt-0 mb-1"/>
-                                <Row>
-                                    <Col xl={6} lg={6} md={6} sm={12} >
-                                        <Form.Group className='mt-3'>
-                                            <Form.Label>Grueso de lineas: {line_weight}px</Form.Label>
-                                            <Form.Range max={2} min={0} step={0.1} defaultValue={line_weight} onChange={e=>setLineWeight(parseFloat(e.target.value))}/>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xl={6} lg={6} md={6} sm={12} >
-                                        <Form.Group className='mt-3'>
-                                            <Form.Label>Opacidad de poligonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
-                                            <Form.Range max={1} min={0} step={0.05} defaultValue={fill_opacity} onChange={e=>setFillOpacity(parseFloat(e.target.value))}/>
-                                        </Form.Group>
-                                    </Col>
+                        <Row className="mt-3">
+                            <Card>  
+                                <h5 className="mt-1 mb-0">Pantalla Completa</h5>
+                                <hr className="mt-0, mb-0"/>
+                                <Row className="p-2">
+                                <Col xl={6} className="text-center">
+                                    <Button className="w-100"><OpenWith className="me-2"/>Mapa</Button>
+                                </Col>
+                                <Col xl={6} className="text-center">
+                                    <Button className="w-100"><OpenWith className="me-2"/>Gráfica</Button>
+                                </Col>
                                 </Row>
                             </Card>
                         </Row>
                     </Col>
-                    <Col xl={3} lg={3} md={12} sm={12} className='mt-xl-0 mt-lg-0'>
-                        <Card className='shadow mb-3'>
-                            <h3 className='text-center'>Mapas con Variables en 2D</h3>
-                        </Card>
-                        <Card className='p-2 shadow'>
-                            <h4 className="mt-2">Opciones</h4>
-                            <hr className="mt-0"/>
-                            <Form>
+                </Row>
+                <Row className='ps-3 pe-0 mt-3'>
+                    <Card className='pt-1 pb-1 shadow'>
+                        <Row className="ps-2 pe-2">
+                            <Col xl={2} lg={12} md={12} sm={12} xs={12}>
+                            <h4 className="mt-1 ms-1">Tiempo</h4>
+                            </Col>    
+                            <Col xl={9} lg={10} md={10} sm={10} xs={10}>
+                                <Form.Range className="mt-2" max={max_index} min={0} value={index} onChange={e=>setIndex(parseInt(e.target.value))} disabled={load_path.length === 0 && true}/>
+                            </Col>
+                            <Col xl={1} lg={2} md={2} sm={2} xs={2} className="pt-2">
+                                <span className="border rounded p-2">{index + 1} / {max_index+1}</span>
+                            </Col>
+                        </Row>
+                    </Card>
+                </Row>
+                <Row className='ps-3 pe-0 mt-3'>
+                    <Card className="shadow">
+                        <h4 className="mt-2">Estilos de Mapa</h4>
+                        <hr className="mt-0 mb-1"/>
+                        <Row>
+                            <Col xl={6} lg={6} md={6} sm={12} >
+                                <Form.Group className='mt-3'>
+                                    <Form.Label>Grueso de lineas: {line_weight}px</Form.Label>
+                                    <Form.Range max={2} min={0} step={0.1} defaultValue={line_weight} onChange={e=>setLineWeight(parseFloat(e.target.value))}/>
+                                </Form.Group>
+                            </Col>
+                            <Col xl={6} lg={6} md={6} sm={12} >
+                                <Form.Group className='mt-3'>
+                                    <Form.Label>Opacidad de poligonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
+                                    <Form.Range max={1} min={0} step={0.05} defaultValue={fill_opacity} onChange={e=>setFillOpacity(parseFloat(e.target.value))}/>
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    </Card>
+                </Row>
+                <Row className="mt-3 ps-3">    
+                    <Card className='shadow'>
+                        <h4 className="mt-2">Opciones</h4>
+                        <hr className="mt-0"/>
+                        <Form>
+                            <Row>
+                            <Col xl={6}>
                                 <Form.Group>
                                     <Row>
-                                        <Form.Label>Archivo(s):</Form.Label>
+                                        <Form.Label className="ms-2 mt-3 mb-3">Archivo(s):</Form.Label>
                                     </Row>
                                     <Row>
-                                        <Card className="ms-3 pt-2 pb-2 pt-3" style={{maxWidth:'90%', maxHeight:'120px'}}>
-                                            <div style={{maxHeight:'120px', overflowY:'auto'}}>
+                                        <Card className="ms-3 pt-2 pb-2 pt-3" style={{maxWidth:'95%', height:'220px', maxHeight:'220px'}}>
+                                            <div style={{maxHeight:'220px', overflowY:'auto'}}>
                                             {name_files_list && name_files_list?.map((name)=>(
                                                 <>
                                                     <small>{name}</small>
@@ -423,7 +480,13 @@ function Maps2d(){
                                     </Row>
                                     {load_path.length === 0 && <div className="mt-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>}
                                     <Form.Control type={'hidden'} name={'wrf_url'} value={load_path} required/>
-                                    <Button className="mt-2" variant="primary" onClick={handleShow}>Selecionar Archivo(s)</Button>
+                                    <Button className="mt-2 ms-2 mb-3" variant="primary" onClick={handleShow}>Selecionar Archivo(s)</Button>
+                                </Form.Group>
+                            </Col>
+                            <Col xl={6}>
+                                <Form.Group className='mt-3'>
+                                    <Form.Label>Número de polígonos: {polygons}</Form.Label>
+                                    <Form.Range max={15} min={5} defaultValue={polygons} onChange={e=>setPolygons(parseInt(e.target.value))}/>
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                     <Form.Label>Seleccionar Diagnóstico</Form.Label>
@@ -443,17 +506,17 @@ function Maps2d(){
                                 </Form.Group>
                                 <Form.Group className='mt-3'>
                                 </Form.Group>
+                            </Col>
+                            </Row>
+                            <hr className="mt-2 mb-0"/>
+                            <Row>
                                 <Form.Group className='mt-3'>
-                                    <Form.Label>Número de polígonos: {polygons}</Form.Label>
-                                    <Form.Range max={15} min={5} defaultValue={polygons} onChange={e=>setPolygons(parseInt(e.target.value))}/>
-                                </Form.Group>
-                                <Form.Group className='mt-3'>
-                                    <Button className="me-3 mb-3 btn-danger" onClick={handleCleaning}>Limpiar Mapa</Button>
+                                    <Button className="ms-2 me-3 mb-3 btn-danger" onClick={handleCleaning}>Limpiar Mapa</Button>
                                     <Button onClick={saveMapData} className="mb-3 btn-success">Salvar Datos</Button>
                                 </Form.Group>
-                            </Form>
-                        </Card>
-                    </Col>
+                            </Row> 
+                        </Form>
+                    </Card>
                 </Row>
             </div>
 
