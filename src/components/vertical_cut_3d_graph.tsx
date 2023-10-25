@@ -83,6 +83,7 @@ const VerticalCut3dGraph:React.FC<GRAPH_3D> = ({x,y,z}) => {
                       },
                 }]}
                 layout={layout}
+                config={{responsive:true}}
             />
         </>
     )
