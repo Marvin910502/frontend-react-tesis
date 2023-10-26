@@ -8,7 +8,7 @@ export interface userInteface {
     last_names:string,
     isAdmin:boolean,
     isGuess:boolean,
-    isManager:boolean
+    isManager:boolean 
 }
 
 interface contextInterface {
@@ -33,7 +33,7 @@ export default function ContextProvider(props:PropsWithChildren<{}>){
                                                                    last_names:userData.last_names || '',
                                                                    isAdmin:userData.isAdmin || false,
                                                                    isGuess:userData.isGuess || false,
-                                                                   isManager:userData.isManager || false,
+                                                                   isManager:userData.isManager || false, 
                                                                 })
 
     const user = {user:current_user, setUser:setCurrentUser}

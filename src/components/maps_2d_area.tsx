@@ -121,7 +121,7 @@ const Maps2dArea:React.FC<Map> = ({geojson,
     return(
         <>
             <MapContainer
-                style={{ width: "100%", height: "72vh" }}
+                style={{ width: "100%", maxHeight:'100%'}}
                 zoom={zoom}
                 center={[center.lat, center.lon]}
                 scrollWheelZoom={false}

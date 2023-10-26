@@ -29,7 +29,6 @@ const Login = () => {
         }
         )
         const response = await res.json()
-        console.log(response)
         const dataUser:userInteface = {
             username: username,
             isAuthenticated: true,
