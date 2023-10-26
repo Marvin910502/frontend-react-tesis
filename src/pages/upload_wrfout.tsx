@@ -3,7 +3,7 @@ import { Card, Row, Col, Table, Form, InputGroup, Modal, Button, Image } from "r
 import { CircularProgress, IconButton } from '@mui/material';
 import { Delete, FileUpload, FormatLineSpacing, Search } from '@mui/icons-material';
 import Cookies from "js-cookie";
-import { FILE } from "./maps_2d";
+import { FILE } from "./diagnostics";
 import MyToast from "../components/my_toast";
 
 

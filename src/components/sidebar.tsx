@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import SidebarList from "./sidebar_list";
 import SidebarDropdown from "./sidebar_dropdown";
 import {Link} from "react-router-dom";
