@@ -1,17 +1,18 @@
-import React, {useState} from "react";
+import {useState, useEffect} from "react";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import {useNavigate, Link} from "react-router-dom";
 
 function Register(){
 
     const department_list = ['Informática', 'Física de la Atmósfera', 'Pronósticos', 'Radares', 'Visitante', 'Estudiante']
-    let [email, setEmail] = useState('')
-    let [password, setPassword] = useState('')
-    let [re_password, setRePassword] = useState('')
-    let [name, setName] = useState('')
-    let [last_names, setLastNames] = useState('')
-    let [department, setDepartment] = useState('')
-    let navigate = useNavigate()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [re_password, setRePassword] = useState('')
+    const [name, setName] = useState('')
+    const [last_names, setLastNames] = useState('')
+    const [department, setDepartment] = useState('')
+    const [validatePass, setValidatePass] = useState(false)
+    const navigate = useNavigate()
 
     const handleSubmit = async (e:any) => {
         e.preventDefault()
@@ -41,6 +42,15 @@ function Register(){
 
     }
 
+    useEffect(()=>{
+        if (password.length <= 8 && re_password.length <= 8) {
+            setValidatePass(true)
+        }
+        else {
+            setValidatePass(false)
+        }
+    },[password, re_password])
+
     return(
         <>
             <Container className='p-5 mt-5'>
@@ -51,19 +61,23 @@ function Register(){
                     <Card.Body className='p-5 mt-3'>
                         <Form>
                             <Row>
-                                <Col xl={6} lg={6} md={12} sm={12} xs={12}>
+                                <Col xl={6} lg={6} md={12} sm={12} xs={12} className="pe-5">
                                     <Form.Floating>
                                         <Form.Control type={'email'} placeholder={'nombre@ejemplo.com'} onChange={e => setEmail(e.target.value)} name={'username'}/>
                                         <Form.Label>Correo</Form.Label>
                                     </Form.Floating>
+                                    {(!email.includes('@') || !email.includes('.') || email.includes(' ') || email !== email.toLowerCase()) && <div><small style={{color:'orange'}}>El formato de correo no es correcto</small><br/></div>}
+                                    {email.length === 0 && <small style={{color:'orange'}}>Su correo es requerido</small>}
                                     <Form.Floating className='mt-5'>
                                         <Form.Control type={'password'} placeholder={'***********'} onChange={e => setPassword(e.target.value)} name={'password'}/>
                                         <Form.Label>Contraseña</Form.Label>
                                     </Form.Floating>
+                                    {password.length < 8 && <small style={{color:'orange'}}>La contraseña es necesaria con no menos de 8 caracteres</small>}
                                     <Form.Floating className='mt-5'>
                                         <Form.Control type={'password'} placeholder={'***********'} onChange={e => setRePassword(e.target.value)} name={'re_password'}/>
                                         <Form.Label>Repetir Contraseña</Form.Label>
                                     </Form.Floating>
+                                    {(re_password.length === 0 || re_password !== password) && <small style={{color:'orange'}}>La contraseña repetida no coinside o esta vacía</small>}
                                 </Col>
                                 <Col xl={6} lg={6} md={12} sm={12} xs={12} className="mt-lg-0 mt-xl-0 mt-5">
                                     <Form.Floating>
