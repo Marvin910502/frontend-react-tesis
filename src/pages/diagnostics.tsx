@@ -121,10 +121,12 @@ function Diagnostics() {
     const [list_states, setListStates] = useState<boolean[]>()
     const [load_path, setLoadPath] = useState<string[]>(mapInicialData.load_path)
     const [name_files_list, setNameFileList] = useState<string[]>(mapInicialData.name_files_list)
+    
     const [showNot, setShowNot] = useState(false)
     const [toast_message, setToastMessage] = useState<string>('')
     const [toast_bg_color, setToastBgColor] = useState<string>('')
     const [toast_text_color, setToastTextColor] = useState('')
+
     const [data, setData] = useState()
     const [x, setX] = useState()
     const [y, setY] = useState()

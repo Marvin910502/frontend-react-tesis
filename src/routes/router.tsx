@@ -8,6 +8,7 @@ import Logout from "../pages/logout";
 import { UserContext } from "../context/context_provider";
 import MyMaps from "../pages/my_maps";
 import UploadWrfout from "../pages/upload_wrfout";
+import MyProfile from "../pages/my_profile";
 
 
 
@@ -30,6 +31,7 @@ const Router = () => {
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/logout' element={<Logout/>}/>
                 <Route path='/register' element={<Register/>}/>
+                <Route path='/mi-perfil' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <MyProfile/> }/>
             </Routes>
         </>
     )

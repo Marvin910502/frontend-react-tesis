@@ -20,8 +20,8 @@ function SidebarDropdown(){
                 >
                     { user.user.isAuthenticated ?  
 
-                        <Link className='text-decoration-none' to='/login'>
-                            <NavDropdown.Item href='/login'>
+                        <Link className='text-decoration-none' to='/mi-perfil'>
+                            <NavDropdown.Item href='/mi-perfil'>
                                 {user.user.username}
                             </NavDropdown.Item>
                         </Link>
