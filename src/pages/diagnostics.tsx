@@ -282,12 +282,14 @@ function Diagnostics() {
                 }
             )
             let data = await res.json()
+            console.log(data)
             let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
             //@ts-ignore
             setGeoJson(geojson.features)
             setCenter({ lat: 25, lon: -87 })
             setZoom(6)
             setUnits(units)
+            setMaxIndex(data.max_index)
             //saving on the localStorage
             const mapCurrentData: mapData = {
                 geojson: geojson,
@@ -417,7 +419,6 @@ function Diagnostics() {
 
         setLoadPath(path_list)
         setNameFileList(name_file_list)
-        setMaxIndex(name_file_list.length * 3 - 1)
         setIndex(0)
         setShow(false)
         setShowNot(true)
@@ -553,13 +554,13 @@ function Diagnostics() {
                                     valueLabelDisplay="auto"
                                     step={1}
                                     min={0}
-                                    max={max_index}
+                                    max={max_index - 1}
                                     marks
                                     onChange={(e, n) => { setIndex(n as number) }}
                                 />
                             </Col>
                             <Col xl={1} lg={2} md={2} sm={2} xs={2} className="pt-2">
-                                <span className="border rounded p-2">{index + 1} / {max_index + 1}</span>
+                                <span className="border rounded p-2">{index + 1} / {max_index}</span>
                             </Col>
                         </Row>
                     </Card>

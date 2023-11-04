@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { FILE } from "./diagnostics";
 import MyToast from "../components/my_toast";
 
-
+const unauthorized_extensions = ['py', 'sh', 'php', 'html', 'js', 'css', 'txt', 'json', 'xml', 'csv', 'md', 'yml', 'yaml', 'log', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'git', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'jpg', 'png', 'gif', 'tif', 'tiff', 'bmp', 'ico', 'svg', 'webp', 'avif', 'mp4', 'webm', 'ogg', 'mp3', 'wav', 'flac', 'aac', 'zip', 'tar', 'gz', '7z', 'rar', 'tgz', 'exe', 'msi', 'bin', 'dmg', 'iso', 'img', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'mkv', 'mp4', 'mov', 'wmv', 'avi', 'mpeg', 'flv', '3gp', 'webm', 'vob', 'ogg', 'ogv', 'drc', 'gifv', 'mng', 'qt', 'yuv', 'rm', 'rmvb', 'asf', 'amv', 'm4p', 'm4v', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'svi', '3gp', 'mxf', 'roq', 'nsv', 'f4v', 'f4p', 'f4a', 'f4b']
 
 function UploadWrfout(){
 
@@ -70,24 +70,46 @@ function UploadWrfout(){
     const uploadFile = async () => {
         setProgress(true)
         const formData = new FormData()
-        //@ts-ignore
-        formData.append('file', file)
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/upload-file/`,
-            {
-                method: 'POST',
-                body:formData
+
+        let valid_file = true
+        for (let i=0; i<unauthorized_extensions.length; i++) {
+            if (file?.name.includes(`.${unauthorized_extensions[i]}`)) {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('El archivo no es compatible prueba')
+                setProgress(false)
+                valid_file = false
+                handleCloseUploadModal()
             }
-        )
-        const data = await res.json()
-        setProgress(false)
-        getListFiles()
-        handleCloseUploadModal()
-        if (res.status === 201){
-            setShowNot(true)
-            setToastBgColor('success')
-            setToastTextColor('text-white')
-            setToastMessage('El archivo fue subido con éxito!')
+        }
+
+        if (valid_file === true){
+            //@ts-ignore
+            formData.append('file', file)
+            const res = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/upload-file/`,
+                {
+                    method: 'POST',
+                    body:formData
+                }
+            )
+            const data = await res.json()
+            setProgress(false)
+            getListFiles()
+            handleCloseUploadModal()
+            if (res.status === 201){
+                setShowNot(true)
+                setToastBgColor('success')
+                setToastTextColor('text-white')
+                setToastMessage('El archivo fue subido con éxito!')
+            }
+            if (res.status === 406){
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('El archivo no es compatible')
+            }
         }
     }
 
