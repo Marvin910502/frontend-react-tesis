@@ -45,19 +45,24 @@ const Login = () => {
         }
         )
         const response = await res.json()
-        const dataUser:userInteface = {
-            username: username,
-            isAuthenticated: true,
-            name: response.name,
-            last_names: response.last_names,
-            department: response.department,
-            isAdmin: response.isAdmin,
-            isGuess: response.isGuess,
-            isManager: response.isManager
+        if (response.isAdmin === false){
+            const dataUser:userInteface = {
+                username: username,
+                isAuthenticated: true,
+                name: response.name,
+                last_names: response.last_names,
+                department: response.department,
+                isAdmin: response.isAdmin,
+                isGuess: response.isGuess,
+                isManager: response.isManager
+            }
+            localStorage.setItem('userData', JSON.stringify(dataUser))
+            user.setUser(dataUser)
+            return navigate('/')
         }
-        localStorage.setItem('userData', JSON.stringify(dataUser))
-        user.setUser(dataUser)
-        return navigate('/')
+        else {
+            return navigate('http://127.0.0.1:8000/usuarios')
+        }
     }
 
 

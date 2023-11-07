@@ -3,6 +3,7 @@ import {Navbar, Container, Nav, Image} from "react-bootstrap";
 import {Link, useLocation} from "react-router-dom";
 import Switch from "./switch";
 import SidebarDropdown from "./sidebar_dropdown";
+import { Home, SsidChart, QueryStats, DriveFolderUpload, Help } from "@mui/icons-material";
 
 function NavbarMini(){
 
@@ -23,18 +24,18 @@ function NavbarMini(){
         case '/':
             list_event = '1'
             break
-        case '/mapas-2d':
+        case '/diagnosticos':
             list_event = '2'
             break
-        case '/mapas-3d':
+        case '/mis-diagnosticos':
             list_event = '3'
             break
-        case '/corte-vertical':
+        case '/subir-wrfout':
             list_event = '4'
-            break
-        case '/corte-vertical-3d':
+            break  
+        case '/ayuda':
             list_event = '5'
-            break
+            break        
     }
 
     return(
@@ -59,34 +60,35 @@ function NavbarMini(){
                         >
                             <Link className='text-decoration-none' to='/'>
                                 <Nav.Link href='/' eventKey='1' className={link_color}>
-                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/home.svg"} className="me-2" style={{maxWidth:'7%'}}/>
-                                    Inicio
+                                <Home className='me-2' />
+                                        Inicio
                                 </Nav.Link>
                             </Link>
-                            <Link className='text-decoration-none' to='mapas-2d'>
-                                <Nav.Link href='mapas-2d' eventKey='2' className={link_color}>
-                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/2d_maps.svg"} className="me-2" style={{maxWidth:'7%'}}/>
-                                    Mapas 2d
+                            <Link className='text-decoration-none' to='diagnosticos'>
+                                <Nav.Link href='diagnosticos' eventKey='2' className={link_color}>
+                                    <SsidChart className='me-2' />
+                                        Diágnosticos
                                 </Nav.Link>
                             </Link>
-                            <Link className='text-decoration-none' to='mapas-3d'>
-                                <Nav.Link id={'element_3'} href='mapas-3d' eventKey='3' className={link_color}>
-                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/3d_maps.svg"} className="me-2" style={{maxWidth:'7%'}}/>
-                                    Mapas 3d
+                            <Link className='text-decoration-none' to='mis-diagnosticos'>
+                                <Nav.Link href='mis-diagnosticos' eventKey='3' className={link_color}>
+                                    <QueryStats className='me-2' />
+                                        Mis Diagnósticos
                                 </Nav.Link>
                             </Link>
-                            <Link className='text-decoration-none' to='corte-vertical'>
-                                <Nav.Link href='corte-vertical' eventKey='4' className={link_color}>
-                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/vertical_cut.svg"} className="me-2" style={{maxWidth:'7%'}}/>
-                                    Cortes Verticales
+                            <Link className='text-decoration-none' to='subir-wrfout'>
+                                <Nav.Link href='subir-wrfout' eventKey='4' className={link_color}>
+                                    <DriveFolderUpload className='me-2' />
+                                        Subir WRFout 
                                 </Nav.Link>
                             </Link>
-                            <Link className='text-decoration-none' to='corte-vertical-3d'>
-                                <Nav.Link href='corte-vertical-3d' eventKey='5' className={link_color}>
-                                <Image src={process.env.PUBLIC_URL+"/images/theme/left_menu_icons/vertical_cut_3d.svg"} className="me-2" style={{maxWidth:'7%'}}/>
-                                    Cortes Veticales 3d
+                            <hr/>
+                            <Link className='text-decoration-none' to='ayuda'>
+                                <Nav.Link href='ayuda' eventKey='5' className={link_color}>
+                                    <Help className='me-2' />
+                                        Ayuda 
                                 </Nav.Link>
-                            </Link>
+                            </Link>  
                         </Nav>
                         <hr/>
                         <SidebarDropdown/>

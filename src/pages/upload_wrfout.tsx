@@ -77,7 +77,7 @@ function UploadWrfout(){
                 setShowNot(true)
                 setToastBgColor('danger')
                 setToastTextColor('text-white')
-                setToastMessage('El archivo no es compatible prueba')
+                setToastMessage('El archivo no es compatible')
                 setProgress(false)
                 valid_file = false
                 handleCloseUploadModal()
@@ -108,7 +108,7 @@ function UploadWrfout(){
                 setShowNot(true)
                 setToastBgColor('danger')
                 setToastTextColor('text-white')
-                setToastMessage('El archivo no es compatible')
+                setToastMessage('El archivo no es compatible o está corrupto')
             }
         }
     }

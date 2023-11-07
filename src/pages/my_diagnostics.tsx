@@ -19,7 +19,7 @@ interface mapDataElement{
     units: string,
 }
 
-function MyMaps(){
+function MyDiagnostics(){
 
     const user = useContext(UserContext)
     const [list_maps, setListMaps] = useState<mapDataElement[]>()
@@ -257,4 +257,4 @@ function MyMaps(){
     )
 }
 
-export default MyMaps
+export default MyDiagnostics

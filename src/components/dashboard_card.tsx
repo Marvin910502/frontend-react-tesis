@@ -4,13 +4,13 @@ import {Card, Image} from "react-bootstrap";
 
 interface ChildProps {
     title: string,
-    description: string,
+    card_content: string,
     url: string,
     image_url: string
 }
 
 
-const DashboardCard: React.FC<ChildProps> = ({title, description, url, image_url}) => {
+const DashboardCard: React.FC<ChildProps> = ({title, card_content, url, image_url}) => {
     return(
         <>
             <Link to={url} className='text-decoration-none'>
@@ -24,7 +24,7 @@ const DashboardCard: React.FC<ChildProps> = ({title, description, url, image_url
                             rounded
                             src={image_url}
                         />
-                        <p>{description}</p>
+                        <div dangerouslySetInnerHTML={{__html: card_content}}></div>
                     </Card.Body>
                 </Card>
             </Link>

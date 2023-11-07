@@ -8,7 +8,7 @@ import { UserContext } from "../context/context_provider"
 import MyToast from "../components/my_toast"
 import VerticalCut3dGraph from "../components/vertical_cut_3d_graph"
 import { OpenWith } from "@mui/icons-material"
-import { Slider, Box } from "@mui/material"
+import { Slider } from "@mui/material"
 
 
 const diagnostic_options = [
@@ -248,6 +248,7 @@ function Diagnostics() {
             }
         )
         const response = await res.json()
+        console.log(response)
         setData(JSON.parse(response.data))
         setX(JSON.parse(response.longitudes))
         setY(JSON.parse(response.latitudes))
@@ -309,8 +310,9 @@ function Diagnostics() {
         }
         if (load_path.length !== 0) {
             getMapData()
+            getCrossSectionData()
         }
-        getCrossSectionData()
+        
 
     }, [index, load_path, units, polygons])
 
@@ -547,20 +549,25 @@ function Diagnostics() {
                                 <h4 className="mt-1 ms-1">Tiempo</h4>
                             </Col>
                             <Col xl={9} lg={10} md={10} sm={10} xs={10}>
-                                <Slider
-                                    className="mt-1"
-                                    aria-label="Temperature"
-                                    value={index}
-                                    valueLabelDisplay="auto"
-                                    step={1}
-                                    min={0}
-                                    max={max_index - 1}
-                                    marks
-                                    onChange={(e, n) => { setIndex(n as number) }}
-                                />
+                                {load_path.length !== 0 ?
+                                    <Slider
+                                        className="mt-1"
+                                        aria-label="Temperature"
+                                        value={index}
+                                        valueLabelDisplay="auto"
+                                        step={1}
+                                        min={0}
+                                        max={max_index - 1}
+                                        marks
+                                        onChange={(e, n) => { setIndex(n as number) }}
+                                    />
+                                :
+                                    <div className="bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>
+                                }
+
                             </Col>
                             <Col xl={1} lg={2} md={2} sm={2} xs={2} className="pt-2">
-                                <span className="border rounded p-2">{index + 1} / {max_index}</span>
+                                { load_path.length !== 0 ? <span className="border rounded p-2">{index + 1} / {max_index}</span> : <span></span>}
                             </Col>
                         </Row>
                     </Card>
