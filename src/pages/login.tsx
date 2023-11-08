@@ -130,6 +130,7 @@ const Login = () => {
                         <Link className="p-4" to={'/register'}>
                             Registrarse
                         </Link>
+                        <a className="float-end me-4" href="http://127.0.0.1:8000/usuarios/">Administración</a>
                     </Card.Footer>
                  </Card>
                 </Col>
