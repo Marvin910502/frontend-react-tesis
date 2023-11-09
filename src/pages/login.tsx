@@ -56,8 +56,8 @@ const Login = () => {
                 isAdmin: response.isAdmin,
                 isGuess: response.isGuess,
                 isManager: response.isManager,
-                profile_image: response.profile_image,
-                image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${response.profile_image}`
+                profile_image: response.profile_image || 'default.png',
+                image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${response.profile_image || 'default.png'}`
             }
             localStorage.setItem('userData', JSON.stringify(dataUser))
             user.setUser(dataUser)

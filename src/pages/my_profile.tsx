@@ -23,6 +23,7 @@ function MyProfile(){
     const [profile_image, setProfileImage] = useState(user.user.profile_image)
     const [image, setImage] = useState<string>(`${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${profile_image}`)
     const [validatePass, setValidatePass] = useState(false)
+    const [validEmail, setValidEmail] = useState(false)
     let navigate = useNavigate()
 
     console.log(user.user)
@@ -166,14 +167,23 @@ function MyProfile(){
 
 
     useEffect(()=>{
-        if (oldPassword.length <= 8 && password.length <= 8 && re_password.length <= 8) {
-            setValidatePass(true)
+        if (password.length >= 8 && re_password.length >= 8 && password === re_password) {
+            setValidatePass(false)
         }
         else {
-            setValidatePass(false)
+            setValidatePass(true)
         }
     },[oldPassword, password, re_password])
 
+
+    useEffect(()=>{
+        if (email.includes('@') && email.includes('.') && !email.includes(' ') && email === email.toLowerCase()) {
+            setValidEmail(false)
+        }
+        else {
+            setValidEmail(true)
+        }
+    },[email])
 
     return(
         <>
@@ -243,7 +253,7 @@ function MyProfile(){
                                         <Form.Label>Departamento</Form.Label>
                                     </Form.Floating>
                                     <Form.Group className='mt-5'>
-                                    <Button onClick={handleUpdateProfile} className='btn btn-primary py-2'>Actualizar Perfil</Button>
+                                        <Button onClick={handleUpdateProfile} className='btn btn-primary py-2' disabled={validEmail}>Actualizar Perfil</Button>
                                     </Form.Group> 
                                 </Col>
                             </Row>

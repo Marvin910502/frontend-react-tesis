@@ -43,13 +43,13 @@ function Register(){
     }
 
     useEffect(()=>{
-        if (password.length <= 8 && re_password.length <= 8) {
-            setValidatePass(true)
-        }
-        else {
+        if (password.length >= 8 && re_password.length >= 8 && password === re_password && email.length !== 0 && email.includes('@') && email.includes('.') && !email.includes(' ') && email === email.toLowerCase()) {
             setValidatePass(false)
         }
-    },[password, re_password])
+        else {
+            setValidatePass(true)
+        }
+    },[password, re_password, email])
 
     return(
         <>
@@ -98,7 +98,7 @@ function Register(){
                                     </Form.Floating>
                                 </Col>
                                 <Form.Group className='mt-5'>
-                                    <Button type={'submit'} placeholder={''} onClick={handleSubmit} className='btn btn-primary py-2'>Registrarse</Button>
+                                    <Button type={'submit'} placeholder={''} onClick={handleSubmit} className='btn btn-primary py-2' disabled={validatePass}>Registrarse</Button>
                                 </Form.Group> 
                             </Row>
                         </Form>
