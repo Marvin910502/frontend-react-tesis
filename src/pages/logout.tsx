@@ -21,7 +21,9 @@ const Logout = () => {
                                        department:'', 
                                        isAdmin:false, 
                                        isGuess:false, 
-                                       isManager:false
+                                       isManager:false,
+                                       profile_image:'',
+                                       image:''
                                     }
         user.setUser(userData)
         return navigate('/login')

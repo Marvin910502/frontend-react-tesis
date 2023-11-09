@@ -20,6 +20,8 @@ function UploadWrfout(){
     const [file, setFile] = useState<File>()
     const [progress, setProgress] = useState(false)
 
+    console.log(file)
+
     let [showNot, setShowNot] = useState(false)
     let [toast_message, setToastMessage] = useState<string>('')
     let [toast_bg_color, setToastBgColor] = useState<string>('')

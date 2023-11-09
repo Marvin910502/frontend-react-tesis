@@ -1,10 +1,11 @@
 import {useState, useContext, useEffect} from "react";
-import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
-import {useNavigate, Link} from "react-router-dom";
+import {Button, Card, Col, Container, Form, Row, Image} from "react-bootstrap";
+import {useNavigate} from "react-router-dom";
 import { UserContext } from "../context/context_provider";
 import { userInteface } from "../context/context_provider";
 import MyToast from "../components/my_toast";
 import Cookies from "js-cookie";
+import { AccountCircle } from "@mui/icons-material";
 
 function MyProfile(){
 
@@ -18,13 +19,57 @@ function MyProfile(){
     const [name, setName] = useState(user.user.name)
     const [last_names, setLastNames] = useState(user.user.last_names)
     const [department, setDepartment] = useState(user.user.department)
+    const [file, setFile] = useState()
+    const [profile_image, setProfileImage] = useState(user.user.profile_image)
+    const [image, setImage] = useState<string>(`${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${profile_image}`)
     const [validatePass, setValidatePass] = useState(false)
     let navigate = useNavigate()
+
+    console.log(user.user)
 
     const [showNot, setShowNot] = useState(false)
     const [toast_message, setToastMessage] = useState<string>('')
     const [toast_bg_color, setToastBgColor] = useState<string>('')
     const [toast_text_color, setToastTextColor] = useState('')
+
+
+    const handleImageProfile = async () => {
+        const formDataToSend = new FormData();
+        formDataToSend.append('username', email);
+        //@ts-ignore
+        formDataToSend.append('file', file);
+        const res_profile = await fetch(
+            `${process.env["REACT_APP_API_URL"]}/api/upload-profile-image/`,
+            {
+                method:'POST',
+                body:formDataToSend
+            }
+        )
+        if (res_profile.status === 201){
+            const data = await res_profile.json()
+            setProfileImage(data.profile_image)
+            setImage(`${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${data.profile_image}`)
+            const dataUser:userInteface = {
+                username: email,
+                isAuthenticated: true,
+                name: name,
+                last_names: last_names,
+                department: department,
+                isAdmin: user.user.isAdmin,
+                isGuess: user.user.isGuess,
+                isManager: user.user.isManager,
+                profile_image: data.profile_image,
+                image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${data.profile_image}`
+            }
+            localStorage.setItem('userData', JSON.stringify(dataUser))
+            user.setUser(dataUser)
+            setShowNot(true)
+            setToastBgColor('success')
+            setToastTextColor('text-white')
+            setToastMessage('Su foto de perfil a sido actualizada')
+        }
+    }
+
 
     const handleUpdateProfile = async () => {
         const res = await fetch(
@@ -40,11 +85,12 @@ function MyProfile(){
                     'username': email,
                     'name': name,
                     'last_names': last_names,
-                    'department': department
+                    'department': department,
                 })
             }
         )
         if (res.status === 201){
+            console.log(profile_image)
             const dataUser:userInteface = {
                 username: email,
                 isAuthenticated: true,
@@ -53,7 +99,9 @@ function MyProfile(){
                 department: department,
                 isAdmin: user.user.isAdmin,
                 isGuess: user.user.isGuess,
-                isManager: user.user.isManager
+                isManager: user.user.isManager,
+                profile_image: profile_image,
+                image: image
             }
             localStorage.setItem('userData', JSON.stringify(dataUser))
             user.setUser(dataUser)
@@ -93,7 +141,9 @@ function MyProfile(){
                                                department:'', 
                                                isAdmin:false, 
                                                isGuess:false, 
-                                               isManager:false
+                                               isManager:false,
+                                               profile_image:'',
+                                               image:''
                                             }
                 user.setUser(userData)
                 localStorage.setItem('session', 'password_changed')
@@ -127,7 +177,7 @@ function MyProfile(){
 
     return(
         <>
-            <Container className='p-5 mt-5'>
+            <Container className='p-5'>
                 <Card>
                     <Card.Header>
                         <h1 className='text-center'>Mi Perfil</h1>
@@ -156,7 +206,21 @@ function MyProfile(){
                                     </Form.Group>                                     
                                 </Col>
                                 <Col xl={6} lg={6} md={12} sm={12} xs={12} className="mt-lg-0 mt-xl-0 mt-5">
-                                    <Form.Floating>
+                                    <Form.Group>
+                                        <Form.Label>Foto de Perfil</Form.Label>
+                                        {user.user.profile_image !== '' ? <Image className="ms-3" src={image}  roundedCircle style={{maxHeight:'40px'}} /> : <AccountCircle className="ms-3"/>}
+                                        <Form.Control
+                                            className="mt-3" 
+                                            id='upload_file' 
+                                            type="file"
+                                            //@ts-ignore 
+                                            onChange={e=>setFile(e.target.files[0])}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className='mt-5'>
+                                        <Button onClick={handleImageProfile} className='btn btn-primary py-2'>Actualizar Foto de Perfil</Button>
+                                    </Form.Group> 
+                                    <Form.Floating className="mt-5">
                                         <Form.Control type={'email'} placeholder={'nombre@ejemplo.com'} value={email} onChange={e => setEmail(e.target.value)} name={'username'}/>
                                         <Form.Label>Correo</Form.Label>
                                         {(!email.includes('@') || !email.includes('.') || email.includes(' ') || email !== email.toLowerCase()) && <div><small style={{color:'orange'}}>El formato de correo no es correcto</small><br/></div>}
@@ -180,7 +244,7 @@ function MyProfile(){
                                     </Form.Floating>
                                     <Form.Group className='mt-5'>
                                     <Button onClick={handleUpdateProfile} className='btn btn-primary py-2'>Actualizar Perfil</Button>
-                                </Form.Group> 
+                                    </Form.Group> 
                                 </Col>
                             </Row>
                         </Form>
