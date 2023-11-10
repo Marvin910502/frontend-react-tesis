@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
 import { Card, Row, Col, Table, Form, InputGroup, Modal, Button, Image } from "react-bootstrap";
 import { CircularProgress, IconButton } from '@mui/material';
-import { Delete, FileUpload, FormatLineSpacing, Search } from '@mui/icons-material';
+import { Delete, FileUpload, FormatLineSpacing, Search, Storage } from '@mui/icons-material';
 import Cookies from "js-cookie";
 import { FILE } from "./diagnostics";
 import MyToast from "../components/my_toast";
@@ -18,6 +18,9 @@ function UploadWrfout(){
     const [filter, setFilter] = useState('')
     const [full_list_save, setFullListSave] = useState<FILE[]>([])
     const [file, setFile] = useState<File>()
+    const [server_space, setServerSpace] = useState<number>(0)
+    const [used_space, setUsedSpace] = useState<number>(0)
+    const [low_space, setLowSpace] = useState<boolean>(false)
     const [progress, setProgress] = useState(false)
 
     console.log(file)
@@ -112,6 +115,12 @@ function UploadWrfout(){
                 setToastTextColor('text-white')
                 setToastMessage('El archivo no es compatible o está corrupto')
             }
+            if (res.status === 507){
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('No hay suficiente espacio en el servidor')
+            }
         }
     }
 
@@ -160,9 +169,35 @@ function UploadWrfout(){
         handleFilter()
     },[filter])
 
+
+    useEffect(() => {
+        const getContentSite = async () => {
+            const res = await fetch(
+                `${process.env['REACT_APP_API_URL']}/api/get-content/`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${Cookies.get('access-token')}`
+                    },
+                }
+                )
+            const data = await res.json()
+            setServerSpace(data.server_space)
+            setUsedSpace(data.used_space)
+            let percent_used = 100 - ((data.used_space / data.server_space) * 100)
+            if (percent_used < 10){
+                setLowSpace(true)
+            }
+        }
+        getContentSite()
+    }, [list_file])
+
+
     return(
         <>
-            <Card className="mt-3 mb-3 shadow"  style={{height:'825px'}}>
+            <Card className="mt-3 mb-3 shadow">
                 <Card.Header>
                     <Row>
                         <Col xl={5} lg={4} md={12} sm={12} className="mb-lg-0 mb-md-2 mb-2">
@@ -180,9 +215,12 @@ function UploadWrfout(){
                     </Row>
                 </Card.Header>
                 <Card.Body>
-                    <div className="border rounded" style={{overflow:'auto', height:'740px'}}>
+                    <div className="mt-3 mb-3 flex-row">
+                        <h4 className={ low_space ? 'text-danger' : 'text-success' }><Storage className="mb-1" titleAccess="Espacio en el servidor"/> {used_space} / {server_space} GB { low_space && '(Poco espacio en el servidor)' }</h4>
+                    </div>
+                    <div className="border rounded">
                     <Table striped bordered hover>
-                        <thead style={{position:'sticky', top: '0', zIndex:'1'}} className="shadow">
+                        <thead className="shadow">
                             <tr>
                                 <th className="bg-primary text-white text-center pb-3" style={{width:'50px'}}>
                                     #
