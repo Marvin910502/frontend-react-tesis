@@ -12,7 +12,7 @@ function SidebarDropdown(){
     return(
         <>
             <div className='d-flex justify-content-start ps-2'>
-                <Image src={process.env.PUBLIC_URL + 'Marvin.webp'}  roundedCircle style={{maxHeight:'40px'}} />
+                <Image src={user.user.image}  roundedCircle style={{maxHeight:'40px'}} />
                 <NavDropdown drop={'up'}
                              title={'Mi Perfil'}
                              id="userDropdown"

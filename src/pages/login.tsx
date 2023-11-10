@@ -6,6 +6,7 @@ import { UserContext } from "../context/context_provider";
 import jwt from 'jwt-decode';
 import { userInteface } from "../context/context_provider";
 import MyToast from "../components/my_toast";
+import { profile } from "console";
 
 interface JWT {token_type: string, exp: number, iat: number, jti: string, email: string}
 
@@ -54,7 +55,9 @@ const Login = () => {
                 department: response.department,
                 isAdmin: response.isAdmin,
                 isGuess: response.isGuess,
-                isManager: response.isManager
+                isManager: response.isManager,
+                profile_image: response.profile_image || 'default.png',
+                image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${response.profile_image || 'default.png'}`
             }
             localStorage.setItem('userData', JSON.stringify(dataUser))
             user.setUser(dataUser)
