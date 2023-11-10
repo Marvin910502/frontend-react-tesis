@@ -49,7 +49,7 @@ function Dashboard(){
         <Card className='mt-3'>
             <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                 <Image
-                    style={{maxWidth:'650px'}}
+                    style={{maxWidth:'55vh'}}
                     src={`${process.env["REACT_APP_API_URL"]}/api/media/get-image/${home_image}`}
                 />
             </div>

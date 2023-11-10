@@ -135,7 +135,7 @@ function MyDiagnostics(){
 
     return(
         <>
-            <Card className="mt-3 mb-3 shadow"  style={{height:'825px'}}>
+            <Card className="mt-3 mb-3 shadow">
                 <Card.Header>
                     <Row>
                         <Col xl={8} lg={8} md={6} sm={12}>
@@ -150,9 +150,9 @@ function MyDiagnostics(){
                     </Row>
                 </Card.Header>
                 <Card.Body>
-                    <div className="border rounded" style={{overflow:'auto', height:'740px'}}>
+                    <div className="border rounded">
                     <Table striped bordered hover>
-                        <thead style={{position:'sticky', top: '0', zIndex:'1'}} className="shadow">
+                        <thead className="shadow">
                             <tr>
                                 <th className="bg-primary text-white text-center pb-3" style={{width:'50px'}}>
                                     #
