@@ -197,17 +197,17 @@ function MyProfile(){
                             <Row>
                                 <Col xl={6} lg={6} md={12} sm={12} xs={12} className="pe-5">
                                     <Form.Floating>
-                                        <Form.Control type={'password'} onChange={e => setOldPassword(e.target.value)} name={'old_password'} required/>
+                                        <Form.Control type={'password'} onChange={e => setOldPassword(e.target.value)} name={'old_password'} placeholder="" required/>
                                         <Form.Label>Contraseña Actual</Form.Label>
                                     </Form.Floating>
                                     {oldPassword.length < 8 && <small style={{color:'orange'}}>La contraseña actual es necesaria con no menos de 8 caracteres</small>}
                                     <Form.Floating className='mt-5'>
-                                        <Form.Control type={'password'} onChange={e => setPassword(e.target.value)} name={'password'}/>
+                                        <Form.Control type={'password'} onChange={e => setPassword(e.target.value)} placeholder="" name={'password'}/>
                                         <Form.Label>Nueva Contraseña</Form.Label>
                                     </Form.Floating>
                                     {password.length < 8 && <small style={{color:'orange'}}>La contraseña nueva es necesaria con no menos de 8 caracteres</small>}
                                     <Form.Floating className='mt-5'>
-                                        <Form.Control type={'password'} onChange={e => setRePassword(e.target.value)} name={'re_password'}/>
+                                        <Form.Control type={'password'} onChange={e => setRePassword(e.target.value)} placeholder="" name={'re_password'}/>
                                         <Form.Label>Repetir Nueva Contraseña</Form.Label>
                                     </Form.Floating>
                                     {(re_password.length === 0 || re_password !== password) && <small style={{color:'orange'}}>La contraseña repetida no coinside o esta vacía</small>}
