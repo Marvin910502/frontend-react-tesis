@@ -29,8 +29,11 @@ const Help = () => {
 
     return(
         <div>
-            <Card className="mt-3 pt-3 pb-3">
-                <Card.Body className="ps-lg-5 pe-lg-5 ps-sm-2 pe-sm-2">
+            <Card className="mt-3 mb-4">
+                <Card.Header>
+                    <h3>Ayuda</h3>
+                </Card.Header>
+                <Card.Body className="ps-lg-5 pe-lg-5 ps-sm-2 pe-sm-2 pt-4 pb-3">
                     <div dangerouslySetInnerHTML={{__html: helpContent}}></div>
                 </Card.Body>
             </Card>

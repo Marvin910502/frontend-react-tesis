@@ -94,7 +94,7 @@ const defaultMapData: mapData = {
     index: 0,
     max_index: 2,
     fill_opacity: 0.3,
-    line_weight: 0.5,
+    line_weight: 0,
     load_path: [],
     name_files_list: []
 }
@@ -134,9 +134,9 @@ function Diagnostics() {
     const [maxX, setMaxX] = useState()
     const [minY, setMinY] = useState()
     const [maxY, setMaxY] = useState()
-
     const [rangeX, setRangeX] = useState<number[]>()
     const [rangeY, setRangeY] = useState<number[]>()
+
     const [showModal, setShowModal] = useState(false)
     const [showModalGraph, setShowModalGraph] = useState(false)
 
@@ -342,7 +342,7 @@ function Diagnostics() {
     }
 
     //for save the map data in the database
-    const saveMapData = async () => {
+    const saveDiagnosticData = async () => {
         if (load_path.length !== 0) {
             let file_name: string = ''
             let count = 0
@@ -352,7 +352,7 @@ function Diagnostics() {
             let time_index = index - ((count) * 3)
             file_name = name_files_list[count] + `-index(${time_index})-${diagnostic}-${mapInicialData.units}`
             const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/save-map-data/`,
+                `${process.env["REACT_APP_API_URL"]}/api/save-diagnostic/`,
                 {
                     method: 'POST',
                     headers: {
@@ -366,11 +366,17 @@ function Diagnostics() {
                         'diagnostic': diagnostic,
                         'units': mapInicialData.units,
                         'polygons': polygons,
-                        'file_name': file_name
+                        'file_name': file_name,
+                        'z': data,
+                        'x': x,
+                        'y': y,
+                        'minX': minX,
+                        'maxX': maxX,
+                        'minY': minY,
+                        'maxY': maxY,
                     })
                 }
             )
-            const data = await res.json()
             if (res.status === 201) {
                 setShowNot(true)
                 setToastBgColor('success')
@@ -673,7 +679,7 @@ function Diagnostics() {
                             <Row>
                                 <Form.Group className='mt-3'>
                                     <Button className="ms-2 me-3 mb-3 btn-danger" onClick={handleCleaning}>Limpiar Mapa</Button>
-                                    <Button onClick={saveMapData} className="mb-3 btn-success">Salvar Datos</Button>
+                                    <Button onClick={saveDiagnosticData} className="mb-3 btn-success">Salvar Datos</Button>
                                 </Form.Group>
                             </Row>
                         </Form>
