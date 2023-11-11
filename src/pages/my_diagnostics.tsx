@@ -3,13 +3,51 @@ import { Card, Table, Modal, Row, Col, Form, Button, InputGroup } from "react-bo
 import GeoJsonObject from "geojson";
 import Cookies from "js-cookie";
 import { UserContext } from "../context/context_provider";
-import { IconButton } from "@mui/material";
-import { Delete, OpenWith, FormatLineSpacing, Search } from '@mui/icons-material';
+import { IconButton, Slider } from "@mui/material";
+import { Delete, FormatLineSpacing, Search, Map, Equalizer } from '@mui/icons-material';
 import Maps2dArea from "../components/maps_2d_area";
+import VerticalCut3dGraph from "../components/vertical_cut_3d_graph";
 import MyToast from "../components/my_toast";
 
 
-interface mapDataElement{
+const diagnostic_labels = {
+    'punto_de_condensacion': 'Punto de Condensación',
+    'temperatura': 'Temperatura',
+    'altura_del_terreno': 'Altura del Terreno',
+    'temperatura_superior_nubes': 'Temperatura Superior de las Nubes',
+    'helicidad_relativa_tormenta': 'Helicidad Realtiva de Tormenta',
+    'agua_precipitable': 'Agua Precipitable',
+    'humedad_relativa': 'Humedad Relativa',
+    'presion_nivel_del_mar': 'Presion a Nivel del Mar',
+    'helicidad_corriente_ascendente': 'Helicidad de Corriente Ascendente'
+}
+
+
+const units_lables = {
+    'degC': 'grados C',
+    'degCT': 'gradosC',
+    'degF': 'grados F',
+    'K': 'K',
+    'Pa': 'Pa',
+    'hPa': 'hPa',
+    'mb': 'mb',
+    'torr': 'torr',
+    'mmhg': 'mmhg',
+    'atm': 'atm',
+    'm': 'm',
+    'km': 'km',
+    'dm': 'dm',
+    'ft': 'pies',
+    'mi': 'millas',
+    'defaultK': 'K',
+    'defaultm2': 'm2',
+    'default%': 'porciento',
+    'defaultkg': 'kg'
+}
+
+
+
+interface diagnosticDataElement{
     geojson: string,
     diagnostic_label:string,
     units_label:string,
@@ -17,22 +55,42 @@ interface mapDataElement{
     file_name:string,
     diagnostic: string,
     units: string,
+    data: Array<number>,
+    x: Array<number>,
+    y: Array<number>,
+    min_x: number,
+    max_x: number,
+    min_y: number,
+    max_y: number,
 }
 
 function MyDiagnostics(){
 
     const user = useContext(UserContext)
-    const [list_maps, setListMaps] = useState<mapDataElement[]>()
+    const [list_diagnostics, setListDiagnostics] = useState<diagnosticDataElement[]>()
     const [order, setOrder] = useState<string>('diagnostic')
     const [showModal, setShowModal] = useState(false)
+    const [showModalGraph, setShowModalGraph] = useState(false)
     const [showDelete, setShowDelete] = useState(false)
-    const [map, setMap] = useState<mapDataElement>()
+    const [diagnostic, setDiagnostic] = useState<diagnosticDataElement>()
+    const [diagnostic_label, setDiagnosticLabel] = useState<string>('')
     const [geojsonObj, setGeoJsonObj] = useState<typeof GeoJsonObject | null>(null)
-    const [line_weight, setLineWeight] = useState( 0.5 )
+    const [units, setUnits] = useState<string>(localStorage.getItem('units') || 'degC')
+    const [line_weight, setLineWeight] = useState( 0 )
     const [fill_opacity, setFillOpacity] = useState( 0.3 )
     const [element_delete, setElementDelete] = useState<string>('')
     const [filter, setFilter] = useState('')
-    const [full_list_save, setFullListSave] = useState<mapDataElement[]>()
+    const [full_list_save, setFullListSave] = useState<diagnosticDataElement[]>()
+
+    const [data, setData] = useState<Array<number>>()
+    const [x, setX] = useState<Array<number>>()
+    const [y, setY] = useState<Array<number>>()
+    const [minX, setMinX] = useState<number>()
+    const [maxX, setMaxX] = useState<number>()
+    const [minY, setMinY] = useState<number>()
+    const [maxY, setMaxY] = useState<number>()
+    const [rangeX, setRangeX] = useState<number[]>()
+    const [rangeY, setRangeY] = useState<number[]>()
 
     let [showNot, setShowNot] = useState(false)
     let [toast_message, setToastMessage] = useState<string>('')
@@ -44,6 +102,10 @@ function MyDiagnostics(){
         setShowModal(false)
     }
 
+    const handleCloseModalGraph = () => {
+        setShowModalGraph(false)
+    }
+
     const handleCloseDeleteModal = () => {
         setShowDelete(false)
     }
@@ -53,16 +115,35 @@ function MyDiagnostics(){
         setElementDelete(element)
     }
 
-    const handleOpenModal = (map_element:mapDataElement) => {
-        setMap(map_element)
-        let geo:typeof GeoJsonObject = JSON.parse(map_element.geojson).features
+    const handleOpenModal = (diagnostic_element:diagnosticDataElement) => {
+        setDiagnostic(diagnostic_element)
+        let geo:typeof GeoJsonObject = JSON.parse(diagnostic_element.geojson).features
         setGeoJsonObj(geo)
         setShowModal(true)
     }
 
-    const GetMapsList = async () => {
+    const handleOpenModalGraph = (diagnostic_element:diagnosticDataElement) => {
+        setDiagnostic(diagnostic_element)
+        setDiagnosticLabel(diagnostic_element.diagnostic_label)
+        setUnits(diagnostic_element.units_label)
+        //@ts-ignore
+        setData(JSON.parse(diagnostic_element.data))
+        //@ts-ignore
+        setX(JSON.parse(diagnostic_element.x))
+        //@ts-ignore
+        setY(JSON.parse(diagnostic_element.y))
+        setMinX(diagnostic_element.min_x)
+        setMaxX(diagnostic_element.max_x)
+        setMinY(diagnostic_element.min_y)
+        setMaxY(diagnostic_element.max_y)
+        setRangeX([diagnostic_element.min_x, diagnostic_element.max_x])
+        setRangeY([diagnostic_element.min_y, diagnostic_element.max_y])
+        setShowModalGraph(true)
+    }
+
+    const GetDiagnosticList = async () => {
         const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/get-list-map-data/`,
+            `${process.env["REACT_APP_API_URL"]}/api/get-diagnostic-list/`,
             {
                 method: 'POST',
                 headers:{
@@ -76,19 +157,19 @@ function MyDiagnostics(){
                 })
             }
         )
-        const response:mapDataElement[] = await res.json()
-        setListMaps(response)
+        const response:diagnosticDataElement[] = await res.json()
+        setListDiagnostics(response)
         setFullListSave(response)
     }
 
     useEffect(()=>{
-        GetMapsList()
+        GetDiagnosticList()
     },[order])
 
     const handleDeleteMapData = (file_name:string) => { 
         const DeleteMapData = async () => {
             const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/delete-map-data/`,
+                `${process.env["REACT_APP_API_URL"]}/api/delete-diagnostic/`,
                 {
                     method: 'POST',
                     headers:{
@@ -103,7 +184,7 @@ function MyDiagnostics(){
                 }
             )
             if (res.status === 200) {
-                GetMapsList()
+                GetDiagnosticList()
                 setShowNot(true)
                 setToastBgColor('success')
                 setToastTextColor('text-white')
@@ -115,21 +196,64 @@ function MyDiagnostics(){
     }
 
     useEffect(()=>{
-        setListMaps(full_list_save) 
+        setListDiagnostics(full_list_save) 
         const handleFilter = () => {
-            const list_new_maps:mapDataElement[] = []
+            const list_new_diagnostics:diagnosticDataElement[] = []
             if (full_list_save && filter !== ''){
                 setFilter(filter.replace(/\s+/g, '_').toLowerCase())
                 for (let i=0; i<full_list_save.length; i++) {
                     if (full_list_save[i].diagnostic_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].units_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].file_name.toLowerCase().replace(/\s+/g, '_').includes(filter)) {
-                        list_new_maps.push(full_list_save[i])
+                        list_new_diagnostics.push(full_list_save[i])
                     }
                 }
-                setListMaps(list_new_maps)
+                setListDiagnostics(list_new_diagnostics)
             } 
         }
         handleFilter()
     },[filter])
+
+
+    const minDistance = 2;
+
+    const handleChangeXaxis = (
+        event: Event,
+        newValue: number | number[],
+        activeThumb: number,
+    ) => {
+        if (!Array.isArray(newValue)) {
+            return;
+        }
+
+        if (newValue[1] - newValue[0] < minDistance) {
+            if (activeThumb === 0) {
+                setRangeX([newValue[0], newValue[0] + minDistance]);
+            } else {
+                setRangeX([newValue[1] - minDistance, newValue[1]]);
+            }
+        } else {
+            setRangeX(newValue as number[]);
+        }
+    }
+
+    const handleChangeYaxis = (
+        event: Event,
+        newValue: number | number[],
+        activeThumb: number,
+    ) => {
+        if (!Array.isArray(newValue)) {
+            return;
+        }
+
+        if (newValue[1] - newValue[0] < minDistance) {
+            if (activeThumb === 0) {
+                setRangeY([newValue[0], newValue[0] + minDistance]);
+            } else {
+                setRangeY([newValue[1] - minDistance, newValue[1]]);
+            }
+        } else {
+            setRangeY(newValue as number[]);
+        }
+    }
 
     
 
@@ -169,21 +293,22 @@ function MyDiagnostics(){
                                 <IconButton title="Ordenar por archivo" color="inherit" onClick={e=>setOrder('file_name')}><FormatLineSpacing/></IconButton>
                                     Archivo
                                 </th>
-                                <th className="bg-primary text-white pb-3" style={{width:'100px'}}>
+                                <th className="bg-primary text-white pb-3" style={{width:'150px'}}>
                                     Administrar
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {list_maps && list_maps.map((map_element, index)=>(
+                            {list_diagnostics && list_diagnostics.map((diagnostic_element, index)=>(
                                 <tr>
-                                    <td className="text-center">{index+1}</td>
-                                    <td>{map_element.diagnostic_label}</td>
-                                    <td>{map_element.units_label}</td>
-                                    <td><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={map_element.file_name}>{map_element.file_name}</div></td>
+                                    <td className="text-center pt-3">{index+1}</td>
+                                    <td className="pt-3">{diagnostic_element.diagnostic_label}</td>
+                                    <td className="pt-3">{diagnostic_element.units_label}</td>
+                                    <td className="pt-3"><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={diagnostic_element.file_name}>{diagnostic_element.file_name}</div></td>
                                     <td>
-                                        <IconButton title="Abrir Mapa" color="inherit" onClick={e=>handleOpenModal(map_element)}><OpenWith/></IconButton>
-                                        <IconButton title="Eliminar" color="error" onClick={e=>handleOpenDeleteModal(map_element.file_name)}><Delete/></IconButton>
+                                        <IconButton title="Abrir Mapa" color="success" onClick={e=>handleOpenModal(diagnostic_element)}><Map/></IconButton>
+                                        <IconButton title="Abrir Mapa" color="success" onClick={e=>handleOpenModalGraph(diagnostic_element)}><Equalizer/></IconButton>
+                                        <IconButton title="Eliminar" color="error" onClick={e=>handleOpenDeleteModal(diagnostic_element.file_name)}><Delete/></IconButton>
                                     </td>
                                 </tr>
                             ))}
@@ -194,12 +319,12 @@ function MyDiagnostics(){
             </Card>
 
 
-            <Modal show={showModal} onHide={handleCloseModal} className="modal-xl">
+            <Modal show={showModal} onHide={handleCloseModal} className="modal-xl" style={{minHeight:'700px'}}>
                 <Modal.Header closeButton>
-                    <Modal.Title className="fs-5">{map?.diagnostic_label} / {map?.units_label} / Numero de Polígonos: {map?.polygons}</Modal.Title>
+                    <Modal.Title className="fs-5">{diagnostic?.diagnostic_label} / {diagnostic?.units_label} / Numero de Polígonos: {diagnostic?.polygons}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <Card>
+                <Modal.Body style={{ maxHeight: '67vh' }}>
+                    <Card style={{ maxHeight: '63vh' }}>
                         <Maps2dArea 
                             //@ts-ignore
                             geojson={geojsonObj} 
@@ -207,7 +332,7 @@ function MyDiagnostics(){
                             zoom={6} 
                             fill_opacity={fill_opacity} 
                             line_weight={line_weight}
-                            units={map?.units || ''} 
+                            units={diagnostic?.units || ''} 
                         />
                     </Card>
                 </Modal.Body>
@@ -240,7 +365,7 @@ function MyDiagnostics(){
                     <Modal.Title>Eliminar Datos de este Mapa</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <span>¿Está seguro(a) que desea eliminar los datos de este mapa? Esta acción es irrebersible</span>
+                    <span>¿Está seguro(a) que desea eliminar los datos de este diagnóstico? Esta acción es irrebersible</span>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" type="submit" form="load_file" onClick={e=>handleDeleteMapData(element_delete)}>
@@ -249,6 +374,70 @@ function MyDiagnostics(){
                     <Button variant="secondary" onClick={handleCloseDeleteModal}>
                         Cancelar
                     </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showModalGraph} onHide={handleCloseModalGraph} className="modal-xl" style={{ minHeight: '800px' }}>
+                <Modal.Header closeButton>
+                    <Modal.Title className="fs-5">{
+                        //@ts-ignore
+                        diagnostic_labels[diagnostic]
+                    }</Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{ minHeight: '65vh' }}>
+                    <Card style={{ minHeight: '62vh' }} className="p-3">
+                        <VerticalCut3dGraph
+                            z={data}
+                            x={x}
+                            y={y}
+                            //@ts-ignore
+                            labelTitle={diagnostic_label}
+                            //@ts-ignore
+                            labelUnit={units}
+                            rangeX={rangeX}
+                            rangeY={rangeY}
+                        />
+                    </Card>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Row className='ps-3 pe-3 w-100'>
+                        <Card className="shadow">
+                            <h4 className="mt-2 fs-6">Cortes Verticales</h4>
+                            <hr className="mt-0 mb-1" />
+                            <Row className="ps-3 pe-3">
+                                <Col xl={6} lg={6} md={6} sm={12} className="ps-4 pe-4">
+                                    <Form.Group className='mt-3'>
+                                        <Form.Label>Seleccionar Rango de Longitudes ( x )</Form.Label>    
+                                        <Slider
+                                            value={rangeX}
+                                            onChange={handleChangeXaxis}
+                                            valueLabelDisplay="auto"
+                                            disableSwap
+                                            //@ts-ignore
+                                            min={minX}
+                                            //@ts-ignore
+                                            max={maxX}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col xl={6} lg={6} md={6} sm={12} className="ps-4 pe-4">
+                                    <Form.Group className='mt-3'>
+                                        <Form.Label>Seleccionar Rango de Latitudes ( y )</Form.Label>   
+                                        <Slider
+                                            value={rangeY}
+                                            onChange={handleChangeYaxis}
+                                            valueLabelDisplay="auto"
+                                            disableSwap
+                                            //@ts-ignore
+                                            min={minY}
+                                            //@ts-ignore
+                                            max={maxY}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Row>
                 </Modal.Footer>
             </Modal>
 
