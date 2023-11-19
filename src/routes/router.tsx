@@ -1,4 +1,4 @@
-import {useContext, useState} from "react";
+import {useContext} from "react";
 import {Routes, Route, Navigate} from "react-router-dom";
 import Dashboard from "../pages/dashboard";
 import Diagnostics from "../pages/diagnostics";

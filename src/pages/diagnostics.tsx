@@ -241,6 +241,7 @@ function Diagnostics() {
                         'Authorization': `Bearer ${Cookies.get('access-token')}`
                     },
                     body: JSON.stringify({
+                        'username': user.user.username,
                         'url': load_path,
                         'diagnostic': diagnostic,
                         'units': units,
@@ -327,6 +328,7 @@ function Diagnostics() {
                             'Authorization': `Bearer ${Cookies.get('access-token')}`
                         },
                         body: JSON.stringify({
+                            'username': user.user.username,
                             'url': load_path,
                             'diagnostic': diagnostic,
                             'units': units,
@@ -429,6 +431,7 @@ function Diagnostics() {
                         'Authorization': `Bearer ${Cookies.get('access-token')}`
                     },
                     body: JSON.stringify({
+                        'username': user.user.username,
                         'order': 'name'
                     })
                 }
@@ -467,7 +470,7 @@ function Diagnostics() {
                             'Authorization': `Bearer ${Cookies.get('access-token')}`
                         },
                         body: JSON.stringify({
-                            'user': user.user.username,
+                            'username': user.user.username,
                             'geojson': JSON.stringify(mapInicialData.geojson),
                             'diagnostic': diagnostic,
                             'units': mapInicialData.units,

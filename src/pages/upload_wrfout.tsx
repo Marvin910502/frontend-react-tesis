@@ -1,14 +1,17 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useContext} from "react";
 import { Card, Row, Col, Table, Form, InputGroup, Modal, Button, Image } from "react-bootstrap";
 import { CircularProgress, IconButton } from '@mui/material';
 import { Delete, FileUpload, FormatLineSpacing, Search, Storage } from '@mui/icons-material';
 import Cookies from "js-cookie";
 import { FILE } from "./diagnostics";
 import MyToast from "../components/my_toast";
+import { UserContext } from "../context/context_provider";
 
 const unauthorized_extensions = ['py', 'sh', 'php', 'html', 'js', 'css', 'txt', 'json', 'xml', 'csv', 'md', 'yml', 'yaml', 'log', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'git', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'gitignore', 'gitattributes', 'gitmodules', 'gitkeep', 'gitconfig', 'jpg', 'png', 'gif', 'tif', 'tiff', 'bmp', 'ico', 'svg', 'webp', 'avif', 'mp4', 'webm', 'ogg', 'mp3', 'wav', 'flac', 'aac', 'zip', 'tar', 'gz', '7z', 'rar', 'tgz', 'exe', 'msi', 'bin', 'dmg', 'iso', 'img', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'epub', 'apk', 'torrent', 'woff', 'woff2', 'eot', 'ttf', 'otf', 'ico', 'mkv', 'mp4', 'mov', 'wmv', 'avi', 'mpeg', 'flv', '3gp', 'webm', 'vob', 'ogg', 'ogv', 'drc', 'gifv', 'mng', 'qt', 'yuv', 'rm', 'rmvb', 'asf', 'amv', 'm4p', 'm4v', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'svi', '3gp', 'mxf', 'roq', 'nsv', 'f4v', 'f4p', 'f4a', 'f4b']
 
 function UploadWrfout(){
+
+    const user = useContext(UserContext)
 
     const [list_file, setListFile] = useState<FILE[]>([])
     const [showDelete, setShowDelete] = useState(false)
@@ -60,6 +63,7 @@ function UploadWrfout(){
                         'Authorization': `Bearer ${Cookies.get('access-token')}`
                     },
                     body:JSON.stringify({
+                        'username': user.user.username,
                         'order': order
                     })
                 }
