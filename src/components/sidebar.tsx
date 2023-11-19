@@ -26,20 +26,24 @@ function Sidebar(){
 
     useEffect(() => {
         const getContentSite = async () => {
-            const res = await fetch(
-                `${process.env['REACT_APP_API_URL']}/api/get-content/`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${Cookies.get('access-token')}`
-                    },
-                }
-                )
-            const data = await res.json()
-            setIcon(data.icon)
-            console.log(data)
+            try {
+                const res = await fetch(
+                    `${process.env['REACT_APP_API_URL']}/api/get-content/`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                    }
+                    )
+                const data = await res.json()
+                setIcon(data.icon)
+            }
+            catch (error) {
+                console.log(error)
+            }
         }
         getContentSite()
     }, [])

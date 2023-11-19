@@ -142,34 +142,9 @@ function MyDiagnostics(){
     }
 
     const GetDiagnosticList = async () => {
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/get-diagnostic-list/`,
-            {
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${Cookies.get('access-token')}`
-                },
-                body:JSON.stringify({
-                    'username':user.user.username,
-                    'order_element':order
-                })
-            }
-        )
-        const response:diagnosticDataElement[] = await res.json()
-        setListDiagnostics(response)
-        setFullListSave(response)
-    }
-
-    useEffect(()=>{
-        GetDiagnosticList()
-    },[order])
-
-    const handleDeleteMapData = (file_name:string) => { 
-        const DeleteMapData = async () => {
+        try {
             const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/delete-diagnostic/`,
+                `${process.env["REACT_APP_API_URL"]}/api/get-diagnostic-list/`,
                 {
                     method: 'POST',
                     headers:{
@@ -179,16 +154,51 @@ function MyDiagnostics(){
                     },
                     body:JSON.stringify({
                         'username':user.user.username,
-                        'file_name':file_name
+                        'order_element':order
                     })
                 }
             )
-            if (res.status === 200) {
-                GetDiagnosticList()
-                setShowNot(true)
-                setToastBgColor('success')
-                setToastTextColor('text-white')
-                setToastMessage('Los datos del mapa fueron eliminados!')
+            const response:diagnosticDataElement[] = await res.json()
+            setListDiagnostics(response)
+            setFullListSave(response)
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(()=>{
+        GetDiagnosticList()
+    },[order])
+
+    const handleDeleteMapData = (file_name:string) => { 
+        const DeleteMapData = async () => {
+            try {
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/delete-diagnostic/`,
+                    {
+                        method: 'POST',
+                        headers:{
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                        body:JSON.stringify({
+                            'username':user.user.username,
+                            'file_name':file_name
+                        })
+                    }
+                )
+                if (res.status === 200) {
+                    GetDiagnosticList()
+                    setShowNot(true)
+                    setToastBgColor('success')
+                    setToastTextColor('text-white')
+                    setToastMessage('Los datos del mapa fueron eliminados!')
+                }
+            }
+            catch (error) {
+                console.log(error)
             }
         }
         DeleteMapData()

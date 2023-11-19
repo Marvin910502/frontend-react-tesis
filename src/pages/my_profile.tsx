@@ -39,85 +39,48 @@ function MyProfile(){
         formDataToSend.append('username', email);
         //@ts-ignore
         formDataToSend.append('file', file);
-        const res_profile = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/upload-profile-image/`,
-            {
-                method:'POST',
-                body:formDataToSend
+        try {
+            const res_profile = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/upload-profile-image/`,
+                {
+                    method:'POST',
+                    body:formDataToSend
+                }
+            )
+            if (res_profile.status === 201){
+                const data = await res_profile.json()
+                setProfileImage(data.profile_image)
+                setImage(`${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${data.profile_image}`)
+                const dataUser:userInteface = {
+                    username: email,
+                    isAuthenticated: true,
+                    name: name,
+                    last_names: last_names,
+                    department: department,
+                    isAdmin: user.user.isAdmin,
+                    isGuess: user.user.isGuess,
+                    isManager: user.user.isManager,
+                    profile_image: data.profile_image,
+                    image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${data.profile_image}`
+                }
+                localStorage.setItem('userData', JSON.stringify(dataUser))
+                user.setUser(dataUser)
+                setShowNot(true)
+                setToastBgColor('success')
+                setToastTextColor('text-white')
+                setToastMessage('Su foto de perfil a sido actualizada')
             }
-        )
-        if (res_profile.status === 201){
-            const data = await res_profile.json()
-            setProfileImage(data.profile_image)
-            setImage(`${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${data.profile_image}`)
-            const dataUser:userInteface = {
-                username: email,
-                isAuthenticated: true,
-                name: name,
-                last_names: last_names,
-                department: department,
-                isAdmin: user.user.isAdmin,
-                isGuess: user.user.isGuess,
-                isManager: user.user.isManager,
-                profile_image: data.profile_image,
-                image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${data.profile_image}`
-            }
-            localStorage.setItem('userData', JSON.stringify(dataUser))
-            user.setUser(dataUser)
-            setShowNot(true)
-            setToastBgColor('success')
-            setToastTextColor('text-white')
-            setToastMessage('Su foto de perfil a sido actualizada')
         }
+        catch (error) {
+            console.log(error)
+        }     
     }
 
 
     const handleUpdateProfile = async () => {
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/update-user/`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body:JSON.stringify({
-                    'old_username': user.user.username,
-                    'username': email,
-                    'name': name,
-                    'last_names': last_names,
-                    'department': department,
-                })
-            }
-        )
-        if (res.status === 201){
-            console.log(profile_image)
-            const dataUser:userInteface = {
-                username: email,
-                isAuthenticated: true,
-                name: name,
-                last_names: last_names,
-                department: department,
-                isAdmin: user.user.isAdmin,
-                isGuess: user.user.isGuess,
-                isManager: user.user.isManager,
-                profile_image: profile_image,
-                image: image
-            }
-            localStorage.setItem('userData', JSON.stringify(dataUser))
-            user.setUser(dataUser)
-            setShowNot(true)
-            setToastBgColor('success')
-            setToastTextColor('text-white')
-            setToastMessage('Su perfil fue actualizado')
-        }
-    }
-
-
-    const handleChangePasswd = async () => {
-        if (password === re_password){
+        try {
             const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/change-passwd/`,
+                `${process.env["REACT_APP_API_URL"]}/api/update-user/`,
                 {
                     method: 'POST',
                     headers: {
@@ -125,37 +88,89 @@ function MyProfile(){
                         'Accept': 'application/json',
                     },
                     body:JSON.stringify({
+                        'old_username': user.user.username,
                         'username': email,
-                        'old_password': oldPassword,
-                        'new_password': password,
+                        'name': name,
+                        'last_names': last_names,
+                        'department': department,
                     })
                 }
             )
             if (res.status === 201){
-                Cookies.set('access-token', '')
-                Cookies.set('refresh-token', '')
-                localStorage.removeItem('userData')
-                const userData:userInteface = {username:'Anónimo', 
-                                               isAuthenticated:false, 
-                                               name:'', 
-                                               last_names:'', 
-                                               department:'', 
-                                               isAdmin:false, 
-                                               isGuess:false, 
-                                               isManager:false,
-                                               profile_image:'',
-                                               image:''
-                                            }
-                user.setUser(userData)
-                localStorage.setItem('session', 'password_changed')
-                return navigate('/login')
-            }
-            if (res.status === 401){
+                console.log(profile_image)
+                const dataUser:userInteface = {
+                    username: email,
+                    isAuthenticated: true,
+                    name: name,
+                    last_names: last_names,
+                    department: department,
+                    isAdmin: user.user.isAdmin,
+                    isGuess: user.user.isGuess,
+                    isManager: user.user.isManager,
+                    profile_image: profile_image,
+                    image: image
+                }
+                localStorage.setItem('userData', JSON.stringify(dataUser))
+                user.setUser(dataUser)
                 setShowNot(true)
-                setToastBgColor('danger')
+                setToastBgColor('success')
                 setToastTextColor('text-white')
-                setToastMessage('La contraseña actual no es correcta')
+                setToastMessage('Su perfil fue actualizado')
             }
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    const handleChangePasswd = async () => {
+        if (password === re_password){
+            try {
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/change-passwd/`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body:JSON.stringify({
+                            'username': email,
+                            'old_password': oldPassword,
+                            'new_password': password,
+                        })
+                    }
+                )
+                if (res.status === 201){
+                    Cookies.set('access-token', '')
+                    Cookies.set('refresh-token', '')
+                    localStorage.removeItem('userData')
+                    const userData:userInteface = {username:'Anónimo', 
+                                                   isAuthenticated:false, 
+                                                   name:'', 
+                                                   last_names:'', 
+                                                   department:'', 
+                                                   isAdmin:false, 
+                                                   isGuess:false, 
+                                                   isManager:false,
+                                                   profile_image:'',
+                                                   image:''
+                                                }
+                    user.setUser(userData)
+                    localStorage.setItem('session', 'password_changed')
+                    return navigate('/login')
+                }
+                if (res.status === 401){
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('La contraseña actual no es correcta')
+                }
+            }
+            catch (error) {
+                console.log(error)
+            }  
         }
         else {
             setShowNot(true)
