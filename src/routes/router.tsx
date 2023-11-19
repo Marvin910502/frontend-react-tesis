@@ -17,24 +17,20 @@ import Page404 from "../pages/page_404";
 const Router = () => {
 
     const user = useContext(UserContext)
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('isAuthenticated'))
 
-    const updateAuthentication = (is:boolean) => {
-        setIsAuthenticated(is)
-    }
 
     return(
         <>
             <Routes>
-                <Route path='/' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <Dashboard/>} />
-                <Route path='/diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <Diagnostics/>} />
-                <Route path='/mis-diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <MyDiagnostics/> }/>
-                <Route path='/subir-wrfout' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <UploadWrfout/> }/>
+                <Route path='/' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <Dashboard/>} />
+                <Route path='/diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <Diagnostics/>} />
+                <Route path='/mis-diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MyDiagnostics/> }/>
+                <Route path='/subir-wrfout' element={ (!user.user.isAuthenticated || !user.user.isManager) ? <Navigate to={'/logout'}/> : <UploadWrfout/> }/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/logout' element={<Logout/>}/>
                 <Route path='/register' element={<Register/>}/>
-                <Route path='/mi-perfil' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <MyProfile/> }/>
-                <Route path='/ayuda' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/>: <Help/> }/>
+                <Route path='/mi-perfil' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MyProfile/> }/>
+                <Route path='/ayuda' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/>: <Help/> }/>
                 <Route path='*' element={<Page404/>}/>
             </Routes>
         </>
