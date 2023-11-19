@@ -17,27 +17,31 @@ function Register(){
     const handleSubmit = async (e:any) => {
         e.preventDefault()
         if (password === re_password){
-            const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/register/`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body:JSON.stringify({
-                        'username': email,
-                        'password': password,
-                        'name': name,
-                        'last_names': last_names,
-                        'department': department
-                    })
+            try {
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/register/`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body:JSON.stringify({
+                            'username': email,
+                            'password': password,
+                            'name': name,
+                            'last_names': last_names,
+                            'department': department
+                        })
+                    }
+                )
+                if (res.status === 201){
+                    return navigate('/login')
                 }
-            )
-            if (res.status === 201){
-                return navigate('/login')
             }
-
+            catch (error) {
+                console.log(error)
+            }
         }
 
     }

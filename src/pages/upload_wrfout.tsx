@@ -49,23 +49,28 @@ function UploadWrfout(){
 
 
     const getListFiles = async () => {
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/get-wrfout-list/`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${Cookies.get('access-token')}`
-                },
-                body:JSON.stringify({
-                    'order': order
-                })
-            }
-        )
-        const data = await res.json()
-        setListFile(data)
-        setFullListSave(data)
+        try {
+            const res = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/get-wrfout-list/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${Cookies.get('access-token')}`
+                    },
+                    body:JSON.stringify({
+                        'order': order
+                    })
+                }
+            )
+            const data = await res.json()
+            setListFile(data)
+            setFullListSave(data)
+        }
+        catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(()=>{
@@ -92,60 +97,70 @@ function UploadWrfout(){
         if (valid_file === true){
             //@ts-ignore
             formData.append('file', file)
-            const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/upload-file/`,
-                {
-                    method: 'POST',
-                    body:formData
+            try {
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/upload-file/`,
+                    {
+                        method: 'POST',
+                        body:formData
+                    }
+                )
+                const data = await res.json()
+                setProgress(false)
+                getListFiles()
+                handleCloseUploadModal()
+                if (res.status === 201){
+                    setShowNot(true)
+                    setToastBgColor('success')
+                    setToastTextColor('text-white')
+                    setToastMessage('El archivo fue subido con éxito!')
                 }
-            )
-            const data = await res.json()
-            setProgress(false)
-            getListFiles()
-            handleCloseUploadModal()
-            if (res.status === 201){
-                setShowNot(true)
-                setToastBgColor('success')
-                setToastTextColor('text-white')
-                setToastMessage('El archivo fue subido con éxito!')
+                if (res.status === 406){
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('El archivo no es compatible o está corrupto')
+                }
+                if (res.status === 507){
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('No hay suficiente espacio en el servidor')
+                }
             }
-            if (res.status === 406){
-                setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('El archivo no es compatible o está corrupto')
-            }
-            if (res.status === 507){
-                setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('No hay suficiente espacio en el servidor')
+            catch (error) {
+                console.log(error)
             }
         }
     }
 
     const handleDeleteFile = () => { 
         const DeleteMapData = async () => {
-            const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/delete-file/`,
-                {
-                    method: 'POST',
-                    headers:{
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${Cookies.get('access-token')}`
-                    },
-                    body:JSON.stringify({
-                        'file_name':element_delete
-                    })
+            try {
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/delete-file/`,
+                    {
+                        method: 'POST',
+                        headers:{
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                        body:JSON.stringify({
+                            'file_name':element_delete
+                        })
+                    }
+                )
+                if (res.status === 200) {
+                    getListFiles()
+                    setShowNot(true)
+                    setToastBgColor('success')
+                    setToastTextColor('text-white')
+                    setToastMessage('El archivo fue eliminado con éxito!')
                 }
-            )
-            if (res.status === 200) {
-                getListFiles()
-                setShowNot(true)
-                setToastBgColor('success')
-                setToastTextColor('text-white')
-                setToastMessage('El archivo fue eliminado con éxito!')
+            }
+            catch (error) {
+                console.log(error)
             }
         }
         DeleteMapData()
@@ -172,23 +187,28 @@ function UploadWrfout(){
 
     useEffect(() => {
         const getContentSite = async () => {
-            const res = await fetch(
-                `${process.env['REACT_APP_API_URL']}/api/get-content/`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${Cookies.get('access-token')}`
-                    },
+            try {
+                const res = await fetch(
+                    `${process.env['REACT_APP_API_URL']}/api/get-content/`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                    }
+                    )
+                const data = await res.json()
+                setServerSpace(data.server_space)
+                setUsedSpace(data.used_space)
+                let percent_used = 100 - ((data.used_space / data.server_space) * 100)
+                if (percent_used < 10){
+                    setLowSpace(true)
                 }
-                )
-            const data = await res.json()
-            setServerSpace(data.server_space)
-            setUsedSpace(data.used_space)
-            let percent_used = 100 - ((data.used_space / data.server_space) * 100)
-            if (percent_used < 10){
-                setLowSpace(true)
+            }
+            catch (error) {
+                console.log(error)
             }
         }
         getContentSite()

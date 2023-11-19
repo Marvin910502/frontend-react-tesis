@@ -16,26 +16,30 @@ function Dashboard(){
 
     useEffect(() => {
         const getContentSite = async () => {
-            const res = await fetch(
-                `${process.env['REACT_APP_API_URL']}/api/get-content/`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${Cookies.get('access-token')}`
-                    },
-                }
-                )
-            const data = await res.json()
-            setSiteTitle(data.site_title)
-            setHomeImage(data.home_image)
-            setCardDiagnosticsImage(data.card_diagnostics_image)
-            setCardMyDiagnosticsImage(data.card_my_diagnostics_image)
-            setHomeContent(data.home_content)
-            setCardDiagnostics(data.card_diagnostics)
-            setCardMyDiagnostics(data.card_my_diagnostics)
-            console.log(data)
+            try {
+                const res = await fetch(
+                    `${process.env['REACT_APP_API_URL']}/api/get-content/`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                    }
+                    )
+                const data = await res.json()
+                setSiteTitle(data.site_title)
+                setHomeImage(data.home_image)
+                setCardDiagnosticsImage(data.card_diagnostics_image)
+                setCardMyDiagnosticsImage(data.card_my_diagnostics_image)
+                setHomeContent(data.home_content)
+                setCardDiagnostics(data.card_diagnostics)
+                setCardMyDiagnostics(data.card_my_diagnostics)
+            }
+            catch (error) {
+                console.log(error)
+            }
         }
         getContentSite()
     }, [])

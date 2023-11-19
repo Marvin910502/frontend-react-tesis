@@ -34,71 +34,80 @@ const Login = () => {
     const navigate = useNavigate()
 
     const getUserInfo = async(username:string) => {
-        const res = await fetch(`${process.env["REACT_APP_API_URL"]}/api/get-user/`,
-        {
-            method:'POST',
-            headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Cookies.get('access-token')}`
-            },
-            body:JSON.stringify({'username':username})
-        }
-        )
-        const response = await res.json()
-        if (response.isAdmin === false){
-            const dataUser:userInteface = {
-                username: username,
-                isAuthenticated: true,
-                name: response.name,
-                last_names: response.last_names,
-                department: response.department,
-                isAdmin: response.isAdmin,
-                isGuess: response.isGuess,
-                isManager: response.isManager,
-                profile_image: response.profile_image || 'default.png',
-                image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${response.profile_image || 'default.png'}`
+        try {
+            const res = await fetch(`${process.env["REACT_APP_API_URL"]}/api/get-user/`,
+            {
+                method:'POST',
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Cookies.get('access-token')}`
+                },
+                body:JSON.stringify({'username':username})
             }
-            localStorage.setItem('userData', JSON.stringify(dataUser))
-            user.setUser(dataUser)
-            return navigate('/')
+            )
+            const response = await res.json()
+            if (response.isAdmin === false){
+                const dataUser:userInteface = {
+                    username: username,
+                    isAuthenticated: true,
+                    name: response.name,
+                    last_names: response.last_names,
+                    department: response.department,
+                    isAdmin: response.isAdmin,
+                    isGuess: response.isGuess,
+                    isManager: response.isManager,
+                    profile_image: response.profile_image || 'default.png',
+                    image: `${process.env["REACT_APP_API_URL"]}/api/media/get-profile-image/${response.profile_image || 'default.png'}`
+                }
+                localStorage.setItem('userData', JSON.stringify(dataUser))
+                user.setUser(dataUser)
+                return navigate('/')
+            }
+            else {
+                return navigate('http://127.0.0.1:8000/usuarios')
+            }
         }
-        else {
-            return navigate('http://127.0.0.1:8000/usuarios')
+        catch (error) {
+            console.log(error)
         }
     }
 
 
     const loginUser = async(e:any)=> {
         e.preventDefault()
-
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/token/`,
-            {
-                method: 'POST',
-                credentials:'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body:JSON.stringify({
-                    'username': email,
-                    'password': password
-                })
+        try {
+            const res = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/token/`,
+                {
+                    method: 'POST',
+                    credentials:'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body:JSON.stringify({
+                        'username': email,
+                        'password': password
+                    })
+                }
+            )
+            if (res.status === 200){
+                const response = await res.json()
+                Cookies.set('access-token', response.access)
+                Cookies.set('refresh-token', response.refresh)
+                const current_user:JWT = jwt(response.access)
+                getUserInfo(current_user.email)
             }
-        )
-        if (res.status === 200){
-            const response = await res.json()
-            Cookies.set('access-token', response.access)
-            Cookies.set('refresh-token', response.refresh)
-            const current_user:JWT = jwt(response.access)
-            getUserInfo(current_user.email)
+            if (res.status === 401 || res.status === 400) {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('Usuario o contraseña incorrectos')
+            }
         }
-        if (res.status === 401 || res.status === 400) {
-            setShowNot(true)
-            setToastBgColor('danger')
-            setToastTextColor('text-white')
-            setToastMessage('Usuario o contraseña incorrectos')
+        catch (error) {
+            console.log(error)
         }
     }
 

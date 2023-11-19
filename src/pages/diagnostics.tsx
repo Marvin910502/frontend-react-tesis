@@ -230,84 +230,9 @@ function Diagnostics() {
 
 
     const getCrossSectionData = async () => {
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/cross-sections/`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${Cookies.get('access-token')}`
-                },
-                body: JSON.stringify({
-                    'url': load_path,
-                    'diagnostic': diagnostic,
-                    'units': units,
-                    'index': index,
-                })
-            }
-        )
-        if (res.status === 200) {
-            const response = await res.json()
-            console.log(response)
-            setData(JSON.parse(response.data))
-            setX(JSON.parse(response.longitudes))
-            setY(JSON.parse(response.latitudes))
-            setMinX(response.min_long)
-            setMaxX(response.max_long)
-            setMinY(response.min_lat)
-            setMaxY(response.max_lat)
-            setRangeX([response.min_long, response.max_long])
-            setRangeY([response.min_lat, response.max_lat])
-        }
-        if (res.status === 500) {
-            setShowNot(true)
-            setToastBgColor('danger')
-            setToastTextColor('text-white')
-            setToastMessage('Error del servidor!')
-        }
-        if (res.status === 400) {
-            let data = await res.json()
-            if (data.error === 'No url data') {
-                setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('No se encontró ninguna url válida!')
-            }
-            if (data.error === 'No diagnostic data') {
-                setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('No se encontró ningún diagnóstico válido!')
-            }
-            if (data.error === 'No index data') {
-                setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('No se encontró ningún index correcto!')
-            }
-            if (data.error === 'No units data') {
-                setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('No se encontró unidad de medida correcta!')
-            }
-            if (data.error === 'No polygons data') {
-                setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('No se encontro el número de polígonos!')
-            }
-        }
-
-    }
-
-
-    //hook for make a request every time than a value of the forms changes
-    useEffect(() => {
-        const getMapData = async () => {
+        try {
             const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/2d-variables-maps/`,
+                `${process.env["REACT_APP_API_URL"]}/api/cross-sections/`,
                 {
                     method: 'POST',
                     headers: {
@@ -320,36 +245,21 @@ function Diagnostics() {
                         'diagnostic': diagnostic,
                         'units': units,
                         'index': index,
-                        'polygons': polygons
                     })
                 }
             )
             if (res.status === 200) {
-                let data = await res.json()
-                console.log(data)
-                let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
-                //@ts-ignore
-                setGeoJson(geojson.features)
-                setCenter({ lat: 25, lon: -87 })
-                setZoom(6)
-                setUnits(units)
-                setMaxIndex(data.max_index)
-                //saving on the localStorage
-                const mapCurrentData: mapData = {
-                    geojson: geojson,
-                    diagnostic: diagnostic,
-                    units: units,
-                    polygons: polygons,
-                    index: index,
-                    max_index: max_index,
-                    fill_opacity: fill_opacity,
-                    line_weight: line_weight,
-                    load_path: load_path,
-                    name_files_list: name_files_list
-                }
-                setMapInicialData(mapCurrentData)
-                localStorage.setItem('mapData', JSON.stringify(mapCurrentData))
-                localStorage.setItem('units', units)
+                const response = await res.json()
+                console.log(response)
+                setData(JSON.parse(response.data))
+                setX(JSON.parse(response.longitudes))
+                setY(JSON.parse(response.latitudes))
+                setMinX(response.min_long)
+                setMaxX(response.max_long)
+                setMinY(response.min_lat)
+                setMaxY(response.max_lat)
+                setRangeX([response.min_long, response.max_long])
+                setRangeY([response.min_lat, response.max_lat])
             }
             if (res.status === 500) {
                 setShowNot(true)
@@ -390,34 +300,145 @@ function Diagnostics() {
                     setToastMessage('No se encontro el número de polígonos!')
                 }
             }
+        }
+        catch (error){
+            console.log(error)
+            setShowNot(true)
+            setToastBgColor('danger')
+            setToastTextColor('text-white')
+            setToastMessage('No hubo respuesta del servidor!')
+        }
+        
 
+    }
+
+
+    //hook for make a request every time than a value of the forms changes
+    useEffect(() => {
+        const getMapData = async () => {
+            try {
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/2d-variables-maps/`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                        body: JSON.stringify({
+                            'url': load_path,
+                            'diagnostic': diagnostic,
+                            'units': units,
+                            'index': index,
+                            'polygons': polygons
+                        })
+                    }
+                )
+                if (res.status === 200) {
+                    let data = await res.json()
+                    console.log(data)
+                    let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
+                    //@ts-ignore
+                    setGeoJson(geojson.features)
+                    setCenter({ lat: 25, lon: -87 })
+                    setZoom(6)
+                    setUnits(units)
+                    setMaxIndex(data.max_index)
+                    //saving on the localStorage
+                    const mapCurrentData: mapData = {
+                        geojson: geojson,
+                        diagnostic: diagnostic,
+                        units: units,
+                        polygons: polygons,
+                        index: index,
+                        max_index: max_index,
+                        fill_opacity: fill_opacity,
+                        line_weight: line_weight,
+                        load_path: load_path,
+                        name_files_list: name_files_list
+                    }
+                    setMapInicialData(mapCurrentData)
+                    localStorage.setItem('mapData', JSON.stringify(mapCurrentData))
+                    localStorage.setItem('units', units)
+                }
+                if (res.status === 500) {
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('Error del servidor!')
+                }
+                if (res.status === 400) {
+                    let data = await res.json()
+                    if (data.error === 'No url data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró ninguna url válida!')
+                    }
+                    if (data.error === 'No diagnostic data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró ningún diagnóstico válido!')
+                    }
+                    if (data.error === 'No index data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró ningún index correcto!')
+                    }
+                    if (data.error === 'No units data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró unidad de medida correcta!')
+                    }
+                    if (data.error === 'No polygons data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontro el número de polígonos!')
+                    }
+                }
+            }
+            catch (error){
+                console.log(error)
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('No hubo respuesta del servidor!')
+            }
         }
         if (load_path.length !== 0) {
             getMapData()
             getCrossSectionData()
         }
-        
-
     }, [index, load_path, units, polygons])
 
     // request for get the list of wrfout files in the default folder
     const getListFiles = async () => {
-        const res = await fetch(
-            `${process.env["REACT_APP_API_URL"]}/api/get-wrfout-list/`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${Cookies.get('access-token')}`
-                },
-                body: JSON.stringify({
-                    'order': 'name'
-                })
-            }
-        )
-        const data = await res.json()
-        setListFile(data)
+        try {
+            const res = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/get-wrfout-list/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${Cookies.get('access-token')}`
+                    },
+                    body: JSON.stringify({
+                        'order': 'name'
+                    })
+                }
+            )
+            const data = await res.json()
+            setListFile(data)
+        }
+        catch (error) {
+            console.log(error)
+        }
     }
 
     //for get the name of the file using the index
@@ -427,58 +448,67 @@ function Diagnostics() {
 
     //for save the map data in the database
     const saveDiagnosticData = async () => {
-        if (load_path.length !== 0) {
-            let file_name: string = ''
-            let count = 0
-            for (let i = 2; index > i; i += 3) {
-                count++
-            }
-            let time_index = index - ((count) * 3)
-            file_name = name_files_list[count] + `-index(${time_index})-${diagnostic}-${mapInicialData.units}`
-            const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/save-diagnostic/`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${Cookies.get('access-token')}`
-                    },
-                    body: JSON.stringify({
-                        'user': user.user.username,
-                        'geojson': JSON.stringify(mapInicialData.geojson),
-                        'diagnostic': diagnostic,
-                        'units': mapInicialData.units,
-                        'polygons': polygons,
-                        'file_name': file_name,
-                        'z': data,
-                        'x': x,
-                        'y': y,
-                        'minX': minX,
-                        'maxX': maxX,
-                        'minY': minY,
-                        'maxY': maxY,
-                    })
+        try {
+            if (load_path.length !== 0) {
+                let file_name: string = ''
+                let count = 0
+                for (let i = 2; index > i; i += 3) {
+                    count++
                 }
-            )
-            if (res.status === 201) {
-                setShowNot(true)
-                setToastBgColor('success')
-                setToastTextColor('text-white')
-                setToastMessage('Los datos de este mapa fueron guardados!')
+                let time_index = index - ((count) * 3)
+                file_name = name_files_list[count] + `-index(${time_index})-${diagnostic}-${mapInicialData.units}`
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/save-diagnostic/`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                        body: JSON.stringify({
+                            'user': user.user.username,
+                            'geojson': JSON.stringify(mapInicialData.geojson),
+                            'diagnostic': diagnostic,
+                            'units': mapInicialData.units,
+                            'polygons': polygons,
+                            'file_name': file_name,
+                            'z': data,
+                            'x': x,
+                            'y': y,
+                            'minX': minX,
+                            'maxX': maxX,
+                            'minY': minY,
+                            'maxY': maxY,
+                        })
+                    }
+                )
+                if (res.status === 201) {
+                    setShowNot(true)
+                    setToastBgColor('success')
+                    setToastTextColor('text-white')
+                    setToastMessage('Los datos de este mapa fueron guardados!')
+                }
+                if (res.status === 208) {
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('Ya guardo este mapa anteriormente!')
+                }
             }
-            if (res.status === 208) {
+            else {
                 setShowNot(true)
-                setToastBgColor('danger')
-                setToastTextColor('text-white')
-                setToastMessage('Ya guardo este mapa anteriormente!')
+                setToastBgColor('warning')
+                setToastTextColor('text-black')
+                setToastMessage('No hay datos para salvar')
             }
         }
-        else {
+        catch (error) {
+            console.log(error)
             setShowNot(true)
-            setToastBgColor('warning')
-            setToastTextColor('text-black')
-            setToastMessage('No hay datos para salvar')
+            setToastBgColor('danger')
+            setToastTextColor('text-white')
+            setToastMessage('No hubo respuesta del servidor!')
         }
     }
 
