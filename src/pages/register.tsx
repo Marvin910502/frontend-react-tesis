@@ -4,7 +4,7 @@ import {useNavigate, Link} from "react-router-dom";
 
 function Register(){
 
-    const department_list = ['Informática', 'Física de la Atmósfera', 'Pronósticos', 'Radares', 'Visitante', 'Estudiante']
+    const department_list = ['Visitante', 'Informática', 'Física de la Atmósfera', 'Pronósticos', 'Radares', 'Estudiante']
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [re_password, setRePassword] = useState('')
