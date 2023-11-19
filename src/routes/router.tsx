@@ -10,6 +10,7 @@ import MyDiagnostics from "../pages/my_diagnostics";
 import UploadWrfout from "../pages/upload_wrfout";
 import MyProfile from "../pages/my_profile";
 import Help from "../pages/help";
+import Page404 from "../pages/page_404";
 
 
 
@@ -34,6 +35,7 @@ const Router = () => {
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/mi-perfil' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/> : <MyProfile/> }/>
                 <Route path='/ayuda' element={ !user.user.isAuthenticated ? <Navigate to={'/login'}/>: <Help/> }/>
+                <Route path='*' element={<Page404/>}/>
             </Routes>
         </>
     )

@@ -247,17 +247,59 @@ function Diagnostics() {
                 })
             }
         )
-        const response = await res.json()
-        console.log(response)
-        setData(JSON.parse(response.data))
-        setX(JSON.parse(response.longitudes))
-        setY(JSON.parse(response.latitudes))
-        setMinX(response.min_long)
-        setMaxX(response.max_long)
-        setMinY(response.min_lat)
-        setMaxY(response.max_lat)
-        setRangeX([response.min_long, response.max_long])
-        setRangeY([response.min_lat, response.max_lat])
+        if (res.status === 200) {
+            const response = await res.json()
+            console.log(response)
+            setData(JSON.parse(response.data))
+            setX(JSON.parse(response.longitudes))
+            setY(JSON.parse(response.latitudes))
+            setMinX(response.min_long)
+            setMaxX(response.max_long)
+            setMinY(response.min_lat)
+            setMaxY(response.max_lat)
+            setRangeX([response.min_long, response.max_long])
+            setRangeY([response.min_lat, response.max_lat])
+        }
+        if (res.status === 500) {
+            setShowNot(true)
+            setToastBgColor('danger')
+            setToastTextColor('text-white')
+            setToastMessage('Error del servidor!')
+        }
+        if (res.status === 400) {
+            let data = await res.json()
+            if (data.error === 'No url data') {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('No se encontró ninguna url válida!')
+            }
+            if (data.error === 'No diagnostic data') {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('No se encontró ningún diagnóstico válido!')
+            }
+            if (data.error === 'No index data') {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('No se encontró ningún index correcto!')
+            }
+            if (data.error === 'No units data') {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('No se encontró unidad de medida correcta!')
+            }
+            if (data.error === 'No polygons data') {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('No se encontro el número de polígonos!')
+            }
+        }
+
     }
 
 
@@ -282,31 +324,73 @@ function Diagnostics() {
                     })
                 }
             )
-            let data = await res.json()
-            console.log(data)
-            let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
-            //@ts-ignore
-            setGeoJson(geojson.features)
-            setCenter({ lat: 25, lon: -87 })
-            setZoom(6)
-            setUnits(units)
-            setMaxIndex(data.max_index)
-            //saving on the localStorage
-            const mapCurrentData: mapData = {
-                geojson: geojson,
-                diagnostic: diagnostic,
-                units: units,
-                polygons: polygons,
-                index: index,
-                max_index: max_index,
-                fill_opacity: fill_opacity,
-                line_weight: line_weight,
-                load_path: load_path,
-                name_files_list: name_files_list
+            if (res.status === 200) {
+                let data = await res.json()
+                console.log(data)
+                let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
+                //@ts-ignore
+                setGeoJson(geojson.features)
+                setCenter({ lat: 25, lon: -87 })
+                setZoom(6)
+                setUnits(units)
+                setMaxIndex(data.max_index)
+                //saving on the localStorage
+                const mapCurrentData: mapData = {
+                    geojson: geojson,
+                    diagnostic: diagnostic,
+                    units: units,
+                    polygons: polygons,
+                    index: index,
+                    max_index: max_index,
+                    fill_opacity: fill_opacity,
+                    line_weight: line_weight,
+                    load_path: load_path,
+                    name_files_list: name_files_list
+                }
+                setMapInicialData(mapCurrentData)
+                localStorage.setItem('mapData', JSON.stringify(mapCurrentData))
+                localStorage.setItem('units', units)
             }
-            setMapInicialData(mapCurrentData)
-            localStorage.setItem('mapData', JSON.stringify(mapCurrentData))
-            localStorage.setItem('units', units)
+            if (res.status === 500) {
+                setShowNot(true)
+                setToastBgColor('danger')
+                setToastTextColor('text-white')
+                setToastMessage('Error del servidor!')
+            }
+            if (res.status === 400) {
+                let data = await res.json()
+                if (data.error === 'No url data') {
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('No se encontró ninguna url válida!')
+                }
+                if (data.error === 'No diagnostic data') {
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('No se encontró ningún diagnóstico válido!')
+                }
+                if (data.error === 'No index data') {
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('No se encontró ningún index correcto!')
+                }
+                if (data.error === 'No units data') {
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('No se encontró unidad de medida correcta!')
+                }
+                if (data.error === 'No polygons data') {
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('No se encontro el número de polígonos!')
+                }
+            }
+
         }
         if (load_path.length !== 0) {
             getMapData()
