@@ -45,10 +45,14 @@ const units_lables = {
     'defaultkg': 'kg'
 }
 
+const graphic_color_palets = ['Blackbody', 'Bluered', 'Blues', 'Earth', 'Electric', 'Greens', 'Greys', 'Hot', 'Jet', 'Picnic', 'Portland', 'Rainbow', 'RdBu', 'Reds', 'Viridis', 'YlGnBu', 'YlOrRd', 'Plasma', 'Cividis']
+
 
 
 interface diagnosticDataElement{
     geojson: string,
+    lat: number,
+    lon: number,
     diagnostic_label:string,
     units_label:string,
     polygons: number,
@@ -72,12 +76,14 @@ function MyDiagnostics(){
     const [showModal, setShowModal] = useState(false)
     const [showModalGraph, setShowModalGraph] = useState(false)
     const [showDelete, setShowDelete] = useState(false)
+    const [center, setCenter] = useState([28, -89])
     const [diagnostic, setDiagnostic] = useState<diagnosticDataElement>()
     const [diagnostic_label, setDiagnosticLabel] = useState<string>('')
+    const [graphic_palet, setGraphicPalet] = useState('RdBu')
     const [geojsonObj, setGeoJsonObj] = useState<typeof GeoJsonObject | null>(null)
     const [units, setUnits] = useState<string>(localStorage.getItem('units') || 'degC')
     const [line_weight, setLineWeight] = useState( 0 )
-    const [fill_opacity, setFillOpacity] = useState( 0.3 )
+    const [fill_opacity, setFillOpacity] = useState( 0.5 )
     const [element_delete, setElementDelete] = useState<string>('')
     const [filter, setFilter] = useState('')
     const [full_list_save, setFullListSave] = useState<diagnosticDataElement[]>()
@@ -116,9 +122,11 @@ function MyDiagnostics(){
     }
 
     const handleOpenModal = (diagnostic_element:diagnosticDataElement) => {
+        console.log(diagnostic_element)
         setDiagnostic(diagnostic_element)
         let geo:typeof GeoJsonObject = JSON.parse(diagnostic_element.geojson).features
         setGeoJsonObj(geo)
+        setCenter([diagnostic_element.lat, diagnostic_element.lon])
         setShowModal(true)
     }
 
@@ -291,7 +299,7 @@ function MyDiagnostics(){
                                 <th className="bg-primary text-white text-center pb-3" style={{width:'50px'}}>
                                     #
                                 </th>
-                                <th className="bg-primary text-white" style={{width:'600px'}}>
+                                <th className="bg-primary text-white" style={{width:'350px'}}>
                                 <IconButton title="Ordenar por diagnóstico" color="inherit" onClick={e=>setOrder('diagnostic')}><FormatLineSpacing/></IconButton>
                                     Diagnóstico
                                 </th>
@@ -299,7 +307,7 @@ function MyDiagnostics(){
                                 <IconButton title="Ordenar por unidad" color="inherit" onClick={e=>setOrder('unit')}><FormatLineSpacing/></IconButton>
                                     Unidad
                                 </th>
-                                <th className="bg-primary text-white" style={{width:'280px'}}>
+                                <th className="bg-primary text-white" style={{width:'480px'}}>
                                 <IconButton title="Ordenar por archivo" color="inherit" onClick={e=>setOrder('file_name')}><FormatLineSpacing/></IconButton>
                                     Archivo
                                 </th>
@@ -317,7 +325,7 @@ function MyDiagnostics(){
                                     <td className="pt-3"><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={diagnostic_element.file_name}>{diagnostic_element.file_name}</div></td>
                                     <td>
                                         <IconButton title="Abrir Mapa" color="success" onClick={e=>handleOpenModal(diagnostic_element)}><Map/></IconButton>
-                                        <IconButton title="Abrir Mapa" color="success" onClick={e=>handleOpenModalGraph(diagnostic_element)}><Equalizer/></IconButton>
+                                        <IconButton title="Abrir Gráfica" color="success" onClick={e=>handleOpenModalGraph(diagnostic_element)}><Equalizer/></IconButton>
                                         <IconButton title="Eliminar" color="error" onClick={e=>handleOpenDeleteModal(diagnostic_element.file_name)}><Delete/></IconButton>
                                     </td>
                                 </tr>
@@ -336,9 +344,10 @@ function MyDiagnostics(){
                 <Modal.Body style={{ maxHeight: '67vh' }}>
                     <Card style={{ maxHeight: '63vh' }}>
                         <Maps2dArea 
+                            key={JSON.stringify(center)}
                             //@ts-ignore
                             geojson={geojsonObj} 
-                            center={{lat:25, lon:-89}}
+                            center={center}
                             zoom={6} 
                             fill_opacity={fill_opacity} 
                             line_weight={line_weight}
@@ -400,6 +409,7 @@ function MyDiagnostics(){
                             z={data}
                             x={x}
                             y={y}
+                            colorscale={graphic_palet}
                             //@ts-ignore
                             labelTitle={diagnostic_label}
                             //@ts-ignore
@@ -415,7 +425,7 @@ function MyDiagnostics(){
                             <h4 className="mt-2 fs-6">Cortes Verticales</h4>
                             <hr className="mt-0 mb-1" />
                             <Row className="ps-3 pe-3">
-                                <Col xl={6} lg={6} md={6} sm={12} className="ps-4 pe-4">
+                                <Col xl={4} lg={4} md={4} sm={12} className="ps-4 pe-4">
                                     <Form.Group className='mt-3'>
                                         <Form.Label>Seleccionar Rango de Longitudes ( x )</Form.Label>    
                                         <Slider
@@ -430,7 +440,7 @@ function MyDiagnostics(){
                                         />
                                     </Form.Group>
                                 </Col>
-                                <Col xl={6} lg={6} md={6} sm={12} className="ps-4 pe-4">
+                                <Col xl={4} lg={4} md={4} sm={12} className="ps-4 pe-4">
                                     <Form.Group className='mt-3'>
                                         <Form.Label>Seleccionar Rango de Latitudes ( y )</Form.Label>   
                                         <Slider
@@ -445,6 +455,16 @@ function MyDiagnostics(){
                                         />
                                     </Form.Group>
                                 </Col>
+                                <Col xl={4} lg={4} md={4} sm={12} >
+                                <Form.Group className='mt-3 ps-3 pe-3 mb-3'>
+                                    <Form.Label>Paletas del gráfico</Form.Label>
+                                    <Form.Select onChange={e => setGraphicPalet(e.target.value)} defaultValue={graphic_palet}>
+                                        {graphic_color_palets.map((color) => (
+                                            <option value={color}>{color}</option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
                             </Row>
                         </Card>
                     </Row>
