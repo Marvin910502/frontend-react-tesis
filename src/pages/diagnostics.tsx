@@ -97,7 +97,7 @@ const defaultMapData: mapData = {
     geojson: {},
     center: [25, -89],
     diagnostic: 'punto_de_condensacion',
-    map_palet: 'RdYlBu',
+    map_palet: 'coolwarm',
     graphic_palet: 'RdBu',
     units: 'degC',
     polygons: 10,
