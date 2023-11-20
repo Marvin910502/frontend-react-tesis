@@ -37,6 +37,10 @@ const diagnostic_labels = {
 }
 
 
+const map_color_palets = ['RdYlBu', 'viridis', 'plasma', 'inferno', 'magma', 'cividis', 'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds', 'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu', 'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn', 'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic', 'twilight_shifted', 'hsv', 'Pastel1', 'Paired', 'Accent', 'Dark2', 'Set1', 'tab10']
+
+const graphic_color_palets = ['Blackbody', 'Bluered', 'Blues', 'Earth', 'Electric', 'Greens', 'Greys', 'Hot', 'Jet', 'Picnic', 'Portland', 'Rainbow', 'RdBu', 'Reds', 'Viridis', 'YlGnBu', 'YlOrRd', 'Plasma', 'Cividis']
+
 const units_lables = {
     'degC': 'grados C',
     'degCT': 'gradosC',
@@ -74,7 +78,10 @@ export interface FILE {
 
 interface mapData {
     geojson: typeof GeoJsonObject,
+    center: number[],
     diagnostic: string,
+    map_palet: string,
+    graphic_palet: string,
     units: string,
     polygons: number,
     index: number,
@@ -88,12 +95,15 @@ interface mapData {
 
 const defaultMapData: mapData = {
     geojson: {},
+    center: [25, -89],
     diagnostic: 'punto_de_condensacion',
+    map_palet: 'RdYlBu',
+    graphic_palet: 'RdBu',
     units: 'degC',
     polygons: 10,
     index: 0,
     max_index: 2,
-    fill_opacity: 0.3,
+    fill_opacity: 0.5,
     line_weight: 0,
     load_path: [],
     name_files_list: []
@@ -107,10 +117,13 @@ function Diagnostics() {
     let [mapInicialData, setMapInicialData] = useState<mapData>(JSON.parse(localStorage.getItem('mapData') || 'null') || defaultMapData)
 
     const [geojson, setGeoJson] = useState<typeof GeoJsonObject | null>({})
-    const [center, setCenter] = useState({ lat: 25, lon: -87 })
+    const [center, setCenter] = useState<number[]>(mapInicialData.center)
+    const [key, setKey] = useState('[25, -89]')
     const [zoom, setZoom] = useState(6)
     const [units, setUnits] = useState<string>(localStorage.getItem('units') || 'degC')
     const [diagnostic, setDiagnostic] = useState<string>(mapInicialData.diagnostic)
+    const [map_palet, setMapPalet] = useState(mapInicialData.map_palet)
+    const [graphic_palet, setGraphicPalet] = useState(mapInicialData.graphic_palet)
     const [list_units, setListUnits] = useState<UNIT[]>()
     const [max_index, setMaxIndex] = useState<number>(mapInicialData.max_index)
     const [index, setIndex] = useState<number>(mapInicialData.index)
@@ -331,6 +344,7 @@ function Diagnostics() {
                             'username': user.user.username,
                             'url': load_path,
                             'diagnostic': diagnostic,
+                            'map_palet': map_palet,
                             'units': units,
                             'index': index,
                             'polygons': polygons
@@ -343,14 +357,17 @@ function Diagnostics() {
                     let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
                     //@ts-ignore
                     setGeoJson(geojson.features)
-                    setCenter({ lat: 25, lon: -87 })
+                    setCenter([data.lat, data.lon])
                     setZoom(6)
                     setUnits(units)
                     setMaxIndex(data.max_index)
                     //saving on the localStorage
                     const mapCurrentData: mapData = {
                         geojson: geojson,
+                        center: [data.lat, data.lon],
                         diagnostic: diagnostic,
+                        map_palet: map_palet,
+                        graphic_palet: graphic_palet,
                         units: units,
                         polygons: polygons,
                         index: index,
@@ -416,7 +433,7 @@ function Diagnostics() {
             getMapData()
             getCrossSectionData()
         }
-    }, [index, load_path, units, polygons])
+    }, [index, load_path, units, polygons, map_palet])
 
     // request for get the list of wrfout files in the default folder
     const getListFiles = async () => {
@@ -444,10 +461,6 @@ function Diagnostics() {
         }
     }
 
-    //for get the name of the file using the index
-    const getFileName = () => {
-
-    }
 
     //for save the map data in the database
     const saveDiagnosticData = async () => {
@@ -459,7 +472,8 @@ function Diagnostics() {
                     count++
                 }
                 let time_index = index - ((count) * 3)
-                file_name = name_files_list[count] + `-index(${time_index})-${diagnostic}-${mapInicialData.units}`
+                //@ts-ignore
+                file_name = name_files_list[count] + `-index(${time_index})-${map_palet}-${diagnostic}-${units_lables[mapInicialData.units]}`
                 const res = await fetch(
                     `${process.env["REACT_APP_API_URL"]}/api/save-diagnostic/`,
                     {
@@ -472,6 +486,8 @@ function Diagnostics() {
                         body: JSON.stringify({
                             'username': user.user.username,
                             'geojson': JSON.stringify(mapInicialData.geojson),
+                            'lat': center[0],
+                            'lon': center[1],
                             'diagnostic': diagnostic,
                             'units': mapInicialData.units,
                             'polygons': polygons,
@@ -616,6 +632,8 @@ function Diagnostics() {
         }
     }
 
+    console.log(center)
+
     return (
         <>
             <div className='ps-2 pe-2 mb-3'>
@@ -623,13 +641,14 @@ function Diagnostics() {
                     <Col xl={6}>
                         <Card className='p-3 shadow' style={{ minHeight: '100%', maxHeight: '70vh' }}>
                             <Maps2dArea
-                                //@ts-ignore
-                                geojson={geojson}
-                                center={center}
-                                zoom={zoom}
-                                units={units}
-                                line_weight={line_weight}
-                                fill_opacity={fill_opacity}
+                            key={JSON.stringify(center)}
+                            //@ts-ignore
+                            geojson={geojson}
+                            center={center}
+                            zoom={zoom}
+                            units={units}
+                            line_weight={line_weight}
+                            fill_opacity={fill_opacity}
                             />
                         </Card>
                     </Col>
@@ -640,6 +659,7 @@ function Diagnostics() {
                                     z={data}
                                     x={x}
                                     y={y}
+                                    colorscale={graphic_palet}
                                     //@ts-ignore
                                     labelTitle={diagnostic_labels[diagnostic]}
                                     //@ts-ignore
@@ -697,9 +717,29 @@ function Diagnostics() {
                 </Row>
                 <Row className='ps-3 pe-0 mt-3'>
                     <Card className="shadow">
-                        <h4 className="mt-2">Estilos de Mapa</h4>
+                        <h4 className="mt-2">Estilos</h4>
                         <hr className="mt-0 mb-1" />
                         <Row>
+                            <Col xl={6} lg={6} md={6} sm={12} >
+                                <Form.Group className='mt-3 ps-3 pe-3 mb-3'>
+                                    <Form.Label>Paletas del mapa</Form.Label>
+                                    <Form.Select onChange={e => setMapPalet(e.target.value)} defaultValue={map_palet}>
+                                        {map_color_palets.map((color) => (
+                                            <option value={color}>{color}</option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                            <Col xl={6} lg={6} md={6} sm={12} >
+                                <Form.Group className='mt-3 ps-3 pe-3 mb-3'>
+                                    <Form.Label>Paletas del gráfico</Form.Label>
+                                    <Form.Select onChange={e => setGraphicPalet(e.target.value)} defaultValue={graphic_palet}>
+                                        {graphic_color_palets.map((color) => (
+                                            <option value={color}>{color}</option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
                             <Col xl={6} lg={6} md={6} sm={12} >
                                 <Form.Group className='mt-3 ps-3 pe-3'>
                                     <Form.Label>Grueso de lineas: {line_weight}px</Form.Label>
@@ -727,7 +767,7 @@ function Diagnostics() {
                                         onChange={(e, n) => { setFillOpacity(n as number) }}
                                     />
                                 </Form.Group>
-                            </Col>
+                            </Col>                            
                         </Row>
                     </Card>
                 </Row>
@@ -852,9 +892,10 @@ function Diagnostics() {
                 <Modal.Body style={{ maxHeight: '67vh' }}>
                     <Card style={{ maxHeight: '63vh' }}>
                         <Maps2dArea
+                            key={JSON.stringify(center)}
                             //@ts-ignore
                             geojson={geojson}
-                            center={{ lat: 25, lon: -89 }}
+                            center={center}
                             zoom={6}
                             fill_opacity={fill_opacity}
                             line_weight={line_weight}
@@ -915,6 +956,7 @@ function Diagnostics() {
                             z={data}
                             x={x}
                             y={y}
+                            colorscale={graphic_palet}
                             //@ts-ignore
                             labelTitle={diagnostic_labels[diagnostic]}
                             //@ts-ignore

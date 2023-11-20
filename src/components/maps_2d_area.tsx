@@ -7,6 +7,7 @@ import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
 import {ControlPosition} from 'leaflet'
 import {Card} from "react-bootstrap";
 import { canvas } from 'leaflet';
+import { match } from 'assert';
 
 interface PluginOptions extends Object {
     cropImageByInnerWH?: boolean, // crop blank opacity from image borders
@@ -33,11 +34,9 @@ interface PluginOptions extends Object {
 
 
 interface Map{
+    key:string | null,
     geojson:GeoJsonObject[] | null | undefined,
-    center: {
-        lat:number,
-        lon:number
-    },
+    center:number[] | null | undefined,
     zoom:number
     units:string | null
     line_weight:number,
@@ -84,7 +83,9 @@ const ScreenShot = () => {
 
 
 
-const Maps2dArea:React.FC<Map> = ({geojson,
+const Maps2dArea:React.FC<Map> = ({
+                                  key,
+                                  geojson,
                                   center,
                                   zoom,
                                   units,
@@ -117,13 +118,15 @@ const Maps2dArea:React.FC<Map> = ({geojson,
         }
     }
 
-
+    console.log(center)
     return(
         <>
             <MapContainer
+                key={key}
                 style={{ width: "100%", maxHeight:'100%'}}
                 zoom={zoom}
-                center={[center.lat, center.lon]}
+                //@ts-ignore
+                center={center}
                 scrollWheelZoom={false}
                 fadeAnimation={true}
                 markerZoomAnimation={true}

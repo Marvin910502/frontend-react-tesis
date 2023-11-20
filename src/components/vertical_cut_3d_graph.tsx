@@ -7,6 +7,7 @@ interface GRAPH_3D{
     x:number[] | undefined,
     y:number[] | undefined,
     z:number[] | undefined,
+    colorscale: string | undefined,
     rangeX:number[] | undefined,
     rangeY:number[] | undefined,
     labelTitle:string | undefined,
@@ -36,7 +37,7 @@ const units_lables = {
 }
 
 
-const VerticalCut3dGraph:React.FC<GRAPH_3D> = ({ x, y, z, labelTitle, labelUnit, rangeX, rangeY}) => {
+const VerticalCut3dGraph:React.FC<GRAPH_3D> = ({ x, y, z, colorscale, labelTitle, labelUnit, rangeX, rangeY}) => {
 
     const bgColor = localStorage.getItem('themeMode') === 'dark' ? '#212529' : 'white'
     const textColor = localStorage.getItem('themeMode') === 'dark' ? 'white' : '#212529'
@@ -90,6 +91,7 @@ const VerticalCut3dGraph:React.FC<GRAPH_3D> = ({ x, y, z, labelTitle, labelUnit,
         x: x,
         y: y,
         type: 'surface',
+        colorscale: colorscale,
         contours: {
             z: {
               show:true,
@@ -103,6 +105,7 @@ const VerticalCut3dGraph:React.FC<GRAPH_3D> = ({ x, y, z, labelTitle, labelUnit,
     return(
         <>
             <Plot
+                key={Math.random()}
                 data={data}
                 layout={layout}
                 config={{responsive:true}}
