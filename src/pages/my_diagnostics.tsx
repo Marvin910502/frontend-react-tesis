@@ -54,6 +54,7 @@ interface diagnosticDataElement{
     lat: number,
     lon: number,
     diagnostic_label:string,
+    date_time:string,
     units_label:string,
     polygons: number,
     file_name:string,
@@ -220,7 +221,7 @@ function MyDiagnostics(){
             if (full_list_save && filter !== ''){
                 setFilter(filter.replace(/\s+/g, '_').toLowerCase())
                 for (let i=0; i<full_list_save.length; i++) {
-                    if (full_list_save[i].diagnostic_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].units_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].file_name.toLowerCase().replace(/\s+/g, '_').includes(filter)) {
+                    if (full_list_save[i].diagnostic_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].units_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].date_time.toLowerCase().replace(/\s+/g, '_').includes(filter)) {
                         list_new_diagnostics.push(full_list_save[i])
                     }
                 }
@@ -299,7 +300,7 @@ function MyDiagnostics(){
                                 <th className="bg-primary text-white text-center pb-3" style={{width:'50px'}}>
                                     #
                                 </th>
-                                <th className="bg-primary text-white" style={{width:'350px'}}>
+                                <th className="bg-primary text-white" style={{width:'550px'}}>
                                 <IconButton title="Ordenar por diagnóstico" color="inherit" onClick={e=>setOrder('diagnostic')}><FormatLineSpacing/></IconButton>
                                     Diagnóstico
                                 </th>
@@ -307,9 +308,9 @@ function MyDiagnostics(){
                                 <IconButton title="Ordenar por unidad" color="inherit" onClick={e=>setOrder('unit')}><FormatLineSpacing/></IconButton>
                                     Unidad
                                 </th>
-                                <th className="bg-primary text-white" style={{width:'480px'}}>
-                                <IconButton title="Ordenar por archivo" color="inherit" onClick={e=>setOrder('file_name')}><FormatLineSpacing/></IconButton>
-                                    Archivo
+                                <th className="bg-primary text-white" style={{width:'280px'}}>
+                                <IconButton title="Ordenar por archivo" color="inherit" onClick={e=>setOrder('date_time')}><FormatLineSpacing/></IconButton>
+                                    Fecha de Diagnóstico
                                 </th>
                                 <th className="bg-primary text-white pb-3" style={{width:'150px'}}>
                                     Administrar
@@ -322,7 +323,7 @@ function MyDiagnostics(){
                                     <td className="text-center pt-3">{index+1}</td>
                                     <td className="pt-3">{diagnostic_element.diagnostic_label}</td>
                                     <td className="pt-3">{diagnostic_element.units_label}</td>
-                                    <td className="pt-3"><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={diagnostic_element.file_name}>{diagnostic_element.file_name}</div></td>
+                                    <td className="pt-3"><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={diagnostic_element.date_time}>{diagnostic_element.date_time}</div></td>
                                     <td>
                                         <IconButton title="Abrir Mapa" color="success" onClick={e=>handleOpenModal(diagnostic_element)}><Map/></IconButton>
                                         <IconButton title="Abrir Gráfica" color="success" onClick={e=>handleOpenModalGraph(diagnostic_element)}><Equalizer/></IconButton>

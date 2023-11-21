@@ -118,7 +118,7 @@ function Diagnostics() {
 
     const [geojson, setGeoJson] = useState<typeof GeoJsonObject | null>({})
     const [center, setCenter] = useState<number[]>(mapInicialData.center)
-    const [key, setKey] = useState('[25, -89]')
+    const [date_time, setDateTime] = useState()
     const [zoom, setZoom] = useState(6)
     const [units, setUnits] = useState<string>(localStorage.getItem('units') || 'degC')
     const [diagnostic, setDiagnostic] = useState<string>(mapInicialData.diagnostic)
@@ -361,6 +361,7 @@ function Diagnostics() {
                     setZoom(6)
                     setUnits(units)
                     setMaxIndex(data.max_index)
+                    setDateTime(data.date_time)
                     //saving on the localStorage
                     const mapCurrentData: mapData = {
                         geojson: geojson,
@@ -488,6 +489,7 @@ function Diagnostics() {
                             'geojson': JSON.stringify(mapInicialData.geojson),
                             'lat': center[0],
                             'lon': center[1],
+                            'date_time': date_time,
                             'diagnostic': diagnostic,
                             'units': mapInicialData.units,
                             'polygons': polygons,
@@ -671,14 +673,14 @@ function Diagnostics() {
                         </Row>
                         <Row className="mt-3">
                             <Card className='p-3 shadow'>
-                                <h5 className="mt-1 mb-0">Pantalla Completa</h5>
+                                <h5 className="mt-1 ms-2 mb-0">Fecha: {date_time}</h5>
                                 <hr className="mt-0, mb-0" />
                                 <Row className="p-2">
                                     <Col xl={6} className="text-center">
-                                        <Button className="w-100" onClick={e => setShowModal(true)}><OpenWith className="me-2" />Mapa</Button>
+                                        <Button className="w-100" onClick={e => setShowModal(true)}><OpenWith className="me-2" />Ampliar Mapa</Button>
                                     </Col>
                                     <Col xl={6} className="text-center">
-                                        <Button className="w-100" onClick={e => setShowModalGraph(true)}><OpenWith className="me-2" />Gráfica</Button>
+                                        <Button className="w-100" onClick={e => setShowModalGraph(true)}><OpenWith className="me-2" />Ampliar Gráfica</Button>
                                     </Col>
                                 </Row>
                             </Card>
