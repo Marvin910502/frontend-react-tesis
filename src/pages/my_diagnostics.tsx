@@ -54,6 +54,7 @@ interface diagnosticDataElement{
     lat: number,
     lon: number,
     diagnostic_label:string,
+    map_palet:string,
     date_time:string,
     units_label:string,
     polygons: number,
@@ -300,15 +301,19 @@ function MyDiagnostics(){
                                 <th className="bg-primary text-white text-center pb-3" style={{width:'50px'}}>
                                     #
                                 </th>
-                                <th className="bg-primary text-white" style={{width:'550px'}}>
+                                <th className="bg-primary text-white" style={{width:'350px'}}>
                                 <IconButton title="Ordenar por diagnóstico" color="inherit" onClick={e=>setOrder('diagnostic')}><FormatLineSpacing/></IconButton>
                                     Diagnóstico
+                                </th>
+                                <th className="bg-primary text-white" style={{width:'200px'}}>
+                                <IconButton title="Ordenar por diagnóstico" color="inherit" onClick={e=>setOrder('map_palet')}><FormatLineSpacing/></IconButton>
+                                    Paleta de Mapa
                                 </th>
                                 <th className="bg-primary text-white" style={{width:'120px'}}>
                                 <IconButton title="Ordenar por unidad" color="inherit" onClick={e=>setOrder('unit')}><FormatLineSpacing/></IconButton>
                                     Unidad
                                 </th>
-                                <th className="bg-primary text-white" style={{width:'280px'}}>
+                                <th className="bg-primary text-white" style={{width:'200px'}}>
                                 <IconButton title="Ordenar por archivo" color="inherit" onClick={e=>setOrder('date_time')}><FormatLineSpacing/></IconButton>
                                     Fecha de Diagnóstico
                                 </th>
@@ -322,6 +327,7 @@ function MyDiagnostics(){
                                 <tr>
                                     <td className="text-center pt-3">{index+1}</td>
                                     <td className="pt-3">{diagnostic_element.diagnostic_label}</td>
+                                    <td className="pt-3">{diagnostic_element.map_palet}</td>
                                     <td className="pt-3">{diagnostic_element.units_label}</td>
                                     <td className="pt-3"><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={diagnostic_element.date_time}>{diagnostic_element.date_time}</div></td>
                                     <td>

@@ -11,6 +11,7 @@ import UploadWrfout from "../pages/upload_wrfout";
 import MyProfile from "../pages/my_profile";
 import Help from "../pages/help";
 import Page404 from "../pages/page_404";
+import MaxMin from "../pages/max_min";
 
 
 
@@ -26,6 +27,7 @@ const Router = () => {
                 <Route path='/diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <Diagnostics/>} />
                 <Route path='/mis-diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MyDiagnostics/> }/>
                 <Route path='/subir-wrfout' element={ (!user.user.isAuthenticated || !user.user.isManager) ? <Navigate to={'/logout'}/> : <UploadWrfout/> }/>
+                <Route path='/maximos-minimos' element={<MaxMin/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/logout' element={<Logout/>}/>
                 <Route path='/register' element={<Register/>}/>
