@@ -122,6 +122,8 @@ function Diagnostics() {
     const [zoom, setZoom] = useState(6)
     const [units, setUnits] = useState<string>(localStorage.getItem('units') || 'degC')
     const [diagnostic, setDiagnostic] = useState<string>(mapInicialData.diagnostic)
+    const [maximum, setMaximum] = useState<number>()
+    const [minimum, setMinimum] = useState<number>()
     const [map_palet, setMapPalet] = useState(mapInicialData.map_palet)
     const [graphic_palet, setGraphicPalet] = useState(mapInicialData.graphic_palet)
     const [list_units, setListUnits] = useState<UNIT[]>()
@@ -362,6 +364,8 @@ function Diagnostics() {
                     setUnits(units)
                     setMaxIndex(data.max_index)
                     setDateTime(data.date_time)
+                    setMaximum(data.maximum)
+                    setMinimum(data.minimum)
                     //saving on the localStorage
                     const mapCurrentData: mapData = {
                         geojson: geojson,
@@ -468,13 +472,8 @@ function Diagnostics() {
         try {
             if (load_path.length !== 0) {
                 let file_name: string = ''
-                let count = 0
-                for (let i = 2; index > i; i += 3) {
-                    count++
-                }
-                let time_index = index - ((count) * 3)
                 //@ts-ignore
-                file_name = name_files_list[count] + `-index(${time_index})-${map_palet}-${diagnostic}-${units_lables[mapInicialData.units]}`
+                file_name = `${map_palet}-${diagnostic}-${units_lables[mapInicialData.units]}-${date_time}`
                 const res = await fetch(
                     `${process.env["REACT_APP_API_URL"]}/api/save-diagnostic/`,
                     {
@@ -491,6 +490,9 @@ function Diagnostics() {
                             'lon': center[1],
                             'date_time': date_time,
                             'diagnostic': diagnostic,
+                            'map_palet': map_palet,
+                            'maximum': maximum,
+                            'minimum': minimum,
                             'units': mapInicialData.units,
                             'polygons': polygons,
                             'file_name': file_name,
