@@ -171,6 +171,7 @@ function MyDiagnostics(){
             const response:diagnosticDataElement[] = await res.json()
             setListDiagnostics(response)
             setFullListSave(response)
+            console.log(list_diagnostics)
         }
         catch (error) {
             console.log(error)
@@ -212,6 +213,7 @@ function MyDiagnostics(){
             }
         }
         DeleteMapData()
+        GetDiagnosticList()
         setShowDelete(false)
     }
 

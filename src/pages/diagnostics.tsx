@@ -8,7 +8,7 @@ import { UserContext } from "../context/context_provider"
 import MyToast from "../components/my_toast"
 import VerticalCut3dGraph from "../components/vertical_cut_3d_graph"
 import { OpenWith } from "@mui/icons-material"
-import { Slider } from "@mui/material"
+import { LinearProgress, Slider } from "@mui/material"
 
 
 const diagnostic_options = [
@@ -77,7 +77,6 @@ export interface FILE {
 
 
 interface mapData {
-    geojson: typeof GeoJsonObject,
     center: number[],
     diagnostic: string,
     map_palet: string,
@@ -94,7 +93,6 @@ interface mapData {
 
 
 const defaultMapData: mapData = {
-    geojson: {},
     center: [25, -89],
     diagnostic: 'punto_de_condensacion',
     map_palet: 'coolwarm',
@@ -142,6 +140,9 @@ function Diagnostics() {
     const [toast_bg_color, setToastBgColor] = useState<string>('')
     const [toast_text_color, setToastTextColor] = useState('')
 
+    const [spinnerMap, setSpinnerMap] = useState(false)
+    const [spinnerGraph, setSpinnerGraph] = useState(false)
+
     const [data, setData] = useState()
     const [x, setX] = useState()
     const [y, setY] = useState()
@@ -156,6 +157,7 @@ function Diagnostics() {
     const [showModalGraph, setShowModalGraph] = useState(false)
 
     let initial_list_states: boolean[]
+
 
     //for cleaning the localStorage map data
     const handleCleaning = () => {
@@ -187,6 +189,13 @@ function Diagnostics() {
                 return UnitsOptions(diagnostic)[i].label
         }
     }
+
+
+    const handleOpacity = async (n:number) => {
+        setTimeout(resolve => 1000)
+        setFillOpacity(n)
+    }
+
 
     //for update localStorage with the current data after every change in this values
     useEffect(() => {
@@ -244,95 +253,103 @@ function Diagnostics() {
     useEffect(() => { setUnits(mapInicialData.units || 'degC') }, [mapInicialData])
 
 
-    const getCrossSectionData = async () => {
-        try {
-            const res = await fetch(
-                `${process.env["REACT_APP_API_URL"]}/api/cross-sections/`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${Cookies.get('access-token')}`
-                    },
-                    body: JSON.stringify({
-                        'username': user.user.username,
-                        'url': load_path,
-                        'diagnostic': diagnostic,
-                        'units': units,
-                        'index': index,
-                    })
+    useEffect(() => {
+        const getCrossSectionData = async () => {
+            try {
+                setSpinnerGraph(true)
+                const res = await fetch(
+                    `${process.env["REACT_APP_API_URL"]}/api/cross-sections/`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${Cookies.get('access-token')}`
+                        },
+                        body: JSON.stringify({
+                            'username': user.user.username,
+                            'url': load_path,
+                            'diagnostic': diagnostic,
+                            'units': units,
+                            'index': index,
+                        })
+                    }
+                )
+                if (res.status === 200) {
+                    setSpinnerGraph(false)
+                    const response = await res.json()
+                    console.log(response)
+                    setData(JSON.parse(response.data))
+                    setX(JSON.parse(response.longitudes))
+                    setY(JSON.parse(response.latitudes))
+                    setMinX(response.min_long)
+                    setMaxX(response.max_long)
+                    setMinY(response.min_lat)
+                    setMaxY(response.max_lat)
+                    setRangeX([response.min_long, response.max_long])
+                    setRangeY([response.min_lat, response.max_lat])
                 }
-            )
-            if (res.status === 200) {
-                const response = await res.json()
-                console.log(response)
-                setData(JSON.parse(response.data))
-                setX(JSON.parse(response.longitudes))
-                setY(JSON.parse(response.latitudes))
-                setMinX(response.min_long)
-                setMaxX(response.max_long)
-                setMinY(response.min_lat)
-                setMaxY(response.max_lat)
-                setRangeX([response.min_long, response.max_long])
-                setRangeY([response.min_lat, response.max_lat])
+                if (res.status === 500) {
+                    setSpinnerGraph(false)
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('Error del servidor!')
+                }
+                if (res.status === 400) {
+                    setSpinnerGraph(false)
+                    let data = await res.json()
+                    if (data.error === 'No url data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró ninguna url válida!')
+                    }
+                    if (data.error === 'No diagnostic data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró ningún diagnóstico válido!')
+                    }
+                    if (data.error === 'No index data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró ningún index correcto!')
+                    }
+                    if (data.error === 'No units data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontró unidad de medida correcta!')
+                    }
+                    if (data.error === 'No polygons data') {
+                        setShowNot(true)
+                        setToastBgColor('danger')
+                        setToastTextColor('text-white')
+                        setToastMessage('No se encontro el número de polígonos!')
+                    }
+                }
             }
-            if (res.status === 500) {
+            catch (error){
+                console.log(error)
                 setShowNot(true)
                 setToastBgColor('danger')
                 setToastTextColor('text-white')
-                setToastMessage('Error del servidor!')
-            }
-            if (res.status === 400) {
-                let data = await res.json()
-                if (data.error === 'No url data') {
-                    setShowNot(true)
-                    setToastBgColor('danger')
-                    setToastTextColor('text-white')
-                    setToastMessage('No se encontró ninguna url válida!')
-                }
-                if (data.error === 'No diagnostic data') {
-                    setShowNot(true)
-                    setToastBgColor('danger')
-                    setToastTextColor('text-white')
-                    setToastMessage('No se encontró ningún diagnóstico válido!')
-                }
-                if (data.error === 'No index data') {
-                    setShowNot(true)
-                    setToastBgColor('danger')
-                    setToastTextColor('text-white')
-                    setToastMessage('No se encontró ningún index correcto!')
-                }
-                if (data.error === 'No units data') {
-                    setShowNot(true)
-                    setToastBgColor('danger')
-                    setToastTextColor('text-white')
-                    setToastMessage('No se encontró unidad de medida correcta!')
-                }
-                if (data.error === 'No polygons data') {
-                    setShowNot(true)
-                    setToastBgColor('danger')
-                    setToastTextColor('text-white')
-                    setToastMessage('No se encontro el número de polígonos!')
-                }
+                setToastMessage('No hubo respuesta del servidor!')
             }
         }
-        catch (error){
-            console.log(error)
-            setShowNot(true)
-            setToastBgColor('danger')
-            setToastTextColor('text-white')
-            setToastMessage('No hubo respuesta del servidor!')
+        if (load_path.length !== 0) {
+            getCrossSectionData()
         }
-        
-
-    }
+    },[index, load_path, units])
 
 
-    //hook for make a request every time than a value of the forms changes
+    //hook for make a request every time than a value of the form changes
     useEffect(() => {
         const getMapData = async () => {
             try {
+                setSpinnerMap(true)
                 const res = await fetch(
                     `${process.env["REACT_APP_API_URL"]}/api/2d-variables-maps/`,
                     {
@@ -354,11 +371,12 @@ function Diagnostics() {
                     }
                 )
                 if (res.status === 200) {
+                    setSpinnerMap(false)
                     let data = await res.json()
                     console.log(data)
                     let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
                     //@ts-ignore
-                    setGeoJson(geojson.features)
+                    setGeoJson(geojson)
                     setCenter([data.lat, data.lon])
                     setZoom(6)
                     setUnits(units)
@@ -368,7 +386,6 @@ function Diagnostics() {
                     setMinimum(data.minimum)
                     //saving on the localStorage
                     const mapCurrentData: mapData = {
-                        geojson: geojson,
                         center: [data.lat, data.lon],
                         diagnostic: diagnostic,
                         map_palet: map_palet,
@@ -387,12 +404,14 @@ function Diagnostics() {
                     localStorage.setItem('units', units)
                 }
                 if (res.status === 500) {
+                    setSpinnerMap(false)
                     setShowNot(true)
                     setToastBgColor('danger')
                     setToastTextColor('text-white')
                     setToastMessage('Error del servidor!')
                 }
                 if (res.status === 400) {
+                    setSpinnerMap(false)
                     let data = await res.json()
                     if (data.error === 'No url data') {
                         setShowNot(true)
@@ -436,9 +455,9 @@ function Diagnostics() {
         }
         if (load_path.length !== 0) {
             getMapData()
-            getCrossSectionData()
         }
     }, [index, load_path, units, polygons, map_palet])
+
 
     // request for get the list of wrfout files in the default folder
     const getListFiles = async () => {
@@ -485,7 +504,7 @@ function Diagnostics() {
                         },
                         body: JSON.stringify({
                             'username': user.user.username,
-                            'geojson': JSON.stringify(mapInicialData.geojson),
+                            'geojson': JSON.stringify(geojson),
                             'lat': center[0],
                             'lon': center[1],
                             'date_time': date_time,
@@ -644,10 +663,11 @@ function Diagnostics() {
                 <Row className='mt-3'>
                     <Col xl={6}>
                         <Card className='p-3 shadow' style={{ minHeight: '100%', maxHeight: '70vh' }}>
+                            {spinnerMap && <LinearProgress />}
                             <Maps2dArea
                             key={JSON.stringify(center)}
                             //@ts-ignore
-                            geojson={geojson}
+                            geojson={geojson.features}
                             center={center}
                             zoom={zoom}
                             units={units}
@@ -659,6 +679,7 @@ function Diagnostics() {
                     <Col xl={6}>
                         <Row>
                             <Card className='p-3 shadow' style={{ minHeight: '65vh', maxHeight: '70vh' }}>
+                                {spinnerGraph && <LinearProgress />}
                                 <VerticalCut3dGraph
                                     z={data}
                                     x={x}
@@ -898,7 +919,7 @@ function Diagnostics() {
                         <Maps2dArea
                             key={JSON.stringify(center)}
                             //@ts-ignore
-                            geojson={geojson}
+                            geojson={geojson.features}
                             center={center}
                             zoom={6}
                             fill_opacity={fill_opacity}
@@ -937,7 +958,8 @@ function Diagnostics() {
                                             step={0.05}
                                             min={0}
                                             max={1}
-                                            onChange={(e, n) => { setFillOpacity(n as number) }}
+                                            onChange={(e, n) => { handleOpacity(n as number) }}
+                                            
                                         />
                                     </Form.Group>
                                 </Col>

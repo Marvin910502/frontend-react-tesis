@@ -27,7 +27,7 @@ const Router = () => {
                 <Route path='/diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <Diagnostics/>} />
                 <Route path='/mis-diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MyDiagnostics/> }/>
                 <Route path='/subir-wrfout' element={ (!user.user.isAuthenticated || !user.user.isManager) ? <Navigate to={'/logout'}/> : <UploadWrfout/> }/>
-                <Route path='/maximos-minimos' element={<MaxMin/>}/>
+                <Route path='/maximos-minimos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MaxMin/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/logout' element={<Logout/>}/>
                 <Route path='/register' element={<Register/>}/>
