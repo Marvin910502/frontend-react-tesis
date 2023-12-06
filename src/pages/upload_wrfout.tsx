@@ -101,6 +101,7 @@ function UploadWrfout(){
         }
 
         if (valid_file === true){
+            formData.append('username', user.user.username)
             //@ts-ignore
             formData.append('file', file)
             try {
