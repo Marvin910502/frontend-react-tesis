@@ -1,9 +1,10 @@
 import {useState, useEffect, useContext} from "react";
 import { Card, Row, Col, Table, Form, InputGroup, Modal, Button, Image } from "react-bootstrap";
-import { CircularProgress, IconButton } from '@mui/material';
+import { CircularProgress, IconButton, Pagination } from '@mui/material';
 import { Delete, FileUpload, FormatLineSpacing, Search, Storage } from '@mui/icons-material';
 import Cookies from "js-cookie";
 import { FILE } from "./diagnostics";
+import { mapData } from "./diagnostics";
 import MyToast from "../components/my_toast";
 import { UserContext } from "../context/context_provider";
 
@@ -25,8 +26,8 @@ function UploadWrfout(){
     const [used_space, setUsedSpace] = useState<number>(0)
     const [low_space, setLowSpace] = useState<boolean>(false)
     const [progress, setProgress] = useState(false)
-
-    console.log(file)
+    const [count, setCount] = useState<number>(0)
+    const [current_page, setCurrentPage] = useState<number>(1)
 
     let [showNot, setShowNot] = useState(false)
     let [toast_message, setToastMessage] = useState<string>('')
@@ -71,6 +72,7 @@ function UploadWrfout(){
             const data = await res.json()
             setListFile(data)
             setFullListSave(data)
+            setCount(Math.ceil(data.length/12))
         }
         catch (error) {
             console.log(error)
@@ -161,6 +163,15 @@ function UploadWrfout(){
                     setToastBgColor('success')
                     setToastTextColor('text-white')
                     setToastMessage('El archivo fue eliminado con éxito!')
+                    let mapInicialData:mapData = JSON.parse(localStorage.getItem('mapData') || 'null')
+                    if (mapInicialData !== null) {
+                        for (let i=0; i<mapInicialData.name_files_list.length; i++) {
+                            if (mapInicialData.name_files_list[i] === element_delete) {
+                                localStorage.removeItem('mapData')
+                            }
+                        }
+                    }
+
                 }
             }
             catch (error) {
@@ -183,6 +194,10 @@ function UploadWrfout(){
                     }
                 }
                 setListFile(list_new_maps)
+                setCount(Math.ceil(list_new_maps.length/12))
+            }
+            if (full_list_save && filter === '') {
+                setCount(Math.ceil(full_list_save.length/12))
             } 
         }
         handleFilter()
@@ -232,7 +247,7 @@ function UploadWrfout(){
                         </Col>
                         <Col xl={4} lg={4} md={12} sm={12}>
                             <InputGroup>
-                                <Form.Control type="text" placeholder="Buscar" onChange={e=>setFilter(e.target.value)}/>
+                                <Form.Control type="search" placeholder="Buscar" onChange={e=>setFilter(e.target.value)}/>
                                 <Search className="mt-2 ms-1"/>
                             </InputGroup>
                         </Col>
@@ -264,8 +279,9 @@ function UploadWrfout(){
                         </thead>
                         <tbody>
                             {list_file && list_file.map((file, index)=>(
+                                (index < 12 * current_page && index >= 12 * (0 + current_page - 1))  &&
                                 <tr>
-                                    <td className="text-center pt-3">{index}</td>
+                                    <td className="text-center pt-3">{index+1}</td>
                                     <td className="ps-3 pt-3">{file.name}</td>
                                     <td className="text-center pt-3">{file.size} mb</td>
                                     <td className="text-center">
@@ -276,6 +292,9 @@ function UploadWrfout(){
                         </tbody>
                     </Table>
                     </div>
+                    <div className="align-item-center">
+                        <div className="text-center p-2 mt-3 rounded align-self-center" style={{backgroundColor:'white', display:'inline-block', border:'2px solid gray'}}><Pagination variant="outlined" color={'primary'} count={count} page={current_page} onChange={(e, page)=>setCurrentPage(page)}/></div>
+                    </div>   
                 </Card.Body>
             </Card>
 

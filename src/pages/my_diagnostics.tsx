@@ -3,7 +3,7 @@ import { Card, Table, Modal, Row, Col, Form, Button, InputGroup } from "react-bo
 import GeoJsonObject from "geojson";
 import Cookies from "js-cookie";
 import { UserContext } from "../context/context_provider";
-import { IconButton, Slider } from "@mui/material";
+import { IconButton, Pagination, Slider } from "@mui/material";
 import { Delete, FormatLineSpacing, Search, Map, Equalizer } from '@mui/icons-material';
 import Maps2dArea from "../components/maps_2d_area";
 import VerticalCut3dGraph from "../components/vertical_cut_3d_graph";
@@ -70,16 +70,49 @@ interface diagnosticDataElement{
     max_y: number,
 }
 
+interface diagnosticListElement{
+    diagnostic_id: number,
+    diagnostic_label: string,
+    units_label: string,
+    map_palet: string,
+    file_name: string,
+    diagnostic: string,
+    date_time: string,
+    units: string,
+}
+
+
+
+
 function MyDiagnostics(){
 
     const user = useContext(UserContext)
-    const [list_diagnostics, setListDiagnostics] = useState<diagnosticDataElement[]>()
+    const [list_diagnostics, setListDiagnostics] = useState<diagnosticListElement[]>()
     const [order, setOrder] = useState<string>('diagnostic')
     const [showModal, setShowModal] = useState(false)
     const [showModalGraph, setShowModalGraph] = useState(false)
     const [showDelete, setShowDelete] = useState(false)
     const [center, setCenter] = useState([28, -89])
-    const [diagnostic, setDiagnostic] = useState<diagnosticDataElement>()
+    const [diagnostic, setDiagnostic] = useState<diagnosticDataElement>({
+        geojson: '',
+        lat: 0,
+        lon: 0,
+        diagnostic_label:'',
+        map_palet:'',
+        date_time:'',
+        units_label:'',
+        polygons: 0,
+        file_name:'',
+        diagnostic: '',
+        units: '',
+        data: [],
+        x: [],
+        y: [],
+        min_x: 0,
+        max_x: 0,
+        min_y: 0,
+        max_y: 0,
+    })
     const [diagnostic_label, setDiagnosticLabel] = useState<string>('')
     const [graphic_palet, setGraphicPalet] = useState('RdBu')
     const [geojsonObj, setGeoJsonObj] = useState<typeof GeoJsonObject | null>(null)
@@ -88,7 +121,9 @@ function MyDiagnostics(){
     const [fill_opacity, setFillOpacity] = useState( 0.5 )
     const [element_delete, setElementDelete] = useState<string>('')
     const [filter, setFilter] = useState('')
-    const [full_list_save, setFullListSave] = useState<diagnosticDataElement[]>()
+    const [full_list_save, setFullListSave] = useState<diagnosticListElement[]>()
+    const [count, setCount] = useState<number>(0)
+    const [current_page, setCurrentPage] = useState<number>(1)
 
     const [data, setData] = useState<Array<number>>()
     const [x, setX] = useState<Array<number>>()
@@ -123,31 +158,13 @@ function MyDiagnostics(){
         setElementDelete(element)
     }
 
-    const handleOpenModal = (diagnostic_element:diagnosticDataElement) => {
-        console.log(diagnostic_element)
-        setDiagnostic(diagnostic_element)
-        let geo:typeof GeoJsonObject = JSON.parse(diagnostic_element.geojson).features
-        setGeoJsonObj(geo)
-        setCenter([diagnostic_element.lat, diagnostic_element.lon])
+    const handleOpenModal = (diagnostic_id:number) => {
+        GetDiagnostic(diagnostic_id)
         setShowModal(true)
     }
 
-    const handleOpenModalGraph = (diagnostic_element:diagnosticDataElement) => {
-        setDiagnostic(diagnostic_element)
-        setDiagnosticLabel(diagnostic_element.diagnostic_label)
-        setUnits(diagnostic_element.units_label)
-        //@ts-ignore
-        setData(JSON.parse(diagnostic_element.data))
-        //@ts-ignore
-        setX(JSON.parse(diagnostic_element.x))
-        //@ts-ignore
-        setY(JSON.parse(diagnostic_element.y))
-        setMinX(diagnostic_element.min_x)
-        setMaxX(diagnostic_element.max_x)
-        setMinY(diagnostic_element.min_y)
-        setMaxY(diagnostic_element.max_y)
-        setRangeX([diagnostic_element.min_x, diagnostic_element.max_x])
-        setRangeY([diagnostic_element.min_y, diagnostic_element.max_y])
+    const handleOpenModalGraph = (diagnostic_id:number) => {
+        GetDiagnostic(diagnostic_id)
         setShowModalGraph(true)
     }
 
@@ -168,10 +185,11 @@ function MyDiagnostics(){
                     })
                 }
             )
-            const response:diagnosticDataElement[] = await res.json()
+            const response:diagnosticListElement[] = await res.json()
             setListDiagnostics(response)
             setFullListSave(response)
-            console.log(list_diagnostics)
+            setCount(Math.ceil(response.length/13))
+            console.log(response.length/12)
         }
         catch (error) {
             console.log(error)
@@ -181,6 +199,51 @@ function MyDiagnostics(){
     useEffect(()=>{
         GetDiagnosticList()
     },[order])
+
+
+
+    const GetDiagnostic = async (diagnostic_id:number) => {
+        try {
+            const res = await fetch(
+                `${process.env["REACT_APP_API_URL"]}/api/get-diagnostic/`,
+                {
+                    method: 'POST',
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${Cookies.get('access-token')}`
+                    },
+                    body:JSON.stringify({
+                        'diagnostic_id':diagnostic_id
+                    })
+                }
+            )
+            const response:diagnosticDataElement = await res.json()
+            let geo:typeof GeoJsonObject = JSON.parse(response.geojson).features
+            setGeoJsonObj(geo)
+            setCenter([response.lat, response.lon])
+            setDiagnosticLabel(response.diagnostic_label)
+            setUnits(response.units_label)
+            //@ts-ignore
+            setData(JSON.parse(response.data))
+            //@ts-ignore
+            setX(JSON.parse(response.x))
+            //@ts-ignore
+            setY(JSON.parse(response.y))
+            setMinX(response.min_x)
+            setMaxX(response.max_x)
+            setMinY(response.min_y)
+            setMaxY(response.max_y)
+            setRangeX([response.min_x, response.max_x])
+            setRangeY([response.min_y, response.max_y])
+            setDiagnostic(response)
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+
 
     const handleDeleteMapData = (file_name:string) => { 
         const DeleteMapData = async () => {
@@ -220,7 +283,7 @@ function MyDiagnostics(){
     useEffect(()=>{
         setListDiagnostics(full_list_save) 
         const handleFilter = () => {
-            const list_new_diagnostics:diagnosticDataElement[] = []
+            const list_new_diagnostics:diagnosticListElement[] = []
             if (full_list_save && filter !== ''){
                 setFilter(filter.replace(/\s+/g, '_').toLowerCase())
                 for (let i=0; i<full_list_save.length; i++) {
@@ -229,7 +292,11 @@ function MyDiagnostics(){
                     }
                 }
                 setListDiagnostics(list_new_diagnostics)
+                setCount(Math.ceil(list_new_diagnostics.length/13))
             } 
+            if (full_list_save && filter === '') {
+                setCount(Math.ceil(full_list_save.length/13))
+            }
         }
         handleFilter()
     },[filter])
@@ -289,7 +356,7 @@ function MyDiagnostics(){
                         </Col>
                         <Col xl={4} lg={4} md={6} sm={12}>
                             <InputGroup>
-                                <Form.Control type="text" placeholder="Buscar" onChange={e=>setFilter(e.target.value)}/>
+                                <Form.Control type="search" placeholder="Buscar" onChange={e=>setFilter(e.target.value)}/>
                                 <Search className="mt-2 ms-1"/>
                             </InputGroup>
                         </Col>
@@ -326,22 +393,27 @@ function MyDiagnostics(){
                         </thead>
                         <tbody>
                             {list_diagnostics && list_diagnostics.map((diagnostic_element, index)=>(
-                                <tr>
-                                    <td className="text-center pt-3">{index+1}</td>
-                                    <td className="pt-3">{diagnostic_element.diagnostic_label}</td>
-                                    <td className="pt-3">{diagnostic_element.map_palet}</td>
-                                    <td className="pt-3">{diagnostic_element.units_label}</td>
-                                    <td className="pt-3"><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={diagnostic_element.date_time}>{diagnostic_element.date_time}</div></td>
-                                    <td>
-                                        <IconButton title="Abrir Mapa" color="success" onClick={e=>handleOpenModal(diagnostic_element)}><Map/></IconButton>
-                                        <IconButton title="Abrir Gráfica" color="success" onClick={e=>handleOpenModalGraph(diagnostic_element)}><Equalizer/></IconButton>
-                                        <IconButton title="Eliminar" color="error" onClick={e=>handleOpenDeleteModal(diagnostic_element.file_name)}><Delete/></IconButton>
-                                    </td>
-                                </tr>
+                                (index < 13 * current_page && index >= 13 * (0 + current_page - 1))  &&
+                                    <tr>
+                                        <td className="text-center pt-3">{index+1}</td>
+                                        <td className="pt-3">{diagnostic_element.diagnostic_label}</td>
+                                        <td className="pt-3">{diagnostic_element.map_palet}</td>
+                                        <td className="pt-3">{diagnostic_element.units_label}</td>
+                                        <td className="pt-3"><div style={{height:'auto', maxHeight:'20px', overflow:'hidden'}} title={diagnostic_element.date_time}>{diagnostic_element.date_time}</div></td>
+                                        <td>
+                                            <IconButton title="Abrir Mapa" color="success" onClick={e=>handleOpenModal(diagnostic_element.diagnostic_id)}><Map/></IconButton>
+                                            <IconButton title="Abrir Gráfica" color="success" onClick={e=>handleOpenModalGraph(diagnostic_element.diagnostic_id)}><Equalizer/></IconButton>
+                                            <IconButton title="Eliminar" color="error" onClick={e=>handleOpenDeleteModal(diagnostic_element.file_name)}><Delete/></IconButton>
+                                        </td>
+                                    </tr>
+                                
                             ))}
                         </tbody>
                     </Table>
                     </div>
+                    <div className="align-item-center">
+                        <div className="text-center p-2 mt-3 rounded align-self-center" style={{backgroundColor:'white', display:'inline-block', border:'2px solid gray'}}><Pagination variant="outlined" color={'primary'} count={count} page={current_page} onChange={(e, page)=>setCurrentPage(page)}/></div>
+                    </div>    
                 </Card.Body>
             </Card>
 

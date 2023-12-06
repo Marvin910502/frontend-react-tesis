@@ -44,7 +44,7 @@ const VerticalCut3dGraph:React.FC<GRAPH_3D> = ({ x, y, z, colorscale, labelTitle
 
     const layout = {
         autosize:true,
-        height:400,
+        height:600,
         margin:{
             l:0,
             r:0,
