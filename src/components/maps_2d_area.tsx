@@ -62,7 +62,8 @@ const units_lables = {
     'defaultK': 'K',
     'defaultm2': 'm2',
     'default%': 'porciento',
-    'defaultkg': 'kg'
+    'defaultkg': 'kg',
+    'defaultm2a': 'm2',
 }
 
 let screen_shot = false
@@ -80,7 +81,6 @@ const ScreenShot = () => {
         <></>
     )
 }
-
 
 
 const Maps2dArea:React.FC<Map> = ({
@@ -118,7 +118,7 @@ const Maps2dArea:React.FC<Map> = ({
         }
     }
 
-    console.log(center)
+    console.log(units)
     return(
         <>
             <MapContainer
@@ -152,7 +152,7 @@ const Maps2dArea:React.FC<Map> = ({
                         {legend_list.map((geoItem, index) => (
                             <>
                                 <div style={{display:"flex"}}>
-                                    <div key={'grade-'+index} style={{backgroundColor:`${geoItem.color}`, opacity:'0.3', width:'15px', height:'15px', marginRight:'5px'}}></div>
+                                    <div key={'grade-'+index} style={{backgroundColor:`${geoItem.color}`, opacity:'0.5', width:'15px', height:'15px', marginRight:'5px'}}></div>
                                     <div style={{float:'right'}}>
                                         <label htmlFor={'grade'+index}>{geoItem.label}</label>
                                     </div>

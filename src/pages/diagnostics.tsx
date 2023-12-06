@@ -76,7 +76,7 @@ export interface FILE {
 }
 
 
-interface mapData {
+export interface mapData {
     center: number[],
     diagnostic: string,
     map_palet: string,

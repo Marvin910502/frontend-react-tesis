@@ -4,6 +4,7 @@ import { CircularProgress, IconButton, Pagination } from '@mui/material';
 import { Delete, FileUpload, FormatLineSpacing, Search, Storage } from '@mui/icons-material';
 import Cookies from "js-cookie";
 import { FILE } from "./diagnostics";
+import { mapData } from "./diagnostics";
 import MyToast from "../components/my_toast";
 import { UserContext } from "../context/context_provider";
 
@@ -162,6 +163,15 @@ function UploadWrfout(){
                     setToastBgColor('success')
                     setToastTextColor('text-white')
                     setToastMessage('El archivo fue eliminado con éxito!')
+                    let mapInicialData:mapData = JSON.parse(localStorage.getItem('mapData') || 'null')
+                    if (mapInicialData !== null) {
+                        for (let i=0; i<mapInicialData.name_files_list.length; i++) {
+                            if (mapInicialData.name_files_list[i] === element_delete) {
+                                localStorage.removeItem('mapData')
+                            }
+                        }
+                    }
+
                 }
             }
             catch (error) {
