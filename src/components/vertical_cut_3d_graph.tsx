@@ -1,5 +1,4 @@
 //@ts-nocheck
-import React, { useEffect, useRef } from "react";
 import Plot from 'react-plotly.js';
 
 
@@ -12,28 +11,6 @@ interface GRAPH_3D{
     rangeY:number[] | undefined,
     labelTitle:string | undefined,
     labelUnit:string | undefined,
-}
-
-const units_lables = {
-    'degC': 'grados C',
-    'degCT': 'grados C',
-    'degF': 'grados F',
-    'K': 'K',
-    'Pa': 'Pa',
-    'hPa': 'hPa',
-    'mb': 'mb',
-    'torr': 'torr',
-    'mmhg': 'mmhg',
-    'atm': 'atm',
-    'm': 'm',
-    'km': 'km',
-    'dm': 'dm',
-    'ft': 'pies',
-    'mi': 'millas',
-    'defaultK': 'K',
-    'defaultm2': 'm2',
-    'default%': 'porciento',
-    'defaultkg': 'kg'
 }
 
 

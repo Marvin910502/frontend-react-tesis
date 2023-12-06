@@ -1,4 +1,3 @@
-import { type } from "os"
 import Plot from "react-plotly.js"
 
 interface GRAPH {
@@ -13,7 +12,6 @@ interface GRAPH {
 const MaxMinGraph:React.FC<GRAPH> = ({diag_label, max_list, min_list, dates, unit}) => {
 
     const bgColor = localStorage.getItem('themeMode') === 'dark' ? '#212529' : 'white'
-    const plotBgColor = localStorage.getItem('themeMode') === 'dark' ? '#212529' : 'white'
     const textColor = localStorage.getItem('themeMode') === 'dark' ? 'white' : '#212529'
 
     

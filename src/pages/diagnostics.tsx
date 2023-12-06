@@ -173,24 +173,6 @@ function Diagnostics() {
         setShowModalGraph(false)
     }
 
-    const getDiagnosticLabel = () => {
-        for (let i = 0; i < diagnostic_options.length; i++) {
-            if (diagnostic_options[i].value === diagnostic)
-                return diagnostic_options[i].label
-        }
-    }
-
-    const getUnistLabel = () => {
-        //@ts-ignore
-        for (let i = 0; i < UnitsOptions(diagnostic)?.length; i++) {
-            //@ts-ignore
-            if (UnitsOptions(diagnostic)[i].unit === units)
-                //@ts-ignore
-                return UnitsOptions(diagnostic)[i].label
-        }
-    }
-
-
     const handleOpacity = async (n:number) => {
         setTimeout(resolve => 1000)
         setFillOpacity(n)
@@ -674,9 +656,9 @@ function Diagnostics() {
                             />
                         </Card>
                     </Col>
-                    <Col xl={6}>
+                    <Col xl={6} className="ps-4 ps-xl-2 ps-lg-4 ps-md-4 pe-xl-2 pe-lg-4 pe-md-4 pe-4">
                         <Row>
-                            <Card className='p-3 shadow' style={{ minHeight: '65vh', maxHeight: '70vh' }}>
+                            <Card className='p-3 mt-xl-0 mt-lg-3 mt-md-3 mt-sm-3 mt-3 shadow' style={{ minHeight: '650px', maxHeight: '700pxvh' }}>
                                 {spinnerGraph && <LinearProgress />}
                                 <VerticalCut3dGraph
                                     z={data}
@@ -700,7 +682,7 @@ function Diagnostics() {
                                     <Col xl={6} className="text-center">
                                         <Button className="w-100" onClick={e => setShowModal(true)}><OpenWith className="me-2" />Ampliar Mapa</Button>
                                     </Col>
-                                    <Col xl={6} className="text-center">
+                                    <Col xl={6} className="text-center mt-xl-0 mt-lg-2 mt-md-2 mt-sm-2 mt-2">
                                         <Button className="w-100" onClick={e => setShowModalGraph(true)}><OpenWith className="me-2" />Ampliar Gráfica</Button>
                                     </Col>
                                 </Row>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Toast, ToastContainer, Button, Row, Col, CloseButton } from 'react-bootstrap';
+import { Toast, ToastContainer, Button, Row, Col } from 'react-bootstrap';
 
 interface toastInterface {
   show:boolean,

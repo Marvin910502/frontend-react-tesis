@@ -6,7 +6,6 @@ import { UserContext } from "../context/context_provider";
 import jwt from 'jwt-decode';
 import { userInteface } from "../context/context_provider";
 import MyToast from "../components/my_toast";
-import { profile } from "console";
 
 interface JWT {token_type: string, exp: number, iat: number, jti: string, email: string}
 

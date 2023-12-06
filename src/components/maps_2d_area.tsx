@@ -1,13 +1,10 @@
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet'
 import {GeoJsonObject} from "geojson";
 import 'leaflet/dist/leaflet.css'
-import React, { useState } from "react";
 import Control from "react-leaflet-custom-control";
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
 import {ControlPosition} from 'leaflet'
 import {Card} from "react-bootstrap";
-import { canvas } from 'leaflet';
-import { match } from 'assert';
 
 interface PluginOptions extends Object {
     cropImageByInnerWH?: boolean, // crop blank opacity from image borders
@@ -66,11 +63,7 @@ const units_lables = {
     'defaultm2a': 'm2',
 }
 
-let screen_shot = false
-
 const screen = new SimpleMapScreenshoter(pluginCreeen)
-
-window.onload = ()=>{screen_shot=true}
 
 const ScreenShot = () => {
     const map = useMap()

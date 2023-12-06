@@ -23,28 +23,6 @@ const diagnostic_labels = {
 }
 
 
-const units_lables = {
-    'degC': 'grados C',
-    'degCT': 'gradosC',
-    'degF': 'grados F',
-    'K': 'K',
-    'Pa': 'Pa',
-    'hPa': 'hPa',
-    'mb': 'mb',
-    'torr': 'torr',
-    'mmhg': 'mmhg',
-    'atm': 'atm',
-    'm': 'm',
-    'km': 'km',
-    'dm': 'dm',
-    'ft': 'pies',
-    'mi': 'millas',
-    'defaultK': 'K',
-    'defaultm2': 'm2',
-    'default%': 'porciento',
-    'defaultkg': 'kg'
-}
-
 const graphic_color_palets = ['Blackbody', 'Bluered', 'Blues', 'Earth', 'Electric', 'Greens', 'Greys', 'Hot', 'Jet', 'Picnic', 'Portland', 'Rainbow', 'RdBu', 'Reds', 'Viridis', 'YlGnBu', 'YlOrRd', 'Plasma', 'Cividis']
 
 

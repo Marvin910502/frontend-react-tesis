@@ -1,5 +1,5 @@
 import React from "react";
-import {Navbar, Container, Nav, Image} from "react-bootstrap";
+import {Navbar, Container, Nav } from "react-bootstrap";
 import {Link, useLocation} from "react-router-dom";
 import Switch from "./switch";
 import SidebarDropdown from "./sidebar_dropdown";
