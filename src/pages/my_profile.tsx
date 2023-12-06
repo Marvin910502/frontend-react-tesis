@@ -26,7 +26,6 @@ function MyProfile(){
     const [validEmail, setValidEmail] = useState(false)
     let navigate = useNavigate()
 
-    console.log(user.user)
 
     const [showNot, setShowNot] = useState(false)
     const [toast_message, setToastMessage] = useState<string>('')
@@ -97,7 +96,6 @@ function MyProfile(){
                 }
             )
             if (res.status === 201){
-                console.log(profile_image)
                 const dataUser:userInteface = {
                     username: email,
                     isAuthenticated: true,

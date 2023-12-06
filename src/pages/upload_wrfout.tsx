@@ -1,5 +1,5 @@
 import {useState, useEffect, useContext} from "react";
-import { Card, Row, Col, Table, Form, InputGroup, Modal, Button, Image } from "react-bootstrap";
+import { Card, Row, Col, Table, Form, InputGroup, Modal, Button } from "react-bootstrap";
 import { CircularProgress, IconButton, Pagination } from '@mui/material';
 import { Delete, FileUpload, FormatLineSpacing, Search, Storage } from '@mui/icons-material';
 import Cookies from "js-cookie";
@@ -112,7 +112,6 @@ function UploadWrfout(){
                         body:formData
                     }
                 )
-                const data = await res.json()
                 setProgress(false)
                 getListFiles()
                 handleCloseUploadModal()

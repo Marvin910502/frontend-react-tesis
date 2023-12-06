@@ -278,7 +278,6 @@ function Diagnostics() {
                 if (res.status === 200) {
                     setSpinnerGraph(false)
                     const response = await res.json()
-                    console.log(response)
                     setData(JSON.parse(response.data))
                     setX(JSON.parse(response.longitudes))
                     setY(JSON.parse(response.latitudes))
@@ -373,7 +372,6 @@ function Diagnostics() {
                 if (res.status === 200) {
                     setSpinnerMap(false)
                     let data = await res.json()
-                    console.log(data)
                     let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
                     //@ts-ignore
                     setGeoJson(geojson)
@@ -655,7 +653,7 @@ function Diagnostics() {
         }
     }
 
-    console.log(center)
+
 
     return (
         <>

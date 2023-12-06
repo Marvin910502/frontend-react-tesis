@@ -118,7 +118,7 @@ const Maps2dArea:React.FC<Map> = ({
         }
     }
 
-    console.log(units)
+  
     return(
         <>
             <MapContainer

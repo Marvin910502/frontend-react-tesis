@@ -23,7 +23,6 @@ const Help = () => {
                     )
                 const data = await res.json()
                 setHelpContent(data.help_content)
-                console.log(data)
             }
             catch (error) {
                 console.log(error)

@@ -189,7 +189,6 @@ function MyDiagnostics(){
             setListDiagnostics(response)
             setFullListSave(response)
             setCount(Math.ceil(response.length/13))
-            console.log(response.length/12)
         }
         catch (error) {
             console.log(error)
