@@ -134,6 +134,12 @@ function UploadWrfout(){
                     setToastTextColor('text-white')
                     setToastMessage('No hay suficiente espacio en el servidor')
                 }
+                if (res.status === 208){
+                    setShowNot(true)
+                    setToastBgColor('danger')
+                    setToastTextColor('text-white')
+                    setToastMessage('El archivo ya existe en el servidor')
+                }
             }
             catch (error) {
                 console.log(error)

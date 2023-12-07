@@ -1,3 +1,4 @@
+import { Close } from "@mui/icons-material";
 import { useState } from "react";
 import { Toast, ToastContainer, Button, Row, Col } from 'react-bootstrap';
 
@@ -29,7 +30,7 @@ const MyToast:React.FC<toastInterface> = ({show, close, position, body_text, bg_
                 {body_text}
               </Col>
               <Col className="col-2">
-                  <Button variant="white" className={`p-0 ps-2 pe-2 ${text_color}`} aria-label="cerrar" onClick={() => handleToast()}>X</Button>
+                  <Button variant="white" className={`p-0 ps-2 pe-2 ${text_color}`} aria-label="cerrar" onClick={() => handleToast()}><Close/></Button>
               </Col>
             </Row>
           </Toast.Body>

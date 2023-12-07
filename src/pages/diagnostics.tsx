@@ -7,7 +7,7 @@ import GeoJsonObject from 'geojson'
 import { UserContext } from "../context/context_provider"
 import MyToast from "../components/my_toast"
 import VerticalCut3dGraph from "../components/vertical_cut_3d_graph"
-import { CleaningServices, OpenWith, Save } from "@mui/icons-material"
+import { Delete, OpenWith, Save } from "@mui/icons-material"
 import { LinearProgress, Slider } from "@mui/material"
 
 
@@ -155,6 +155,7 @@ function Diagnostics() {
 
     const [showModal, setShowModal] = useState(false)
     const [showModalGraph, setShowModalGraph] = useState(false)
+    const [blockUnits, setBlockUnits] = useState(false)
 
     let initial_list_states: boolean[]
 
@@ -237,6 +238,7 @@ function Diagnostics() {
 
     useEffect(() => {
         const getCrossSectionData = async () => {
+            setBlockUnits(true)
             try {
                 setSpinnerGraph(true)
                 const res = await fetch(
@@ -258,6 +260,7 @@ function Diagnostics() {
                     }
                 )
                 if (res.status === 200) {
+                    setBlockUnits(false)
                     setSpinnerGraph(false)
                     const response = await res.json()
                     setData(JSON.parse(response.data))
@@ -271,6 +274,7 @@ function Diagnostics() {
                     setRangeY([response.min_lat, response.max_lat])
                 }
                 if (res.status === 500) {
+                    setBlockUnits(false)
                     setSpinnerGraph(false)
                     setShowNot(true)
                     setToastBgColor('danger')
@@ -278,6 +282,7 @@ function Diagnostics() {
                     setToastMessage('Error del servidor!')
                 }
                 if (res.status === 400) {
+                    setBlockUnits(false)
                     setSpinnerGraph(false)
                     let data = await res.json()
                     if (data.error === 'No url data') {
@@ -329,6 +334,7 @@ function Diagnostics() {
     //hook for make a request every time than a value of the form changes
     useEffect(() => {
         const getMapData = async () => {
+            setBlockUnits(true)
             try {
                 setSpinnerMap(true)
                 const res = await fetch(
@@ -352,6 +358,7 @@ function Diagnostics() {
                     }
                 )
                 if (res.status === 200) {
+                    setBlockUnits(false)
                     setSpinnerMap(false)
                     let data = await res.json()
                     let geojson: typeof GeoJsonObject = JSON.parse(data.geojson)
@@ -384,6 +391,7 @@ function Diagnostics() {
                     localStorage.setItem('units', units)
                 }
                 if (res.status === 500) {
+                    setBlockUnits(false)
                     setSpinnerMap(false)
                     setShowNot(true)
                     setToastBgColor('danger')
@@ -391,6 +399,7 @@ function Diagnostics() {
                     setToastMessage('Error del servidor!')
                 }
                 if (res.status === 400) {
+                    setBlockUnits(false)
                     setSpinnerMap(false)
                     let data = await res.json()
                     if (data.error === 'No url data') {
@@ -468,6 +477,7 @@ function Diagnostics() {
 
     //for save the map data in the database
     const saveDiagnosticData = async () => {
+        setShowNot(false)
         try {
             if (load_path.length !== 0) {
                 let file_name: string = ''
@@ -827,7 +837,7 @@ function Diagnostics() {
                                     </Form.Group>
                                     <Form.Group className='mt-3'>
                                         <Form.Label>Unidad de Medición</Form.Label>
-                                        <Form.Select onChange={e => setUnits(e.target.value)} defaultValue={units} value={units}>
+                                        <Form.Select onChange={e => setUnits(e.target.value)} defaultValue={units} value={units} disabled={blockUnits}>
                                             {list_units && list_units.map((unit) => (
                                                 <option value={unit.unit}>{unit.label}</option>
                                             ))}
@@ -840,8 +850,8 @@ function Diagnostics() {
                             <hr className="mt-2 mb-0" />
                             <Row>
                                 <Form.Group className='mt-3'>
-                                    <Button className="ms-2 me-3 mb-3 btn-danger" onClick={handleCleaning} title="Limpiar archivos cargados"><CleaningServices/></Button>
-                                    <Button onClick={saveDiagnosticData} className="mb-3 btn-success" title="Salvar diagnóstico"><Save/></Button>
+                                    <Button className="ms-2 me-3 mb-3 btn-danger" onClick={handleCleaning} title="Limpiar archivos cargados"><Delete/></Button>
+                                    <Button disabled={blockUnits} onClick={saveDiagnosticData} className="mb-3 btn-success" title="Salvar diagnóstico"><Save/></Button>
                                 </Form.Group>
                             </Row>
                         </Form>

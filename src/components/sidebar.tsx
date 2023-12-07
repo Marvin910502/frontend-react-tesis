@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import SidebarList from "./sidebar_list";
 import SidebarDropdown from "./sidebar_dropdown";
 import {Link} from "react-router-dom";
-import Switch from "./switch";
+import SwitchTheme from "./switch_theme";
 import {Col, Navbar, NavbarBrand, Image} from "react-bootstrap";
 import { UserContext } from "../context/context_provider";
 import Cookies from 'js-cookie';
@@ -56,15 +56,16 @@ function Sidebar(){
                 <div>
                     <Link to="/" className={"text-center text-decoration-none " + link_color}>
                         <NavbarBrand className="pt-2 pb-4" style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Image src={`${process.env["REACT_APP_API_URL"]}/api/media/get-icon/${icon}`} className="me-2" style={{maxWidth:'100px'}}/>
+                            <Image src={`${process.env["REACT_APP_API_URL"]}/api/media/get-icon/${icon}`} className="me-0" style={{maxWidth:'100px'}}/>
                         </NavbarBrand>
                     </Link>
+                    <h5 className="text-center mb-4 ps-2 pe-2">Centro de Física de la Atmósfera</h5>
                     <hr className="mt-0"/>
                     <div className='p-1'>
                         { user?.user.isAuthenticated && <SidebarList/>}
                     </div>
                     <div style={{position:"absolute", bottom:'5vh'}} className='pe-4 w-100'>
-                        <Switch/>
+                        <SwitchTheme/>
                         <hr/>
                         <SidebarDropdown/>
                     </div>

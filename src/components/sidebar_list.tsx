@@ -47,32 +47,32 @@ function SidebarList(){
             <Navbar className="w-100">
                 <Nav variant='pills' activeKey={list_event} className="flex-column w-100">
                     <Link className='text-decoration-none' to='/'>
-                        <Nav.Link href='/' eventKey='1' className={link_color}>
+                        <Nav.Link href='/' eventKey='1' className={ list_event === '1' ? 'text-white' : link_color }>
                             <Home className='me-2' />
                                 Inicio
                         </Nav.Link>
                     </Link>
                     <Link className='text-decoration-none' to='diagnosticos'>
-                        <Nav.Link href='diagnosticos' eventKey='2' className={link_color}>
+                        <Nav.Link href='diagnosticos' eventKey='2' className={ list_event === '2' ? 'text-white' : link_color }>
                             <Map className='me-2' />
                                 Diágnosticos
                         </Nav.Link>
                     </Link>
                     <Link className='text-decoration-none' to='mis-diagnosticos'>
-                        <Nav.Link href='mis-diagnosticos' eventKey='3' className={link_color}>
+                        <Nav.Link href='mis-diagnosticos' eventKey='3' className={ list_event === '3' ? 'text-white' : link_color }>
                             <QueryStats className='me-2' />
                                 Mis Diagnósticos
                         </Nav.Link>
                     </Link>
                     <Link className='text-decoration-none' to='maximos-minimos'>
-                        <Nav.Link href='maximos-minimos' eventKey='4' className={link_color}>
+                        <Nav.Link href='maximos-minimos' eventKey='4' className={ list_event === '4' ? 'text-white' : link_color }>
                             <SsidChart className='me-2' />
                                 Máximos y Mínimos
                         </Nav.Link>
                     </Link>
                     {   user.user.isManager ?
                         <Link className='text-decoration-none' to='subir-wrfout'>
-                        <Nav.Link href='subir-wrfout' eventKey='5' className={link_color}>
+                        <Nav.Link href='subir-wrfout' eventKey='5' className={ list_event === '5' ? 'text-white' : link_color }>
                             <DriveFolderUpload className='me-2' />
                                 Subir WRFout 
                         </Nav.Link>
@@ -82,7 +82,7 @@ function SidebarList(){
                     }
                     <hr/>
                     <Link className='text-decoration-none' to='ayuda'>
-                        <Nav.Link href='ayuda' eventKey='6' className={link_color}>
+                        <Nav.Link href='ayuda' eventKey='6' className={ list_event === '6' ? 'text-white' : link_color }>
                             <Help className='me-2' />
                                 Ayuda 
                         </Nav.Link>

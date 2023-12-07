@@ -130,7 +130,7 @@ const Login = () => {
                                 <Form.Label>Correo</Form.Label>
                             </Form.Floating>
                             <Form.Floating className='mt-5'>
-                                <Form.Control type={'password'} onChange={e=>setPassword(e.target.value)} name={'password'}/>
+                                <Form.Control type={'password'} placeholder={'**********'} onChange={e=>setPassword(e.target.value)} name={'password'}/>
                                 <Form.Label>Contraseña</Form.Label>
                             </Form.Floating>
                             <Form.Group className='mt-5'>
