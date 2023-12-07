@@ -223,7 +223,7 @@ function MyProfile(){
                                         <Form.Control type={'password'} onChange={e => setRePassword(e.target.value)} placeholder="" name={'re_password'}/>
                                         <Form.Label>Repetir Nueva Contraseña</Form.Label>
                                     </Form.Floating>
-                                    {(re_password.length === 0 || re_password !== password) && <small style={{color:'orange'}}>La contraseña repetida no coinside o esta vacía</small>}
+                                    {(re_password.length === 0 || re_password !== password) && <small style={{color:'orange'}}>La contraseña repetida no coincide o esta vacía</small>}
                                     <Form.Group className='mt-5'>
                                         <Button onClick={handleChangePasswd} className='btn btn-primary py-2' disabled={validatePass}>Cambiar Contraseña</Button>
                                     </Form.Group>                                     

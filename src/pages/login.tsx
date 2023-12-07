@@ -75,6 +75,7 @@ const Login = () => {
 
     const loginUser = async(e:any)=> {
         e.preventDefault()
+        console.log('si')
         try {
             const res = await fetch(
                 `${process.env["REACT_APP_API_URL"]}/api/token/`,

@@ -57,6 +57,7 @@ function NavbarMini(){
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse id="navbarScroll">
                         <hr/>
+                        { user.user.isAuthenticated &&
                         <Nav
                             variant='pills'
                             activeKey={list_event}
@@ -106,6 +107,7 @@ function NavbarMini(){
                                 </Nav.Link>
                             </Link>  
                         </Nav>
+                        }
                         <hr/>
                         <SidebarDropdown/>
                     </Navbar.Collapse>

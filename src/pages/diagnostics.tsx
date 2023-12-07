@@ -7,7 +7,7 @@ import GeoJsonObject from 'geojson'
 import { UserContext } from "../context/context_provider"
 import MyToast from "../components/my_toast"
 import VerticalCut3dGraph from "../components/vertical_cut_3d_graph"
-import { OpenWith } from "@mui/icons-material"
+import { CleaningServices, OpenWith, Save } from "@mui/icons-material"
 import { LinearProgress, Slider } from "@mui/material"
 
 
@@ -840,8 +840,8 @@ function Diagnostics() {
                             <hr className="mt-2 mb-0" />
                             <Row>
                                 <Form.Group className='mt-3'>
-                                    <Button className="ms-2 me-3 mb-3 btn-danger" onClick={handleCleaning}>Limpiar Mapa</Button>
-                                    <Button onClick={saveDiagnosticData} className="mb-3 btn-success">Salvar Datos</Button>
+                                    <Button className="ms-2 me-3 mb-3 btn-danger" onClick={handleCleaning} title="Limpiar archivos cargados"><CleaningServices/></Button>
+                                    <Button onClick={saveDiagnosticData} className="mb-3 btn-success" title="Salvar diagnóstico"><Save/></Button>
                                 </Form.Group>
                             </Row>
                         </Form>
