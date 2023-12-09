@@ -81,7 +81,7 @@ function Register(){
                                         <Form.Control type={'password'} placeholder={'***********'} onChange={e => setRePassword(e.target.value)} name={'re_password'}/>
                                         <Form.Label>Repetir Contraseña</Form.Label>
                                     </Form.Floating>
-                                    {(re_password.length === 0 || re_password !== password) && <small style={{color:'orange'}}>La contraseña repetida no coinside o esta vacía</small>}
+                                    {(re_password.length === 0 || re_password !== password) && <small style={{color:'orange'}}>La contraseña repetida no coincide o está vacía</small>}
                                 </Col>
                                 <Col xl={6} lg={6} md={12} sm={12} xs={12} className="mt-lg-0 mt-xl-0 mt-5">
                                     <Form.Floating>

@@ -36,9 +36,12 @@ function MaxMin(){
             {
                 list_max_min.map((diag)=>(
                     diag.diag_label !== 'Altura del terreno' &&
-                    <Card className="mt-3">
-                        <MaxMinGraph diag_label={diag.diag_label} max_list={diag.max_list} min_list={diag.min_list} dates={diag.dates} unit={diag.unit}/>
-                    </Card>
+                    <div className="ps-2 pe-2 mb-5">
+                        <Card className="mt-3 shadow ps-3 pe-3 pt-2 pb-2">
+                            <MaxMinGraph diag_label={diag.diag_label} max_list={diag.max_list} min_list={diag.min_list} dates={diag.dates} unit={diag.unit}/>
+                        </Card>
+                    </div>
+                    
                 ))
             }
         </>

@@ -18,7 +18,7 @@ const diagnostic_labels = {
     'helicidad_relativa_tormenta': 'Helicidad Realtiva de Tormenta',
     'agua_precipitable': 'Agua Precipitable',
     'humedad_relativa': 'Humedad Relativa',
-    'presion_nivel_del_mar': 'Presion a Nivel del Mar',
+    'presion_nivel_del_mar': 'Presión a Nivel del Mar',
     'helicidad_corriente_ascendente': 'Helicidad de Corriente Ascendente'
 }
 
@@ -260,11 +260,12 @@ function MyDiagnostics(){
     useEffect(()=>{
         setListDiagnostics(full_list_save) 
         const handleFilter = () => {
+            setCurrentPage(1)
             const list_new_diagnostics:diagnosticListElement[] = []
             if (full_list_save && filter !== ''){
                 setFilter(filter.replace(/\s+/g, '_').toLowerCase())
                 for (let i=0; i<full_list_save.length; i++) {
-                    if (full_list_save[i].diagnostic_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].units_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].date_time.toLowerCase().replace(/\s+/g, '_').includes(filter)) {
+                    if (full_list_save[i].diagnostic_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].units_label.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].date_time.toLowerCase().replace(/\s+/g, '_').includes(filter) || full_list_save[i].map_palet.toLowerCase().replace(/\s+/g, '_').includes(filter)) {
                         list_new_diagnostics.push(full_list_save[i])
                     }
                 }
@@ -370,7 +371,7 @@ function MyDiagnostics(){
                         </thead>
                         <tbody>
                             {list_diagnostics && list_diagnostics.map((diagnostic_element, index)=>(
-                                (index < 13 * current_page && index >= 13 * (0 + current_page - 1))  &&
+                                (index < 13 * current_page && index >= 13 * (current_page - 1))  &&
                                     <tr>
                                         <td className="text-center pt-3">{index+1}</td>
                                         <td className="pt-3">{diagnostic_element.diagnostic_label}</td>
@@ -383,7 +384,6 @@ function MyDiagnostics(){
                                             <IconButton title="Eliminar" color="error" onClick={e=>handleOpenDeleteModal(diagnostic_element.file_name)}><Delete/></IconButton>
                                         </td>
                                     </tr>
-                                
                             ))}
                         </tbody>
                     </Table>
@@ -397,7 +397,7 @@ function MyDiagnostics(){
 
             <Modal show={showModal} onHide={handleCloseModal} className="modal-xl" style={{minHeight:'700px'}}>
                 <Modal.Header closeButton>
-                    <Modal.Title className="fs-5">{diagnostic?.diagnostic_label} / {diagnostic?.units_label} / Numero de Polígonos: {diagnostic?.polygons}</Modal.Title>
+                    <Modal.Title className="fs-5">{diagnostic?.diagnostic_label} / {diagnostic?.units_label} / Número de Polígonos: {diagnostic?.polygons}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{ maxHeight: '67vh' }}>
                     <Card style={{ maxHeight: '63vh' }}>
@@ -421,13 +421,13 @@ function MyDiagnostics(){
                             <Row>
                                 <Col xl={6} lg={6} md={6} sm={12} >
                                     <Form.Group className='mt-3'>
-                                        <Form.Label>Grueso de lineas: {line_weight}px</Form.Label>
+                                        <Form.Label>Grueso de líneas: {line_weight}px</Form.Label>
                                         <Form.Range max={2} min={0} step={0.1} defaultValue={line_weight} onChange={e=>setLineWeight(parseFloat(e.target.value))}/>
                                     </Form.Group>
                                 </Col>
                                 <Col xl={6} lg={6} md={6} sm={12} >
                                     <Form.Group className='mt-3'>
-                                        <Form.Label>Opacidad de poligonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
+                                        <Form.Label>Opacidad de polígonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
                                         <Form.Range max={1} min={0} step={0.05} defaultValue={fill_opacity} onChange={e=>setFillOpacity(parseFloat(e.target.value))}/>
                                     </Form.Group>
                                 </Col>
@@ -439,10 +439,10 @@ function MyDiagnostics(){
 
             <Modal show={showDelete} onHide={handleCloseDeleteModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Eliminar Datos de este Mapa</Modal.Title>
+                    <Modal.Title>Eliminar Diagnóstico</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <span>¿Está seguro(a) que desea eliminar los datos de este diagnóstico? Esta acción es irrebersible</span>
+                    <span>¿Está seguro(a) que desea eliminar los datos de este diagnóstico? Esta acción es irreversible</span>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" type="submit" form="load_file" onClick={e=>handleDeleteMapData(element_delete)}>

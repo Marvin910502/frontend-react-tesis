@@ -14,7 +14,7 @@ const DashboardCard: React.FC<ChildProps> = ({title, card_content, url, image_ur
     return(
         <>
             <Link to={url} className='text-decoration-none'>
-                <Card className='shadow-sm'>
+                <Card className='shadow'>
                     <Card.Header>
                         <h3>{title}</h3>
                     </Card.Header>

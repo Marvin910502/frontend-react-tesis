@@ -16,10 +16,10 @@ const diagnostic_options = [
     { value: 'temperatura', label: 'Temperatura' },
     { value: 'altura_del_terreno', label: 'Altura del Terreno' },
     { value: 'temperatura_superior_nubes', label: 'Temperatura Superior de las Nubes' },
-    { value: 'helicidad_relativa_tormenta', label: 'Helicidad Realtiva de Tormenta' },
+    { value: 'helicidad_relativa_tormenta', label: 'Helicidad Relativa de Tormenta' },
     { value: 'agua_precipitable', label: 'Agua Precipitable' },
     { value: 'humedad_relativa', label: 'Humedad Relativa' },
-    { value: 'presion_nivel_del_mar', label: 'Presion a Nivel del Mar' },
+    { value: 'presion_nivel_del_mar', label: 'Presión a Nivel del Mar' },
     { value: 'helicidad_corriente_ascendente', label: 'Helicidad de Corriente Ascendente' }
 ]
 
@@ -29,10 +29,10 @@ const diagnostic_labels = {
     'temperatura': 'Temperatura',
     'altura_del_terreno': 'Altura del Terreno',
     'temperatura_superior_nubes': 'Temperatura Superior de las Nubes',
-    'helicidad_relativa_tormenta': 'Helicidad Realtiva de Tormenta',
+    'helicidad_relativa_tormenta': 'Helicidad Relativa de Tormenta',
     'agua_precipitable': 'Agua Precipitable',
     'humedad_relativa': 'Humedad Relativa',
-    'presion_nivel_del_mar': 'Presion a Nivel del Mar',
+    'presion_nivel_del_mar': 'Presión a Nivel del Mar',
     'helicidad_corriente_ascendente': 'Helicidad de Corriente Ascendente'
 }
 
@@ -757,7 +757,7 @@ function Diagnostics() {
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={12} >
                                 <Form.Group className='mt-3 ps-3 pe-3'>
-                                    <Form.Label>Grueso de lineas: {line_weight}px</Form.Label>
+                                    <Form.Label>Grueso de líneas: {line_weight}px</Form.Label>
                                     <Slider
                                         aria-label="Temperature"
                                         value={line_weight}
@@ -771,7 +771,7 @@ function Diagnostics() {
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={12} >
                                 <Form.Group className='mt-3 ps-3 pe-3'>
-                                    <Form.Label>Opacidad de poligonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
+                                    <Form.Label>Opacidad de polígonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
                                     <Slider
                                         aria-label="Temperature"
                                         value={fill_opacity}
@@ -811,7 +811,7 @@ function Diagnostics() {
                                         </Row>
                                         {load_path.length === 0 && <div className="mt-2 bg-warning text-black rounded p-2 shadow"><small>Debe seleccionar el (los) archivo(s) para mapear</small></div>}
                                         <Form.Control type={'hidden'} name={'wrf_url'} value={load_path} required />
-                                        <Button className="mt-2 ms-2 mb-3" variant="primary" onClick={handleShow}>Selecionar Archivo(s)</Button>
+                                        <Button className="mt-2 ms-2 mb-3" variant="primary" onClick={handleShow}>Seleccionar Archivo(s)</Button>
                                     </Form.Group>
                                 </Col>
                                 <Col xl={6}>
@@ -926,7 +926,7 @@ function Diagnostics() {
                             <Row className="ps-3 pe-3">
                                 <Col xl={6} lg={6} md={6} sm={12} >
                                     <Form.Group className='mt-3'>
-                                        <Form.Label>Grueso de lineas: {line_weight}px</Form.Label>
+                                        <Form.Label>Grueso de líneas: {line_weight}px</Form.Label>
                                         <Slider
                                             aria-label="Temperature"
                                             value={line_weight}
@@ -940,7 +940,7 @@ function Diagnostics() {
                                 </Col>
                                 <Col xl={6} lg={6} md={6} sm={12} >
                                     <Form.Group className='mt-3'>
-                                        <Form.Label>Opacidad de poligonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
+                                        <Form.Label>Opacidad de polígonos: {(fill_opacity * 100).toFixed(0)}%</Form.Label>
                                         <Slider
                                             aria-label="Temperature"
                                             value={fill_opacity}

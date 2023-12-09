@@ -55,7 +55,7 @@ function SidebarList(){
                     <Link className='text-decoration-none' to='diagnosticos'>
                         <Nav.Link href='diagnosticos' eventKey='2' className={ list_event === '2' ? 'text-white' : link_color }>
                             <Map className='me-2' />
-                                Diágnosticos
+                                Diagnósticos
                         </Nav.Link>
                     </Link>
                     <Link className='text-decoration-none' to='mis-diagnosticos'>

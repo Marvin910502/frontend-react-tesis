@@ -47,10 +47,10 @@ function Dashboard(){
 
     return(
         <div>
-        <Card className='mt-3 text-center'>
+        <Card className='mt-3 text-center shadow'>
             <h1 className='mt-2' style={{fontSize: '5vh'}}>{site_title}</h1>
         </Card>
-        <Card className='mt-3'>
+        <Card className='mt-3  shadow'>
             <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                 <Image
                     style={{maxWidth:'55vh'}}

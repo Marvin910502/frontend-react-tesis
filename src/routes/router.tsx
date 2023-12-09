@@ -28,9 +28,9 @@ const Router = () => {
                 <Route path='/mis-diagnosticos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MyDiagnostics/> }/>
                 <Route path='/subir-wrfout' element={ (!user.user.isAuthenticated || !user.user.isManager) ? <Navigate to={'/logout'}/> : <UploadWrfout/> }/>
                 <Route path='/maximos-minimos' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MaxMin/>}/>
-                <Route path='/login' element={<Login/>}/>
+                <Route path='/login' element={ user.user.isAuthenticated ? <Navigate to={'/'}/> : <Login/>}/>
                 <Route path='/logout' element={<Logout/>}/>
-                <Route path='/register' element={<Register/>}/>
+                <Route path='/register' element={ user.user.isAuthenticated ? <Navigate to={'/'}/> : <Register/>}/>
                 <Route path='/mi-perfil' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/> : <MyProfile/> }/>
                 <Route path='/ayuda' element={ !user.user.isAuthenticated ? <Navigate to={'/logout'}/>: <Help/> }/>
                 <Route path='*' element={<Page404/>}/>

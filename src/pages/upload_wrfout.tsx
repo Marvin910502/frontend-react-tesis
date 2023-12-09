@@ -190,6 +190,7 @@ function UploadWrfout(){
     }
 
     useEffect(()=>{
+        setCurrentPage(1)
         setListFile(full_list_save) 
         const handleFilter = () => {
             const list_new_maps:FILE[] = []
@@ -310,7 +311,7 @@ function UploadWrfout(){
                     <Modal.Title>Eliminar Archivo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <span>¿Está seguro(a) que desea eliminar este archivo del server? Esta acción es irrebersible</span>
+                    <span>¿Está seguro(a) que desea eliminar este archivo del servidor? Esta acción es irreversible</span>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" type="submit" form="load_file" onClick={e=>handleDeleteFile()}>
