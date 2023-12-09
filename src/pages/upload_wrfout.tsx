@@ -147,7 +147,8 @@ function UploadWrfout(){
         }
     }
 
-    const handleDeleteFile = () => { 
+    const handleDeleteFile = () => {
+        setCurrentPage(1) 
         const DeleteMapData = async () => {
             try {
                 const res = await fetch(
@@ -160,6 +161,7 @@ function UploadWrfout(){
                             'Authorization': `Bearer ${Cookies.get('access-token')}`
                         },
                         body:JSON.stringify({
+                            'username': user.user.username,
                             'file_name':element_delete
                         })
                     }
